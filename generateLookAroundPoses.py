@@ -91,31 +91,31 @@ def getRoomsInfo(ocMap, numRooms, cellSide):
     roomsTopLeftCoord = np.empty((numRooms,2))
     roomsTopLeftCoord[:] = np.NAN
     roomsCoords = listOflist(numRooms)
-    for i,row in enumerate(ocMap):
-        for j,roomIdx in enumerate(row):
+    for i, row in enumerate(ocMap):
+        for j, roomIdx in enumerate(row):
             if not roomIdx == 0.:
                 roomIdx = int(roomIdx-1)
 
                 if np.isnan(roomsTopLeftCoord[roomIdx][0]):
                     roomsTopLeftCoord[roomIdx] = [i,j]
                 
-                roomsCoords[roomIdx].extend([i,j])
+                roomsCoords[roomIdx].append([i,j])
 
     roomsCoords = np.array(roomsCoords)    
     roomsCentreCoord = np.zeros((numRooms,2))
-    for i in range(numRooms):
-        roomCoords = roomsCoords[i]
-        i_coords = [k for k in roomCoords if k % 2 == 0]
-        if (i == 0):
-            print roomCoords
-            print '\n'
-            print i_coords
+    for r in range(numRooms):
+        roomCoords = roomsCoords[r]
+        roomCoords = np.array(roomCoords)
+        iList = list(set(roomCoords[:,0]))
+        mid_i = iList[len(iList)/2]
+        midRow = []
+        for coord in roomCoords:
+            if coord[0] == mid_i:
+                midRow.append(coord)
+        roomsCentreCoord[r] = midRow[len(midRow)/2]
 
-
-        length = len(roomCoords)
-        centre = length / 2 # integer division
-
-    return roomsTopLeftCoord, roomsCoords
+    print roomsCentreCoord       
+    return roomsTopLeftCoord, roomsCentreCoord
 
 
 f = open ('fromOcMap.pckl','rb')
