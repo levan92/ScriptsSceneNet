@@ -82,7 +82,7 @@ def getRoomsFloor():
     vertIdxCount = 0
     inFloorPre = False
     inFloor = False
-    init = True
+    
     for line in r:
         if line.startswith('v '):
             vertIdxCount += 1

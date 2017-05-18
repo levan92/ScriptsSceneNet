@@ -4,6 +4,7 @@ import numpy as np
 import math
 from pylab import *
 from readLayout import *
+import pickle
 
 def getCellBbox(i, j):
 	x0 = origin_ocMap[0] + cellSide * j
@@ -19,22 +20,39 @@ def getCellCentre(i, j):
 
 def initialiseOcMap():
 	x_min, x_max, _, _, z_min, z_max = getLayoutBounds(layoutFilePath)
-	
 	zwidth = z_max - z_min
-	# zwidth = zwidth + (cellSide - zwidth%cellSide)
 	iwidth = int(math.ceil(zwidth / cellSide))
-	
 	xwidth = x_max - x_min
-	# xwidth = xwidth + (cellSide - xwidth%cellSide)
 	jwidth = int(math.ceil(xwidth / cellSide))
 
 	origin_ocMap = [x_min, z_min]
-
 	ocMap = np.zeros((iwidth,jwidth))
 
 	return ocMap, iwidth, jwidth, origin_ocMap
 
-cellSide = 0.5 # in m
+def visualiseOcMap():
+	fig, ax = plt.subplots()
+
+	# define the colormap
+	cmap = plt.cm.jet
+	cmaplist = [cmap(i) for i in range(cmap.N)]
+	cmaplist[0] = (.5,.5,.5,1.0)
+	cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+
+	bounds = np.linspace(0,numRooms+1,numRooms+2)
+	norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+	img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
+
+	plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
+					ticks=bounds, boundaries=bounds, format='%1i')
+	ax.set_title('Rooms Layout of House')
+	savefig('roomsLayout.png')
+	show()
+	return
+
+
+cellSide = .10 # in m
 
 ocMap, iwidth, jwidth, origin_ocMap = initialiseOcMap()
 
@@ -50,15 +68,21 @@ for i in range(iwidth):
 			for face in faces:
 				if face.contains_point(cellCentre): ocMap[i,j] = r+1
 				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
-				
-			
+
+
+toSave = [ocMap, numRooms, cellSide]
+f = open('fromOcMap.pckl','wb')
+pickle.dump(toSave, f)
+f.close()
+
+visualiseOcMap()			
+
+
 
 			# if face.intersects_bbox(cell, filled=True): 
 			# 	ocMap[i,j] = 1
 
 # Visualisation of ocMap
-np.savetxt('ocMap.txt',ocMap)
-
 # fig, ax = plt.subplots(1,1, figsize=(6,6))
 
 # # define the colormap
@@ -79,33 +103,36 @@ np.savetxt('ocMap.txt',ocMap)
 # colorbar()
 # show()
 
-# setup the plot
-fig, ax = plt.subplots(1,1, figsize=(6,6))
+# def visualiseOcMap():
+# 	# setup the plot
+# 	# fig, ax = plt.subplots(1,1, figsize=(6,6))
+# 	fig, ax = plt.subplots()
 
-# define the colormap
-cmap = plt.cm.jet
-# extract all colors from the .jet map
-cmaplist = [cmap(i) for i in range(cmap.N)]
-# force the first color entry to be grey
-cmaplist[0] = (.5,.5,.5,1.0)
-# create the new map
-cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+# 	# define the colormap
+# 	cmap = plt.cm.jet
+# 	# extract all colors from the .jet map
+# 	cmaplist = [cmap(i) for i in range(cmap.N)]
+# 	# force the first color entry to be grey
+# 	cmaplist[0] = (.5,.5,.5,1.0)
+# 	# create the new map
+# 	cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
 
-# define the bins and normalize
-bounds = np.linspace(0,numRooms,numRooms+1)
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+# 	# define the bins and normalize
+# 	bounds = np.linspace(0,numRooms,numRooms+1)
+# 	norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-# make the scatter
-scat = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
+# 	# make the scatter
+# 	img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
 
-# create a second axes for the colorbar
-ax2 = fig.add_axes([0.95, 0.1, 0.03, 0.8])
-cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, spacing='proportional', ticks=bounds, boundaries=bounds, format='%1i')
+# 	# create a second axes for the colorbar
+# 	# ax2 = fig.add_axes([0.95, 0.1, 0.03, 0.8])
+# 	plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
+# 					ticks=bounds, boundaries=bounds, format='%1i')
 
-ax.set_title('Rooms Layout of House')
-ax2.set_ylabel('Room Index')
-savefig('roomsLayout.png')
-# show()
+# 	ax.set_title('Rooms Layout of House')
+# 	savefig('roomsLayout.png')
+# 	show()
+# 	return
 
 # vertices=[]
 # vertices.append( [42.6, 0.05, 37.5] )
