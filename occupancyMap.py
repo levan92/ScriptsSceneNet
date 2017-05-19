@@ -30,6 +30,47 @@ def initialiseOcMap():
 
 	return ocMap, iwidth, jwidth, origin_ocMap
 
+def listOflist(size):
+    listOflist = list()
+    for i in range(0,size):
+        listOflist.append( list() )
+    return listOflist
+
+def getRoomsInfo(ocMap, numRooms, cellSide):
+    roomsTopLeftCoord = np.empty((numRooms,2))
+    roomsTopLeftCoord[:] = np.NAN
+    roomsCoords = listOflist(numRooms)
+    
+    for i, row in enumerate(ocMap):
+        for j, roomIdx in enumerate(row):
+            if not roomIdx == 0.:
+                roomIdx = int(roomIdx-1)
+
+                if np.isnan(roomsTopLeftCoord[roomIdx][0]):
+                    roomsTopLeftCoord[roomIdx] = [i,j]
+                
+                roomsCoords[roomIdx].append([i,j])
+
+    roomsCoords = np.array(roomsCoords)    
+    roomsCentreCoord = np.zeros((numRooms,2))
+    roomsSize = np.zeros((numRooms,2))
+    
+    for r in range(numRooms):
+        roomCoords = roomsCoords[r]
+        roomCoords = np.array(roomCoords)
+        iList = list(set(roomCoords[:,0]))
+        roomHeight = len(iList) 
+        mid_i = iList[(roomHeight-1)/2] #integer division
+        midRow = []
+        for coord in roomCoords:
+            if coord[0] == mid_i:
+                midRow.append(coord)
+        roomWidth = len(midRow)
+        roomsCentreCoord[r] = midRow[(roomWidth-1)/2] #integer division
+        roomsSize[r] = [roomHeight, roomWidth]
+
+    return roomsTopLeftCoord, roomsCentreCoord, roomsSize
+
 def visualiseOcMap():
 	fig, ax = plt.subplots()
 
@@ -51,6 +92,7 @@ def visualiseOcMap():
 	show()
 	return
 
+### 
 
 cellSide = .10 # in m
 
@@ -69,8 +111,13 @@ for i in range(iwidth):
 				if face.contains_point(cellCentre): ocMap[i,j] = r+1
 				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
 
+roomsTopLeftCoord, roomsCentreCoord, roomsSize = getRoomsInfo(ocMap, 
+                                                    numRooms, cellSide)
 
-toSave = [ocMap, numRooms, cellSide]
+floorHeight = getFloorHeight()
+
+toSave = [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
+		  roomsTopLeftCoord, roomsCentreCoord, roomsSize]
 f = open('fromOcMap.pckl','wb')
 pickle.dump(toSave, f)
 f.close()

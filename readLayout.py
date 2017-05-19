@@ -1,8 +1,11 @@
 import numpy as np
 import matplotlib.path as mplPath
+from sys import platform
 
-
-layoutDirectory='/homes/el216/Workspace/SceneNetData/Layouts'
+if platform == "linux" or platform == "linux2":
+    layoutDirectory='/homes/el216/Workspace/SceneNetData/Layouts'
+elif platform == "darwin":
+    layoutDirectory='/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts'
 layoutFile='/suncg_houses/house2/house.obj'
 layoutFilePath = layoutDirectory+layoutFile
 

@@ -2,24 +2,15 @@ import re
 import numpy as np
 import pickle
 
-#user variables
-numOfFrames = 150
-layoutDirectory='/homes/el216/Workspace/SceneNetData/Layouts'
-layoutFile='/suncg_houses/house2.obj'
-layoutFilePath = layoutDirectory+layoutFile
-#robot parameters
-robotD = 0.30 # diameter in m
-robotR = robotD / 2. # radius
-robotH = 0.20 # height in m
-camDownAngle = 22.5 # in deg, angle camera looks down at
-camForwardD = robotH / np.tan(camDownAngle/180.0*np.pi)
-v_straight = 0.2 # speed when going straight in m/s
-omega_turn = 90 # turn speed in deg/s
-#simulation parameters
-th = 0.05 # time step
-frameStep = 1 # extract frame every frameStep secs
+### Functions
 
-# step = 0.01 # movement simulation stepsize in m
+#initialise poses.txt with default heading lines
+def initPoseFile():
+    w = open("poses.txt","w")
+    w.write('#time, cameraPoint(3D), lookAtPoint(3D)\n')
+    w.write('#frame rate\n')
+    w.write('#shutter_speed\n') 
+    return w
 
 #check if robot location is valid
 def valid(robotLoc, bearings3D):
@@ -32,29 +23,25 @@ def valid(robotLoc, bearings3D):
     return False
 
 #prints camera and look at points to file
-def printPointsToFile(iteration, robotLoc, bearings3D, file):
-    camLoc = robotLoc + robotR * bearings3D \
-                      + np.array([0.,robotH,0.])
-    lookAtLoc = robotLoc + (robotR + camForwardD) * bearings3D
-    print >> file, iteration, \
+def printPoseToFile(index, pose, file):
+    camLoc = np.zeros(3)
+    lookAtLoc = np.zeros(3)
+    # x
+    camLoc[0] = pose[1] + robotR * np.cos(pose[2])
+    lookAtLoc[0] = pose[1] + (robotR+camForwardD) * np.cos(pose[2])
+    # y
+    camLoc[1] = floorHeight + robotH
+    lookAtLoc[1] = floorHeight
+    # z
+    camLoc[2] = pose[0] + robotR * np.sin(pose[2])
+    lookAtLoc[2] = pose[0] + (robotR+camForwardD) * np.sin(pose[2])
+
+    print >> file, index, \
              camLoc[0], camLoc[1], camLoc[2], \
              lookAtLoc[0], lookAtLoc[1], lookAtLoc[2]
-    print >> file, iteration, \
+    print >> file, index, \
              camLoc[0], camLoc[1], camLoc[2], \
              lookAtLoc[0], lookAtLoc[1], lookAtLoc[2]
-
-#turns bearings right by 90 degrees
-def turnRight90 (bearings):
-    print 'turned right'
-    bearings = np.dot(np.array([[0,1],[-1,0]]), bearings)
-    return bearings
-
-#theta in rads, negative theta to turn right
-def turnLeftTheta (bearings, theta):
-    print 'turned by',theta
-    bearings = np.dot(np.array([[np.cos(theta),-np.sin(theta)],
-                                [np.sin(theta),np.cos(theta)]]), bearings)
-    return bearings/np.linalg.norm(bearings)
 
 def goingToHitWall(pose):
 
@@ -62,77 +49,75 @@ def goingToHitWall(pose):
 
 # D in m
 def getPose_straight(pose, D):
-	newPose[0] = pose[0] + D * np.cos(pose[2])
-	newPose[1] = pose[1] + D * np.sin(pose[2])
-	newPose[2] = pose[2]
-	return newPose
+    newPose = np.zeros(3)
+    newPose[0] = pose[0] + D * np.cos(pose[2])
+    newPose[1] = pose[1] + D * np.sin(pose[2])
+    newPose[2] = pose[2]
+    return newPose
+
+# wraps angle within -pi and pi
+def wrap (rad):
+    while (rad <= -np.pi): rad += 2 * np.pi
+    while (rad > np.pi): rad -= 2 * np.pi
+    return rad
 
 # R in m, deltaTheta in deg
 def getPose_turn(pose, R, deltaTheta): 
-	deltaTheta_rad = np.deg2rad(deltaTheta)
-	newPose[0] = pose[0] + R * ( np.sin(pose[2] + deltaTheta_rad) - sin(deltaTheta_rad) )
-	newPose[1] = pose[1] - R * ( np.cos(pose[2] + deltaTheta_rad) - cos(deltaTheta_rad) )
-	newPose[2] = pose[2] + deltaTheta_rad
-	return newPose
+    newPose = np.zeros(3)
+    deltaTheta_rad = np.deg2rad(deltaTheta)
+    newPose[0] = pose[0] + R * ( np.sin(pose[2] + deltaTheta_rad) \
+                 - np.sin(deltaTheta_rad) )
+    newPose[1] = pose[1] - R * ( np.cos(pose[2] + deltaTheta_rad) \
+                 - np.cos(deltaTheta_rad) )
+    newPose[2] = wrap(pose[2] + deltaTheta_rad)
+    return newPose
 
-# wraps angle within -pi and pi
-def wrap (angle):
-	while (angle <= -np.pi): angle += 2 * np.pi
-	while (angle > np.pi): angle -= 2 * np.pi
-	return angle
+def cell2WorldCoord(cell):
+    [i,j] = cell
+    x = origin_ocMap[0] + cellSide * (j + 0.5)
+    z = origin_ocMap[1] + cellSide * (i + 0.5)
+    return np.array([z,x])
 
-def listOflist(size):
-    listOflist = list()
-    for i in range(0,size):
-        listOflist.append( list() )
-    return listOflist
+### User variables
+numOfFrames = 150
+#robot parameters
+robotD = 0.30 # diameter in m
+robotR = robotD / 2. # radius
+robotH = 0.20 # height in m
+camDownAngle = 22.5 # in deg, angle camera looks down at
+camForwardD = robotH / np.tan(np.deg2rad(camDownAngle))
+v_straight = 0.2 # speed when going straight in m/s
+omega_turn = 90 # turn speed in deg/s
+#simulation parameters
+th = 0.05 # time step
+frameStep = 1 # extract frame every frameStep secs
 
-def getRoomsInfo(ocMap, numRooms, cellSide):
-    roomsTopLeftCoord = np.empty((numRooms,2))
-    roomsTopLeftCoord[:] = np.NAN
-    roomsCoords = listOflist(numRooms)
-    for i, row in enumerate(ocMap):
-        for j, roomIdx in enumerate(row):
-            if not roomIdx == 0.:
-                roomIdx = int(roomIdx-1)
+# step = 0.01 # movement simulation stepsize in m
 
-                if np.isnan(roomsTopLeftCoord[roomIdx][0]):
-                    roomsTopLeftCoord[roomIdx] = [i,j]
-                
-                roomsCoords[roomIdx].append([i,j])
+framesPerRoom = 36
 
-    roomsCoords = np.array(roomsCoords)    
-    roomsCentreCoord = np.zeros((numRooms,2))
-    for r in range(numRooms):
-        roomCoords = roomsCoords[r]
-        roomCoords = np.array(roomCoords)
-        iList = list(set(roomCoords[:,0]))
-        mid_i = iList[len(iList)/2]
-        midRow = []
-        for coord in roomCoords:
-            if coord[0] == mid_i:
-                midRow.append(coord)
-        roomsCentreCoord[r] = midRow[len(midRow)/2]
-
-    print roomsCentreCoord       
-    return roomsTopLeftCoord, roomsCentreCoord
-
+### Main
 
 f = open ('fromOcMap.pckl','rb')
-[ocMap, numRooms, cellSide] = pickle.load(f)
+[ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
+ roomsTopLeftCoord, roomsCentreCoord, roomsSize] = pickle.load(f)
 f.close()
 
-roomsTopLeftCoord, roomsCoords = getRoomsInfo(ocMap, numRooms, cellSide)
+wf = initPoseFile()
 
+for r in range(numRooms):
+    #start with centre of each room
+    centreCoord = cell2WorldCoord(roomsCentreCoord[r])
+    pose = np.array([centreCoord[0],
+                     centreCoord[1],
+                     np.deg2rad(180)])
+    
+    for i in range(framesPerRoom - 1):
+        printPoseToFile(r, pose, wf)
+        deltaTheta = 360 / framesPerRoom
+        pose = getPose_turn(pose, 0, deltaTheta) # turning on the spot
 
-
-
-
-
-
-
-
-
+print 'poses.txt generated, num of rooms:', numRooms
 
 
 
