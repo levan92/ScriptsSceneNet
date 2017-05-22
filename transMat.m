@@ -5,12 +5,12 @@ s_y = 1;
 s_z = 1;
 
 %rotate
-theta_y_deg = 90;
+theta_y = 90;
 
 %translation
-d_x = 40;
+d_x = 39.9;
 d_y = 0.05;
-d_z = 40;
+d_z = 38.1;
 
 %%Processing
 S = [s_x, 0,   0,   0;

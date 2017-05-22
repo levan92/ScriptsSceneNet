@@ -7,7 +7,7 @@ import pickle
 #initialise poses.txt with default heading lines
 def initPoseFile():
     w = open("poses.txt","w")
-    w.write('#time, cameraPoint(3D), lookAtPoint(3D)\n')
+    w.write('#first three elements, eye and last three, lookAt\n')
     w.write('#frame rate\n')
     w.write('#shutter_speed\n') 
     return w
@@ -79,22 +79,13 @@ def cell2WorldCoord(cell):
     return np.array([z,x])
 
 ### User variables
-numOfFrames = 150
+framesPerRoom = 36
 #robot parameters
 robotD = 0.30 # diameter in m
 robotR = robotD / 2. # radius
 robotH = 0.20 # height in m
 camDownAngle = 22.5 # in deg, angle camera looks down at
 camForwardD = robotH / np.tan(np.deg2rad(camDownAngle))
-v_straight = 0.2 # speed when going straight in m/s
-omega_turn = 90 # turn speed in deg/s
-#simulation parameters
-th = 0.05 # time step
-frameStep = 1 # extract frame every frameStep secs
-
-# step = 0.01 # movement simulation stepsize in m
-
-framesPerRoom = 36
 
 ### Main
 
@@ -117,7 +108,9 @@ for r in range(numRooms):
         deltaTheta = 360 / framesPerRoom
         pose = getPose_turn(pose, 0, deltaTheta) # turning on the spot
 
-print 'poses.txt generated, num of rooms:', numRooms
+print 'poses.txt generated, num of rooms:', numRooms, \
+        ', floor height:', floorHeight, \
+        ', total num frames:', (framesPerRoom * numRooms)
 
 
 
