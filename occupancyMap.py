@@ -7,28 +7,28 @@ from readLayout import *
 import pickle
 
 def getCellBbox(i, j):
-	x0 = origin_ocMap[0] + cellSide * j
-	x1 = x0 + cellSide
-	z0 = origin_ocMap[1] + cellSide * i
-	z1 = z0 + cellSide
-	return mplTrans.Bbox(np.array([[x0,z0],[x1,z1]]))
+    z0 = origin_ocMap[0] + cellSide * i
+    z1 = z0 + cellSide
+    x0 = origin_ocMap[1] + cellSide * j
+    x1 = x0 + cellSide
+    return mplTrans.Bbox(np.array([[z0,x0],[z1,x1]]))
 
 def getCellCentre(i, j):
-	x = origin_ocMap[0] + cellSide * (j + 0.5)
-	z = origin_ocMap[1] + cellSide * (i + 0.5)
-	return np.array([x,z])
+    z = origin_ocMap[0] + cellSide * (i + 0.5)
+    x = origin_ocMap[1] + cellSide * (j + 0.5)
+    return np.array([z,x])
 
 def initialiseOcMap():
-	x_min, x_max, _, _, z_min, z_max = getLayoutBounds(layoutFilePath)
-	zwidth = z_max - z_min
-	iwidth = int(math.ceil(zwidth / cellSide))
-	xwidth = x_max - x_min
-	jwidth = int(math.ceil(xwidth / cellSide))
+    x_min, x_max, _, _, z_min, z_max = getLayoutBounds(layoutFilePath)
+    zwidth = z_max - z_min
+    iwidth = int(math.ceil(zwidth / cellSide))
+    xwidth = x_max - x_min
+    jwidth = int(math.ceil(xwidth / cellSide))
 
-	origin_ocMap = [x_min, z_min]
-	ocMap = np.zeros((iwidth,jwidth))
+    origin_ocMap = [z_min, x_min]
+    ocMap = np.zeros((iwidth,jwidth))
 
-	return ocMap, iwidth, jwidth, origin_ocMap
+    return ocMap, iwidth, jwidth, origin_ocMap
 
 def listOflist(size):
     listOflist = list()
@@ -51,7 +51,7 @@ def getRoomsInfo(ocMap, numRooms, cellSide):
                 
                 roomsCoords[roomIdx].append([i,j])
 
-    roomsCoords = np.array(roomsCoords)    
+    roomsCoords = np.array(roomsCoords)
     roomsCentreCoord = np.zeros((numRooms,2))
     roomsSize = np.zeros((numRooms,2))
     
@@ -89,7 +89,7 @@ def visualiseOcMap():
 					ticks=bounds, boundaries=bounds, format='%1i')
 	ax.set_title('Rooms Layout of House')
 	savefig('roomsLayout.png')
-	show()
+	# show()
 	return
 
 ### 
@@ -122,7 +122,7 @@ f = open('fromOcMap.pckl','wb')
 pickle.dump(toSave, f)
 f.close()
 
-visualiseOcMap()			
+# visualiseOcMap()			
 
 
 

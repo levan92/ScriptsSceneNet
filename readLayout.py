@@ -115,9 +115,9 @@ def getRoomsFloor():
                 v1 = verts[faceIndices[0]-startVertIdx-1]
                 v2 = verts[faceIndices[1]-startVertIdx-1]
                 v3 = verts[faceIndices[2]-startVertIdx-1]
-                face = mplPath.Path( np.array([[v1[0],v1[2]],
-                                               [v2[0],v2[2]],
-                                               [v3[0],v3[2]]]) )
+                face = mplPath.Path( np.array([[v1[2],v1[0]],
+                                               [v2[2],v2[0]],
+                                               [v3[2],v3[0]]]) )
                 faces.append(face)
 
         if inFloorPre:

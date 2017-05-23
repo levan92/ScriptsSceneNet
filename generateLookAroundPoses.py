@@ -14,27 +14,21 @@ def initPoseFile():
 
 #check if robot location is valid
 def valid(robotLoc, bearings3D):
-    # lookAtLoc = robotLoc + (robotR + camForwardD) * bearings3D
-    camLoc = robotLoc + robotR * bearings3D \
-                      + np.array([0.,robotH,0.])
-    buffer = 0.1 #10cm buffer
-    if ( (x_min+buffer<camLoc[0]<x_max-buffer) and 
-         (z_min+buffer<camLoc[2]<z_max-buffer) ): return True
-    return False
+    return
 
 #prints camera and look at points to file
 def printPoseToFile(index, pose, file):
     camLoc = np.zeros(3)
     lookAtLoc = np.zeros(3)
     # x
-    camLoc[0] = pose[1] + robotR * np.cos(pose[2])
-    lookAtLoc[0] = pose[1] + (robotR+camForwardD) * np.cos(pose[2])
+    camLoc[0] = pose[1] + robotR * np.sin(pose[2])
+    lookAtLoc[0] = pose[1] + (robotR+camForwardD) * np.sin(pose[2])
     # y
     camLoc[1] = floorHeight + robotH
     lookAtLoc[1] = floorHeight
     # z
-    camLoc[2] = pose[0] + robotR * np.sin(pose[2])
-    lookAtLoc[2] = pose[0] + (robotR+camForwardD) * np.sin(pose[2])
+    camLoc[2] = pose[0] + robotR * np.cos(pose[2])
+    lookAtLoc[2] = pose[0] + (robotR+camForwardD) * np.cos(pose[2])
 
     print >> file, index, \
              camLoc[0], camLoc[1], camLoc[2], \
@@ -65,17 +59,20 @@ def wrap (rad):
 def getPose_turn(pose, R, deltaTheta): 
     newPose = np.zeros(3)
     deltaTheta_rad = np.deg2rad(deltaTheta)
+    #z
     newPose[0] = pose[0] + R * ( np.sin(pose[2] + deltaTheta_rad) \
                  - np.sin(deltaTheta_rad) )
+    #x
     newPose[1] = pose[1] - R * ( np.cos(pose[2] + deltaTheta_rad) \
                  - np.cos(deltaTheta_rad) )
+    #theta
     newPose[2] = wrap(pose[2] + deltaTheta_rad)
     return newPose
 
 def cell2WorldCoord(cell):
     [i,j] = cell
-    x = origin_ocMap[0] + cellSide * (j + 0.5)
-    z = origin_ocMap[1] + cellSide * (i + 0.5)
+    z = origin_ocMap[0] + cellSide * (i + 0.5)
+    x = origin_ocMap[1] + cellSide * (j + 0.5)
     return np.array([z,x])
 
 ### User variables
@@ -99,9 +96,9 @@ wf = initPoseFile()
 for r in range(numRooms):
     #start with centre of each room
     centreCoord = cell2WorldCoord(roomsCentreCoord[r])
-    pose = np.array([centreCoord[0],
-                     centreCoord[1],
-                     np.deg2rad(180)])
+    pose = np.array([centreCoord[0],    #z
+                     centreCoord[1],    #x
+                     np.deg2rad(180)])  #theta
     
     for i in range(framesPerRoom - 1):
         printPoseToFile(r, pose, wf)

@@ -1,0 +1,132 @@
+layout_file: ./suncg/house/house2/house.obj
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0644852085214
+transformation
+0.099 0.000 -0.995 42.014
+0.000 1.000 0.000 0.050
+0.995 0.000 0.099 41.788
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0981746603355
+transformation
+0.360 0.000 -0.933 37.601
+0.000 1.000 0.000 0.050
+0.933 0.000 0.360 38.957
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.107335260458
+transformation
+0.370 0.000 -0.929 46.544
+0.000 1.000 0.000 0.050
+0.929 0.000 0.370 35.146
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.134309982363
+transformation
+0.143 0.000 0.990 39.939
+0.000 1.000 0.000 0.050
+-0.990 0.000 0.143 33.347
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0706418154064
+transformation
+-0.373 0.000 0.928 42.636
+0.000 1.000 0.000 0.050
+-0.928 0.000 -0.373 37.360
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0614660333412
+transformation
+0.507 0.000 -0.862 45.100
+0.000 1.000 0.000 0.050
+0.862 0.000 0.507 40.415
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.111408204336
+transformation
+0.610 0.000 -0.792 47.435
+0.000 1.000 0.000 0.050
+0.792 0.000 0.610 37.740
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0627005293305
+transformation
+0.939 0.000 0.343 47.475
+0.000 1.000 0.000 0.050
+-0.343 0.000 0.939 42.458
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0889838892939
+transformation
+0.629 0.000 0.778 43.870
+0.000 1.000 0.000 0.050
+-0.778 0.000 0.629 40.676
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.105660379425
+transformation
+-0.977 0.000 0.215 45.743
+0.000 1.000 0.000 0.050
+-0.215 0.000 -0.977 43.442
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0815973724548
+transformation
+0.514 0.000 -0.858 51.694
+0.000 1.000 0.000 0.050
+0.858 0.000 0.514 37.255
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.0955763179445
+transformation
+0.977 0.000 0.213 47.820
+0.000 1.000 0.000 0.050
+-0.213 0.000 0.977 34.156
+object
+SmallObjs/eb073520d0c4db4d346f9a49ab523ba7
+wnid
+SmallObjs
+scale
+0.134016359254
+transformation
+-0.652 0.000 0.758 47.761
+0.000 1.000 0.000 0.050
+-0.758 0.000 -0.652 37.982
+end
