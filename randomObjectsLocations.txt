@@ -1,0 +1,38 @@
+Total:  31
+Room 1
+	redBus [94 27]
+	blackPiano [107  34]
+	aeroplane [60 19]
+	greenMissile [103  26]
+	greenMissile [67 12]
+	redBus [100  30]
+Room 2
+	aeroplane [34 26]
+	bo [38 83]
+	redPiano [45 61]
+Room 3
+	greenMissile [73 62]
+	blackPiano [69 86]
+	missile [72 70]
+	redPiano [68 92]
+	missile [72 85]
+	blackPiano [79 98]
+	greenMissile [78 65]
+Room 4
+	greyPiano [87 98]
+	bus [91 99]
+Room 5
+	redPiano [ 29 111]
+	pillow [ 24 115]
+	blackPiano [ 11 124]
+	greyPiano [ 46 112]
+Room 6
+	blackPiano [108 139]
+	aeroplane [ 79 118]
+	aeroplane [ 78 134]
+	greenMissile [ 61 122]
+	redPiano [ 59 118]
+	greenMissile [ 87 130]
+	blackPiano [ 94 118]
+	redBus [ 85 119]
+	bo [ 85 119]

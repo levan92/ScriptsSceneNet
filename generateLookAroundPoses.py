@@ -12,10 +12,6 @@ def initPoseFile():
     w.write('#shutter_speed\n') 
     return w
 
-#check if robot location is valid
-def valid(robotLoc, bearings3D):
-    return
-
 #prints camera and look at points to file
 def printPoseToFile(index, pose, file):
     camLoc = np.zeros(3)
@@ -94,7 +90,7 @@ f.close()
 wf = initPoseFile()
 
 for r in range(numRooms):
-    #start with centre of each room
+    #start with centre of each room facing front
     centreCoord = cell2WorldCoord(roomsCentreCoord[r])
     pose = np.array([centreCoord[0],    #z
                      centreCoord[1],    #x

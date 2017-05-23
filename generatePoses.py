@@ -1,6 +1,6 @@
-import re 
 import numpy as np
 import pickle
+import math
 
 ### Functions
 
@@ -12,24 +12,35 @@ def initPoseFile():
     w.write('#shutter_speed\n') 
     return w
 
-#check if robot location is valid
-def valid(pose, room):
+def robotOutOfRoom(pose, room):
+    robotD_cell = int(math.ceil(robotD/cellSide))
+    zx_start = pose[:2]
+    zx = list(zx_start)
 
-    return
+    for i in range(robotD_cell):
+        for j in range(robotD_cell):
+            cell = world2CellCoord(zx)
+            if not (ocMap[cell[0]][cell[1]] == room):
+                return True
+            zx[1] += cellSide
+        zx[1] = zx_start[1]
+        zx[0] += cellSide
     
+    return False
+
 #prints camera and look at points to file
 def printPoseToFile(index, pose, file):
     camLoc = np.zeros(3)
     lookAtLoc = np.zeros(3)
     # x
-    camLoc[0] = pose[1] + robotR * np.cos(pose[2])
-    lookAtLoc[0] = pose[1] + (robotR+camForwardD) * np.cos(pose[2])
+    camLoc[0] = pose[1] + robotR * np.sin(pose[2])
+    lookAtLoc[0] = pose[1] + (robotR+camForwardD) * np.sin(pose[2])
     # y
     camLoc[1] = floorHeight + robotH
     lookAtLoc[1] = floorHeight
     # z
-    camLoc[2] = pose[0] + robotR * np.sin(pose[2])
-    lookAtLoc[2] = pose[0] + (robotR+camForwardD) * np.sin(pose[2])
+    camLoc[2] = pose[0] + robotR * np.cos(pose[2])
+    lookAtLoc[2] = pose[0] + (robotR+camForwardD) * np.cos(pose[2])
 
     print >> file, index, \
              camLoc[0], camLoc[1], camLoc[2], \
@@ -37,10 +48,6 @@ def printPoseToFile(index, pose, file):
     print >> file, index, \
              camLoc[0], camLoc[1], camLoc[2], \
              lookAtLoc[0], lookAtLoc[1], lookAtLoc[2]
-
-def goingToHitWall(pose):
-
-    return
 
 # D in m
 def getPose_straight(pose, D):
@@ -60,18 +67,31 @@ def wrap (rad):
 def getPose_turn(pose, R, deltaTheta): 
     newPose = np.zeros(3)
     deltaTheta_rad = np.deg2rad(deltaTheta)
+    #z
     newPose[0] = pose[0] + R * ( np.sin(pose[2] + deltaTheta_rad) \
                  - np.sin(deltaTheta_rad) )
+    #x
     newPose[1] = pose[1] - R * ( np.cos(pose[2] + deltaTheta_rad) \
                  - np.cos(deltaTheta_rad) )
+    #theta
     newPose[2] = wrap(pose[2] + deltaTheta_rad)
     return newPose
 
 def cell2WorldCoord(cell):
     [i,j] = cell
-    x = origin_ocMap[0] + cellSide * (j + 0.5)
-    z = origin_ocMap[1] + cellSide * (i + 0.5)
+    z = origin_ocMap[0] + cellSide * (i + 0.5)
+    x = origin_ocMap[1] + cellSide * (j + 0.5)
     return np.array([z,x])
+
+def world2CellCoord(world):
+    [z,x] = world
+    i = int( np.floor((z - origin_ocMap[0]) / cellSide) )
+    j = int( np.floor((x - origin_ocMap[1]) / cellSide) )
+    return np.array([i,j])
+
+def selectTurn():
+    if (turnToggle == 0): return -90 # turn right
+    else: return 90 # turn left 
 
 ### User variables
 framesPerRoom = 36
@@ -81,7 +101,10 @@ robotR = robotD / 2. # radius
 robotH = 0.20 # height in m
 camDownAngle = 22.5 # in deg, angle camera looks down at
 camForwardD = robotH / np.tan(np.deg2rad(camDownAngle))
-
+robotV_straight = 1. # forward speed in m/s
+robotV_turn = 90 # turning speed in deg/s
+timeStep = 0.1 # simulation time step in sec
+frameStep = 30 # capture a frame every [frameStep] timeSteps
 ### Main
 
 f = open ('fromOcMap.pckl','rb')
@@ -92,20 +115,78 @@ f.close()
 wf = initPoseFile()
 
 for r in range(numRooms):
-    #start with centre of each room
-    centreCoord = cell2WorldCoord(roomsCentreCoord[r])
-    pose = np.array([centreCoord[0],
-                     centreCoord[1],
-                     np.deg2rad(180)])
-    
-    for i in range(framesPerRoom - 1):
-        printPoseToFile(r, pose, wf)
-        deltaTheta = 360 / framesPerRoom
-        pose = getPose_turn(pose, 0, deltaTheta) # turning on the spot
+    #start with top left of each room, facing right
+    topLeftCoord = cell2WorldCoord(roomsTopLeftCoord[r])
+    pose = np.array([topLeftCoord[0],    #z
+                     topLeftCoord[1],    #x
+                     np.deg2rad(90)])  #theta
+    i = 0
+    turnToggle = 0
+    while True:
+        if not uturn:
+            D = timeStep * robotV_straight
+            newPose = getPose_straight(pose, D)
+            if robotOutOfRoom(pose, r):
+                uturn = True 
+                firstTurn = True
+                totalTurn = selectTurn() #turn right or left
+            else: 
+                pose = newPose
+
+        if uturn:
+            if secondTurn:
+                deltaTheta = timeStep * robotV_turn
+                if deltaTheta < totalTurn:
+                    newPose = getPose_turn(pose, 0, deltaTheta) # turning on the spot
+                else: 
+                    newPose = getPose_turn(pose, 0, totalTurn) # turn the remaining
+                    secondTurn = False
+                    uturn = False
+                    turnToggle = 1 - turnToggle
+                totalTurn -= deltaTheta
+
+            elif straight:
+                D = timeStep * robotV_straight
+                if D < totalD:
+                    newPose = getPose_straight(pose, D)
+                else:
+                    newPose = getPose_straight(pose, totalD)
+                    straight = False
+                    secondTurn = True
+                    totalTurn = selectTurn() #turn right or left
+
+            elif firstTurn == True:
+                deltaTheta = timeStep * robotV_turn
+                if deltaTheta < totalTurn:
+                    newPose = getPose_turn(pose, 0, deltaTheta) # turning on the spot
+                else: 
+                    newPose = getPose_turn(pose, 0, totalTurn) # turn the remaining
+                    firstTurn = False
+                    straight = True
+                    totalD = robotD
+                totalTurn -= deltaTheta
+
+        if i%frameStep == 0:
+            printPoseToFile(r, pose, wf)
+
+        i += 1;
+
+
+
+
+
+
+
 
 print 'poses.txt generated, num of rooms:', numRooms, \
         ', floor height:', floorHeight, \
         ', total num frames:', (framesPerRoom * numRooms)
+
+
+
+
+
+
 
 
 

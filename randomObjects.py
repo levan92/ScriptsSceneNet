@@ -1,7 +1,11 @@
 import numpy as np
 import pickle
 from sys import platform
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 from pylab import *
+import random
 
 # returns 3D bounds of obj
 def getObjBounds(objWnid, objID):
@@ -34,8 +38,21 @@ def getObjBounds(objWnid, objID):
                 if vec3[1] > y_max: y_max = vec3[1]
                 if vec3[2] < z_min: z_min = vec3[2]
                 if vec3[2] > z_max: z_max = vec3[2]
-
+    r.close()
     return x_min, x_max, y_min, y_max, z_min, z_max
+
+def chooseRandObject():
+    r = open('smallObjects.txt','r')
+    rand = 0
+    for line in r:
+        if line.startswith('Total'):
+            total = int(line.split(':')[1])
+            rand = random.randrange(1,total+1) #random int btwn 1 and total
+        elif line.startswith(str(rand)):
+            num, objWnid, objID, y_height_std, y_sd_std, nickname = line[:-1].split(',')
+            break
+
+    return objWnid, objID, float(y_height_std), float(y_sd_std), nickname
 
 def getTmatrix(s, theta_y, d):
     S = np.array([[s[0], 0,    0,    0],
@@ -93,7 +110,18 @@ def visualiseMap():
                     ticks=bounds, boundaries=bounds, format='%1i')
     ax.set_title('Rooms Layout with objects')
     savefig('roomsLayout+Objects.png')
-    show()
+    # show()
+    return
+
+def writeLogFile():
+    f = open('randomObjectsLocations.txt','w')
+    print >> f, 'Total: ', totalNumObjects
+    i = 0
+    for r in range(numRooms):
+        print >> f, 'Room',(r+1)
+        for _ in range(numObjInRooms[r]):
+            print >> f, '\t', nicknames[i], objs_cell[i], scales[i]
+            i += 1;
     return
 
 f = open ('fromOcMap.pckl','rb')
@@ -109,21 +137,22 @@ objWnids = []
 Ts = []
 scales = []
 objs_cell = np.empty((0,2),int)
+nicknames = []
+numObjInRooms = []
 
 for r in range(numRooms):
-    # numObjects = int(round(getNormalRand(5, 2))) # mean, SD
-    numObjects = int(round(getNormalRand(3, 1))) # mean, SD
+    numObjects = int(round(getNormalRand(5, 2))) # mean, SD
+    # numObjects = int(round(getNormalRand(3, 1))) # mean, SD
     room_origin = cell2WorldCoord(roomsTopLeftCoord[r])
     room_zwidth, room_xwidth = roomsSize[r] * cellSide
     print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
     for obj in range(numObjects):
-        objID = 'eb073520d0c4db4d346f9a49ab523ba7' #bus
-        objWnid = 'SmallObjs'
+        objWnid, objID, y_height_std, y_sd_std, nickname = chooseRandObject()
         x_min, x_max, y_min, y_max, z_min, z_max = getObjBounds(objWnid, objID)
         objSmallestWidth = min(x_max - x_min, z_max - z_min)
         objYwidth = y_max - y_min
-        y_height = getNormalRand(0.10,0.025) # in metres
+        y_height = getNormalRand(y_height_std, y_sd_std)
         scale_factor = y_height / objYwidth
         for i in range(maxIteration):
             rand_zx = np.random.rand(2)
@@ -147,7 +176,9 @@ for r in range(numRooms):
         Ts.append(T[0:3])
         scales.append(y_height)
         objs_cell = np.vstack( (objs_cell,world2CellCoord(d_zx)) )
+        nicknames.append(nickname)
 
+    numObjInRooms.append(numObjects)
     totalNumObjects += numObjects
 
 toSave = [totalNumObjects, objIDs, objWnids, scales, Ts]
@@ -157,7 +188,11 @@ f.close()
 
 print totalNumObjects, 'random objects generated and saved.'
 
+writeLogFile()
+
 visualiseMap()
+
+
 
 
 
