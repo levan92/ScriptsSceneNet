@@ -15,7 +15,7 @@ def initPoseFile():
 def robotOutOfRoom(pose, room):
     room = room + 1 # for loop iteration starts from 0 but ocMap starts from 1
     robotD_cell = int(math.ceil(robotD/cellSide))
-    zx_start = pose[:2]
+    zx_start = [pose[0]-robotR, pose[1]-robotR] #top-left corner of robot bb
     zx = list(zx_start)
 
     for i in range(robotD_cell):
@@ -115,19 +115,23 @@ f.close()
 
 wf = initPoseFile()
 
-framesCount = 0
+framesCountTotal = 0
 for r in range(numRooms):
     print 'Rooms cleaned: ', r, '/', numRooms 
     #start with top left of each room, facing right
     topLeftCoord = cell2WorldCoord(roomsTopLeftCoord[r])
-    pose = np.array([topLeftCoord[0],    #z
-                     topLeftCoord[1],    #x
+    pose = np.array([topLeftCoord[0] + robotR,    #z
+                     topLeftCoord[1] + robotR,    #x
                      np.deg2rad(90)])  #theta
+    if robotOutOfRoom(pose,r):
+        print 'initial position in room',r,'wrong, exitting.'
+
     i = 0
     turnToggle = -1 # first uturn is right, second is left, ...
     uturn = firstTurn = straight = secondTurn = finalStraightCheck = False
     uturnHitWallCount = 0
     uturnCount = 0
+    framesCountRoom = 0
     while True:
         if not uturn:
             D = timeStep * robotV_straight
@@ -164,7 +168,6 @@ for r in range(numRooms):
                     newPose = getPose_straight(pose, totalD)
                     straight = False
                     finalStraightCheck = True
-                    # print 'uturn straight done'
                     secondTurn = True
                     totalTurn = 90 * turnToggle #turn right or left
 
@@ -188,81 +191,30 @@ for r in range(numRooms):
                 secondTurn = True
                 totalTurn = 90 * turnToggle
                 uturnHitWallCount += 1
-                # TODO: reset uturnHitWallCount everytime successful full uturn is done. 
                 # print "uturnHitWallCount:", uturnHitWallCount
                 if uturnHitWallCount >= 2: break
             else: 
                 pose = newPose
                 # if successfully completes the full straight motion during uturn, uturnHitWallCount is resetted
-                if finalStraightCheck: uturnHitWallCount = 0
+                if finalStraightCheck: 
+                    uturnHitWallCount = 0
+                    # print 'uturn straight done'
 
             finalStraightCheck = False
 
         if i%frameStep == 0:
             printPoseToFile(r, pose, wf)
-            framesCount += 1
+            framesCountRoom += 1
 
         i += 1;
     #end while true loop
     print "num uturns done for Room", r+1,":",uturnCount
+    print "frames generated for Room", r+1,":",framesCountRoom
+    framesCountTotal += framesCountRoom
+
 
 print 'poses.txt generated, num of rooms:', numRooms, \
-        ', total num frames:', framesCount
-
-
-
-
-
-
-
-
-
-# #read layout file 
-# x_min, x_max, y_min, y_max, z_min, z_max = getFloorBounds(layoutFilePath)
-
-# print x_min, x_max, y_min, y_max, z_min, z_max
-
-# # #hardcoding for office1_layout.obj
-# # x_max = x_max - 0.6
-
-# #write poses.txt
-# w = open("poses.txt","w")
-# w.write('#time, cameraPoint (3D), lookAtPoint (3D)\n')
-# w.write('#frame rate per second: 25\n')
-# w.write('#shutter_speed (s): 0.0166667\n') 
-
-# # robotLoc = np.array([x_min + robotR + 1., y_min, z_min + robotR + 0.5])
-# # bearings = np.array([0, 1]) #always unit vector, 2D (z & x axes) 
-
-# # Initial pose
-# pose = np.array([z_min + 0.05 + robotR,
-#                x_min + 0.05 + robotR,
-#                np.deg2rad(90)])
-
-# # i = 0
-# t = 0
-# n = 0
-# turning = False
-# while True:
-#     # bearings3D = np.array([bearings[1], 0., bearings[0]])
-#     # newRobotLoc = robotLoc + step * bearings3D
-#     if turning:
-#       deltaTheta = th * omega_turn
-#       if abs(deltaTheta) > abs(targetDeltaTheta): 
-#           deltaTheta = targetDeltaTheta
-#           turning = False
-#       else:
-#           targetDeltaTheta -= deltaTheta
-#       pose = getPose_turn(pose, R, deltaTheta)
-
-#     else:
-#           D = th * v_straight
-#       pose = getPose_straight(pose, D)
-#       if goingToHitWall(pose):
-#           turning = True
-#           targetDeltaTheta = 90
-
-#     t += th
+        ', total num frames:', framesCountTotal
 
 
 
