@@ -101,8 +101,8 @@ robotR = robotD / 2. # radius
 robotH = 0.20 # height in m
 camDownAngle = 22.5 # in deg, angle camera looks down at
 camForwardD = robotH / np.tan(np.deg2rad(camDownAngle))
-robotV_straight = 1. # forward speed in m/s
-robotV_turn = 90 # turning speed in deg/s
+robotV_straight = .3 # forward speed in m/s
+robotV_turn = 45 # turning speed in deg/s
 # simulation parameters
 timeStep = 0.1 # simulation time step in sec
 frameStep = 30 # capture a frame every [frameStep] timeSteps
@@ -125,7 +125,7 @@ for r in range(numRooms):
                      np.deg2rad(90)])  #theta
     i = 0
     turnToggle = -1 # first uturn is right, second is left, ...
-    uturn = firstTurn = straight = secondTurn = False
+    uturn = firstTurn = straight = secondTurn = finalStraightCheck = False
     uturnHitWallCount = 0
     uturnCount = 0
     while True:
@@ -154,7 +154,6 @@ for r in range(numRooms):
                     # print 'uturn completed'
                     uturnCount += 1
                     turnToggle = -turnToggle
-                
 
             elif straight:
                 D = timeStep * robotV_straight
@@ -164,6 +163,7 @@ for r in range(numRooms):
                 else:
                     newPose = getPose_straight(pose, totalD)
                     straight = False
+                    finalStraightCheck = True
                     # print 'uturn straight done'
                     secondTurn = True
                     totalTurn = 90 * turnToggle #turn right or left
@@ -188,11 +188,15 @@ for r in range(numRooms):
                 secondTurn = True
                 totalTurn = 90 * turnToggle
                 uturnHitWallCount += 1
+                # TODO: reset uturnHitWallCount everytime successful full uturn is done. 
                 # print "uturnHitWallCount:", uturnHitWallCount
                 if uturnHitWallCount >= 2: break
             else: 
                 pose = newPose
+                # if successfully completes the full straight motion during uturn, uturnHitWallCount is resetted
+                if finalStraightCheck: uturnHitWallCount = 0
 
+            finalStraightCheck = False
 
         if i%frameStep == 0:
             printPoseToFile(r, pose, wf)
