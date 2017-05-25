@@ -71,18 +71,21 @@ def getTmatrix(s, theta_y, d):
     T = np.dot(np.dot(D,R),S);
     return T
 
+#returns a positive random number to a normal dist.
 def getNormalRand(mean, sd):
     while True: 
         rand = np.random.normal(mean, sd)
         if rand > 0: break
     return rand
 
+#returns world coordinate of the centre of a given cell
 def cell2WorldCoord(cell):
     [i,j] = cell
     z = origin_ocMap[0] + cellSide * (i + 0.5)
     x = origin_ocMap[1] + cellSide * (j + 0.5)
     return np.array([z,x])
 
+#returns cell that contains this world coordinate
 def world2CellCoord(world):
     [z,x] = world
     i = int( np.floor((z - origin_ocMap[0]) / cellSide) )
@@ -115,10 +118,12 @@ def visualiseMap():
 
 def writeLogFile():
     f = open('randomObjectsLocations.txt','w')
-    print >> f, 'Total: ', totalNumObjects
+    print >> f, 'Total: ', totalNumObjects, 'objects'
     i = 0
     for r in range(numRooms):
-        print >> f, 'Room',(r+1)
+        print >> f
+        print >> f, 'Room',(r+1),':',numObjInRooms[r],'objects (', \
+                               round(roomsMessiness[r]),'% mess )'
         for _ in range(numObjInRooms[r]):
             print >> f, '\t', nicknames[i], objs_cell[i], scales[i]
             i += 1;
@@ -129,7 +134,7 @@ f = open ('fromOcMap.pckl','rb')
  roomsTopLeftCoord, roomsCentreCoord, roomsSize] = pickle.load(f)
 f.close()
 
-totalNumObjects = 0
+## Parameters
 maxIteration = 500
 
 objIDs = []
@@ -139,12 +144,18 @@ scales = []
 objs_cell = np.empty((0,2),int)
 nicknames = []
 numObjInRooms = []
+roomsMessiness = []
+totalNumObjects = 0
 
 for r in range(numRooms):
-    numObjects = int(round(getNormalRand(5, 2))) # mean, SD
-    # numObjects = int(round(getNormalRand(3, 1))) # mean, SD
-    room_origin = cell2WorldCoord(roomsTopLeftCoord[r])
+    room_origin = cell2WorldCoord(roomsTopLeftCoord[r]) - [cellSide/2., cellSide/2.]
     room_zwidth, room_xwidth = roomsSize[r] * cellSide
+
+    area = room_zwidth * room_xwidth
+    roomMessiness = getNormalRand(15, 10) #around roomMessiness objects per 100m^2
+    numObjects = int(round(roomMessiness * (area / 100.))) 
+    #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
+
     print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
     for obj in range(numObjects):
@@ -178,6 +189,7 @@ for r in range(numRooms):
         objs_cell = np.vstack( (objs_cell,world2CellCoord(d_zx)) )
         nicknames.append(nickname)
 
+    roomsMessiness.append(roomMessiness)
     numObjInRooms.append(numObjects)
     totalNumObjects += numObjects
 

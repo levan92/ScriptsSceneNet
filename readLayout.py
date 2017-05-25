@@ -76,6 +76,8 @@ def getFloorHeight():
     _, _, _, y_max, _, _ = getObjBounds(layoutFilePath, 'Floor')
     return y_max
 
+# returns the faces of each room as defined in the layout .obj file, 
+# as well as the number of rooms.
 def getRoomsFloor():
     r = open(layoutFilePath,'r')
     rooms = []

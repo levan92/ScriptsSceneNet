@@ -1,38 +1,46 @@
-Total:  31
-Room 1
-	redBus [94 27]
-	blackPiano [107  34]
-	aeroplane [60 19]
-	greenMissile [103  26]
-	greenMissile [67 12]
-	redBus [100  30]
-Room 2
-	aeroplane [34 26]
-	bo [38 83]
-	redPiano [45 61]
-Room 3
-	greenMissile [73 62]
-	blackPiano [69 86]
-	missile [72 70]
-	redPiano [68 92]
-	missile [72 85]
-	blackPiano [79 98]
-	greenMissile [78 65]
-Room 4
-	greyPiano [87 98]
-	bus [91 99]
-Room 5
-	redPiano [ 29 111]
-	pillow [ 24 115]
-	blackPiano [ 11 124]
-	greyPiano [ 46 112]
-Room 6
-	blackPiano [108 139]
-	aeroplane [ 79 118]
-	aeroplane [ 78 134]
-	greenMissile [ 61 122]
-	redPiano [ 59 118]
-	greenMissile [ 87 130]
-	blackPiano [ 94 118]
-	redBus [ 85 119]
-	bo [ 85 119]
+Total:  33 objects
+
+Room 1 : 6 objects ( 18.0 % mess )
+	missile [64  9] 0.0236622830958
+	box [52  4] 0.0167971261845
+	pillow [85 33] 0.0464493061068
+	box [69 48] 0.00616854818075
+	pillow [91 29] 0.0209169987232
+	box [106   7] 0.0118933889904
+
+Room 2 : 17 objects ( 32.0 % mess )
+	blackPiano [46 59] 0.028787332252
+	pillow [16 92] 0.0517019661091
+	greyPiano [ 2 97] 0.0249668756764
+	greyPiano [34 71] 0.0262831815645
+	pillow [ 1 28] 0.0485893956843
+	bus [14 38] 0.0305676628113
+	aeroplane [38 39] 0.0262296385761
+	greenMissile [17 36] 0.00963598996571
+	pillow [ 5 41] 0.0625711301177
+	redBus [31 42] 0.0191422129281
+	pillow [22 19] 0.047468064771
+	aeroplane [42  3] 0.0460163988645
+	bus [16 14] 0.0647884605741
+	greenMissile [ 3 33] 0.0141884873498
+	bus [6 5] 0.0604971103414
+	redPiano [48 26] 0.023521904235
+	bus [46 95] 0.044961037339
+
+Room 3 : 1 objects ( 7.0 % mess )
+	pillow [78 56] 0.0215590683608
+
+Room 4 : 3 objects ( 19.0 % mess )
+	greenMissile [113  51] 0.0144275074646
+	greenMissile [107 101] 0.00529571112287
+	aeroplane [91 70] 0.0873043575618
+
+Room 5 : 5 objects ( 24.0 % mess )
+	redBus [ 42 131] 0.0522525419563
+	box [ 39 102] 0.00522511407743
+	pillow [ 44 123] 0.0314901692886
+	box [  6 125] 0.00389725929226
+	bus [ 16 109] 0.0380946821922
+
+Room 6 : 1 objects ( 6.0 % mess )
+	redBus [ 87 110] 0.0583122724397
