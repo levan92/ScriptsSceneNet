@@ -64,13 +64,21 @@ generateLookAroundPoses.py:
 generatePoses.py:
 	Generates "poses.txt" for SceneNet renderer. Takes in room information generated from "occupancyMap.py". 
 
-	This set of poses simulates a robotics vaccuum cleaner placed on the top left corner (min z and min x) of each room in the house facing right (positive x direction). It then attempt to sweep the entire room by undergoing a snake-like scanning pattern: goes straight, before hitting the wall it will uturn to its right, goes straight, before hitting wall again it will uturn to its left. It terminates its sweep and moves on to the next room everytime it is unable make anymore (positive) z-movements. 
+	This set of poses simulates a robotics vaccuum cleaner placed on the top left corner (min
+	z and min x) of each room in the house facing right (positive x direction). It then
+	attempt to sweep the entire room by undergoing a snake-like scanning pattern: goes
+	straight, before hitting the wall it will uturn to its right, goes straight, before
+	hitting wall again it will uturn to its left. It terminates its sweep and moves on to the
+	next room everytime it is unable make anymore (positive) z-movements. 
 
 	Input file: fromOcMap.pckl
 	Output file: poses.txt
 
 
 convertPngToMatrix.py: 
-	Output from SceneNet gives the instances and depth data in terms of a png, which cannot be directly visualised. This script automatically reads the output folder, processes the instances and depth pngs into visual image maps. It also does some folders organising at the same time. 
+	Output from SceneNet gives the instances and depth data in terms of a png, which cannot
+	be directly visualised. This script automatically reads the output folder, processes the
+	instances and depth pngs into visual image maps. It also does some folders organising at
+	the same time. 
 
 
