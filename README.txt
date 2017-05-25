@@ -62,7 +62,8 @@ generateLookAroundPoses.py:
 
 
 generatePoses.py:
-	Generates "poses.txt" for SceneNet renderer. Takes in room information generated from "occupancyMap.py". 
+	Generates "poses.txt" for SceneNet renderer. Takes in room information generated from 
+	"occupancyMap.py". 
 
 	This set of poses simulates a robotics vaccuum cleaner placed on the top left corner (min
 	z and min x) of each room in the house facing right (positive x direction). It then
