@@ -10,7 +10,7 @@ import random
 # returns 3D bounds of obj
 def getObjBounds(objWnid, objID):
     if platform == "linux" or platform == "linux2":
-        objectsDirectory='/homes/el216/Workspace/SceneNetData/Objects'
+        objectsDirectory='/homes/el216/Workspace/DataSceneNet/Objects'
     elif platform == "darwin":
         objectsDirectory='/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Objects'
 
