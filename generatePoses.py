@@ -129,7 +129,8 @@ robotV_straight = .3 # forward speed in m/s
 robotV_turn = 45 # turning speed in deg/s
 # simulation parameters
 timeStep = 0.1 # simulation time step in sec
-frameStep = 10 # capture a frame every [frameStep] timeSteps
+# frameStep = 10 # capture a frame every [frameStep] timeSteps
+frameStep = 50 # capture a frame every [frameStep] timeSteps
 
 ### Main
 f = open ('fromOcMap.pckl','rb')
