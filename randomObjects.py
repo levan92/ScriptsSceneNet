@@ -152,7 +152,9 @@ for r in range(numRooms):
     room_zwidth, room_xwidth = roomsSize[r] * cellSide
 
     area = room_zwidth * room_xwidth
-    roomMessiness = getNormalRand(15, 10) #around roomMessiness objects per 100m^2
+    # objects per 100m^2
+    # roomMessiness = getNormalRand(15, 10) 
+    roomMessiness = getNormalRand(40, 10) 
     numObjects = int(round(roomMessiness * (area / 100.))) 
     #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 

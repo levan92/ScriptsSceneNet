@@ -1,6 +1,8 @@
 import numpy as np
 import pickle
 import math
+from pylab import *
+np.set_printoptions(threshold=np.nan)
 
 ### Functions
 
@@ -14,19 +16,18 @@ def initPoseFile():
 
 def robotOutOfRoom(pose, room):
     room = room + 1 # for loop iteration starts from 0 but ocMap starts from 1
-    robotD_cell = int(math.ceil(robotD/cellSide))
+    robotD_cell = int(math.ceil(robotD/cellSide)) + 1
     zx_start = [pose[0]-robotR, pose[1]-robotR] #top-left corner of robot bb
     zx = list(zx_start)
-
     for i in range(robotD_cell):
         for j in range(robotD_cell):
             cell = world2CellCoord(zx)
             if not (ocMap[cell[0]][cell[1]] == room):
                 return True
             zx[1] += cellSide
+
         zx[1] = zx_start[1]
         zx[0] += cellSide
-    
     return False
 
 #prints camera and look at points to file
@@ -90,9 +91,32 @@ def world2CellCoord(world):
     j = int( np.floor((x - origin_ocMap[1]) / cellSide) )
     return np.array([i,j])
 
-# def selectTurn():
-#     if (turnToggle == 0): return -90 # turn right
-#     else: return 90 # turn left 
+def visualiseScanning(poses_cell):
+    fig, ax = plt.subplots()
+
+    # define the colormap
+    cmap = plt.cm.jet
+    cmaplist = [cmap(i) for i in range(cmap.N)]
+    cmaplist[0] = (.5,.5,.5,1.0)
+    cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+
+    bounds = np.linspace(0,numRooms+1,numRooms+2)
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+    img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
+    poses_cell = np.array(poses_cell)
+    x = poses_cell[:,1]
+    # print x
+    y = poses_cell[:,0]
+    # print y
+    plt.plot(x, y,'r-')
+
+    plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
+                    ticks=bounds, boundaries=bounds, format='%1i')
+    ax.set_title('Scanning pattern')
+    savefig('scanningPatternDemo.png')
+    show()
+    return
 
 ### User variables
 # robot parameters
@@ -105,7 +129,7 @@ robotV_straight = .3 # forward speed in m/s
 robotV_turn = 45 # turning speed in deg/s
 # simulation parameters
 timeStep = 0.1 # simulation time step in sec
-frameStep = 30 # capture a frame every [frameStep] timeSteps
+frameStep = 10 # capture a frame every [frameStep] timeSteps
 
 ### Main
 f = open ('fromOcMap.pckl','rb')
@@ -115,9 +139,14 @@ f.close()
 
 wf = initPoseFile()
 
+poses_cell = []
+
 framesCountTotal = 0
 for r in range(numRooms):
-    print 'Rooms cleaned: ', r, '/', numRooms 
+
+    # if not r == 1: continue
+
+    print 'Cleaning Room: ', r, '/', numRooms 
     #start with top left of each room, facing right
     topLeftCoord = cell2WorldCoord(roomsTopLeftCoord[r])
     pose = np.array([topLeftCoord[0] + robotR,    #z
@@ -196,6 +225,7 @@ for r in range(numRooms):
             else: 
                 pose = newPose
                 # if successfully completes the full straight motion during uturn, uturnHitWallCount is resetted
+
                 if finalStraightCheck: 
                     uturnHitWallCount = 0
                     # print 'uturn straight done'
@@ -207,16 +237,20 @@ for r in range(numRooms):
             framesCountRoom += 1
 
         i += 1;
+        poses_cell.append(world2CellCoord(pose[:2]))
+
+
     #end while true loop
-    print "num uturns done for Room", r+1,":",uturnCount
+    # print "num uturns done for Room", r+1,":",uturnCount
     print "frames generated for Room", r+1,":",framesCountRoom
     framesCountTotal += framesCountRoom
+
 
 
 print 'poses.txt generated, num of rooms:', numRooms, \
         ', total num frames:', framesCountTotal
 
-
+# visualiseScanning(poses_cell)
 
 
 

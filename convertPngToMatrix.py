@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import ntpath
 import os
 
-folder = "/Users/lingevan/Workspace/SceneNet/19May/SceneNetOutput/"
+# make sure folder ends with a slash /
+folder = "/Users/lingevan/Workspace/SceneNet/29May/OutputSceneNet01good/"
 
 
 if not os.path.exists(folder+"depth/original"):
