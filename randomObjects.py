@@ -86,9 +86,16 @@ def cell2WorldCoord(cell):
     x = origin_ocMap[1] + cellSide * (j + 0.5)
     return np.array([z,x])
 
+#returns world coordinate of the top-left of a given cell
+def cell2WorldCoord_TopLeft(cell):
+    [i,j] = cell
+    z = origin_ocMap[0] + cellSide * i
+    x = origin_ocMap[1] + cellSide * j
+    return np.array([z,x])
+
 #returns cell that contains this world coordinate
-def world2CellCoord(world):
-    [z,x] = world
+def world2CellCoord(world_zx):
+    [z,x] = world_zx
     i = int( np.floor((z - origin_ocMap[0]) / cellSide) )
     j = int( np.floor((x - origin_ocMap[1]) / cellSide) )
     return np.array([i,j])
@@ -153,34 +160,38 @@ if __name__ == '__main__':
     totalNumObjects = 0
 
     for r in range(numRooms):
-        room_origin = cell2WorldCoord(roomsTopLeftCoord[r]) - [cellSide/2., cellSide/2.]
+        room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
         room_zwidth, room_xwidth = roomsSize[r] * cellSide
-
         area = room_zwidth * room_xwidth
         # objects per 100m^2
         roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
         numObjects = int(round(roomMessiness * (area / 100.))) 
         #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 
-
-        if r == 1: print 'room size', room_zwidth, room_xwidth
         print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
         for obj in range(numObjects):
-            objWnid, objID, y_height_std, y_sd_std, nickname = chooseRandObject()
+            [objWnid, objID, y_height_std, 
+                        y_sd_std, nickname] = chooseRandObject()
             # TODO: take object size into account in placement
             # x_min, x_max, y_min, y_max, z_min, z_max = getObjBounds(objWnid, objID)
             # objSmallestWidth = min(x_max - x_min, z_max - z_min)
             # objYwidth = y_max - y_min
             y_height = getNormalRand(y_height_std, y_sd_std)
             # scale_factor = y_height / objYwidth
+            found = False
             for i in range(maxIteration):
                 rand_zx = np.random.rand(2)
                 rand_theta_y = np.random.rand()
                 # buf = objSmallestWidth * scale_factor / 2
                 d_zx = room_origin + rand_zx * [room_zwidth, room_xwidth]
                 theta_y = np.deg2rad(rand_theta_y * 360)
-                break
+                [i,j] = world2CellCoord(d_zx)
+                if ocMap[i,j]==r: 
+                    found = True
+                    break
+
+            if not found: print 'ERROR: Please check parameters and re-run script. Object location cannot be found within',maxIteration,'iterations.'
 
             # d_y = floorHeight - 0.6 * y_height
             d_y = floorHeight
