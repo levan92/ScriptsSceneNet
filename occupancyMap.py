@@ -95,7 +95,7 @@ def visualiseOcMap():
 if __name__ == "__main__":
     houseFilePath = sys.argv[1]
     layoutFilePath = houseFilePath + '/houseOneFloor.obj'
-    #print 'test'
+    
     # cellSide = .10 # in m
     cellSide = float(sys.argv[2])
 
