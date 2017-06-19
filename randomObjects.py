@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import sys
 from sys import platform
 import matplotlib
 # Force matplotlib to not use any Xwindows backend.
@@ -135,6 +136,9 @@ f = open ('fromOcMap.pckl','rb')
 f.close()
 
 ## Parameters
+roomsMessMean = float(sys.argv[1])
+roomsMessSD = float(sys.argv[2])
+
 maxIteration = 500
 
 objIDs = []
@@ -154,7 +158,7 @@ for r in range(numRooms):
     area = room_zwidth * room_xwidth
     # objects per 100m^2
     # roomMessiness = getNormalRand(15, 10) 
-    roomMessiness = getNormalRand(40, 10) 
+    roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
     numObjects = int(round(roomMessiness * (area / 100.))) 
     #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 

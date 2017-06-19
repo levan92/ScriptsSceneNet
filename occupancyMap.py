@@ -3,8 +3,9 @@ import matplotlib.transforms as mplTrans
 import numpy as np
 import math
 from pylab import *
-from readLayout import *
+import readLayout
 import pickle
+import sys
 
 def getCellBbox(i, j):
     z0 = origin_ocMap[0] + cellSide * i
@@ -19,7 +20,7 @@ def getCellCentre(i, j):
     return np.array([z,x])
 
 def initialiseOcMap():
-    x_min, x_max, _, _, z_min, z_max = getLayoutBounds(layoutFilePath)
+    x_min, x_max, _, _, z_min, z_max = readLayout.getLayoutBounds(layoutFilePath)
     zwidth = z_max - z_min
     iwidth = int(math.ceil(zwidth / cellSide))
     xwidth = x_max - x_min
@@ -94,11 +95,15 @@ def visualiseOcMap():
 
 ### 
 
-cellSide = .10 # in m
+houseFilePath = sys.argv[1]
+layoutFilePath = houseFilePath + '/houseOneFloor.obj'
+
+# cellSide = .10 # in m
+cellSide = float(sys.argv[2])
 
 ocMap, iwidth, jwidth, origin_ocMap = initialiseOcMap()
 
-floorsOfRooms, numRooms = getRoomsFloor()
+floorsOfRooms, numRooms = readLayout.getRoomsFloor(layoutFilePath)
 
 for i in range(iwidth):
 	print 'Progress: ',round(float(i)/iwidth * 100,2),'%'
@@ -114,7 +119,7 @@ for i in range(iwidth):
 roomsTopLeftCoord, roomsCentreCoord, roomsSize = getRoomsInfo(ocMap, 
                                                     numRooms, cellSide)
 
-floorHeight = getFloorHeight()
+floorHeight = readLayout.getFloorHeight(layoutFilePath)
 
 toSave = [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
 		  roomsTopLeftCoord, roomsCentreCoord, roomsSize]

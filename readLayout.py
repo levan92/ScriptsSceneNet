@@ -2,14 +2,6 @@ import numpy as np
 import matplotlib.path as mplPath
 from sys import platform
 
-if platform == "linux" or platform == "linux2":
-    layoutDirectory='/homes/el216/Workspace/SceneNetData/Layouts'
-elif platform == "darwin":
-    layoutDirectory='/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts'
-    
-layoutFile='/suncg_houses/house2/house.obj'
-layoutFilePath = layoutDirectory+layoutFile
-
 # returns 3D bounds of obj, given how an object is named in the layout file
 # for eg, objStr = 'Model#123'
 def getObjBounds(layoutFilePath, objStr):
@@ -73,13 +65,13 @@ def getLayoutBounds(layoutFilePath):
     return x_min, x_max, y_min, y_max, z_min, z_max
 
 
-def getFloorHeight():
+def getFloorHeight(layoutFilePath):
     _, _, _, y_max, _, _ = getObjBounds(layoutFilePath, 'Floor')
     return y_max
 
 # returns the faces of each room as defined in the layout .obj file, 
 # as well as the number of rooms.
-def getRoomsFloor():
+def getRoomsFloor(layoutFilePath):
     r = open(layoutFilePath,'r')
     rooms = []
     faces = []

@@ -1,11 +1,14 @@
 import numpy as np
 import pickle
+import sys
+
+houseID = sys.argv[1]
 
 f = open('fromRandomObjects.pckl','rb')
 totalNumObjects, objIDs, objWnids, scales, Ts = pickle.load(f)
 f.close()
 
-houseObj_filepath = 'suncg/house/house2/house.obj'
+houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
 
 w = open("scene_description.txt","w")
 w.write('layout_file: ./')
