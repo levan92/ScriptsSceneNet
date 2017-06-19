@@ -104,7 +104,7 @@ if __name__ == "__main__":
     floorsOfRooms, numRooms = readLayout.getRoomsFloor(layoutFilePath)
 
     for i in range(iwidth):
-    	print 'Progress: ',round(float(i)/iwidth * 100,2),'%'
+    	print 'Occupancy mapping progress: ',round(float(i)/iwidth * 100,2),'%'
     	for j in range(jwidth):
     		cell = getCellBbox(i,j)
     		cellCentre = getCellCentre(i,j)
