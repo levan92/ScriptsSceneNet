@@ -48,10 +48,10 @@ def getRoomsInfo(ocMap, numRooms, cellSide):
         for j, roomIdx in enumerate(ocMap):
             if not roomIdx == 0:
                 thisCell = np.array([i,j])
-                if np.isnan(bbs_min[roomIdx]).all() or 
+                if np.isnan(bbs_min[roomIdx]).all() or \
                    (thisCell < bbs_min[roomIdx]).all():
                     bbs_min[roomIdx] = thisCell
-                if np.isnan(bbs_max[roomIdx]).all() or 
+                if np.isnan(bbs_max[roomIdx]).all() or \
                    (thisCell > bbs_max[roomIdx]).all():
                     bbs_max[roomIdx] = thisCell
 
