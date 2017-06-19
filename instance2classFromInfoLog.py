@@ -55,7 +55,8 @@ WNID_TO_NYU_CLASS = {
     '04603729':10, '20000015':4, '04548280':12, '06410904':2, '04398951':10, '03693474':9, '04330267':7,
     '03015149':9, '04460038':7, '03128519':7, '04306847':7, '03677231':7, '02871439':6, '04550184':6,
     '14974264':7, '04344873':9, '03636649':7, '20000012':6, '02876657':7, '03325088':7, '04253437':7,
-    '02992529':7, '03222722':12, '04373704':4, '02851099':13, '04061681':10, '04529681':7,
+    '02992529':7, '03222722':12, '04373704':4, '02851099':13, '04061681':10, '04529681':7, '02691156':7,
+    '04099429':7, '02924116':7, '04146614':7, '02690373':7, '02693413':7, '02781338':7
 }
 
 
@@ -91,13 +92,14 @@ def readInfoLog():
 	f.readline() #ignore first line
 	for line in f:
 		instance, WNID = re.split(';|:', line)[1:3]
+		WNID = WNID.split(',')[0]
 		INSTANCE_TO_WNID [instance] = WNID
 	return INSTANCE_TO_WNID
 
 
 if __name__ == '__main__':
 
-	startTime = datetime.now()
+	# startTime = datetime.now()
 
 	INSTANCE_TO_WNID = readInfoLog()
 
@@ -109,22 +111,25 @@ if __name__ == '__main__':
 
 	for pngfile in glob.glob(outputDirectory + output + "/instance/*.png"):
 		imageName=ntpath.basename(pngfile)
-		if i%50 == 0:
-			print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
+		# if i%50 == 0:
+		print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
 		im = Image.open(pngfile)
 		pix = im.load()
 
 		for x in range(im.size[0]):
 			for y in range(im.size[1]):
 		 		instance = pix[x,y]
-		 		WNID = INSTANCE_TO_WNID.get(str(instance))
-		 		NYU = WNID_TO_NYU_CLASS.get(WNID)
+		 		WNID = INSTANCE_TO_WNID.get(str(instance), 0)
+		 		NYU = WNID_TO_NYU_CLASS.get(WNID, 0)
+		 		# if NYU == None: print 'no mapping for :', WNID
 		 		CLASS = NYU_CLASS_TO_THREE_CLASSES.get(NYU)
 		 		pix[x,y] = CLASS
+		 		if NYU == 0: print instance, WNID, NYU, CLASS
+
 
 		im.save(outputDirectory + output + '/labels/' + imageName)
 		i += 1
 
 
-	print datetime.now() - startTime
+	# print datetime.now() - startTime
 
