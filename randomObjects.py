@@ -133,7 +133,7 @@ def writeLogFile():
 if __name__ == '__main__':
     f = open ('fromOcMap.pckl','rb')
     [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
-     roomsTopLeftCoord, roomsCentreCoord, roomsSize] = pickle.load(f)
+     roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
     f.close()
 
     ## Parameters
@@ -158,27 +158,27 @@ if __name__ == '__main__':
 
         area = room_zwidth * room_xwidth
         # objects per 100m^2
-        # roomMessiness = getNormalRand(15, 10) 
         roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
         numObjects = int(round(roomMessiness * (area / 100.))) 
         #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 
+
+        if r == 1: print 'room size', room_zwidth, room_xwidth
         print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
         for obj in range(numObjects):
             objWnid, objID, y_height_std, y_sd_std, nickname = chooseRandObject()
-            x_min, x_max, y_min, y_max, z_min, z_max = getObjBounds(objWnid, objID)
-            objSmallestWidth = min(x_max - x_min, z_max - z_min)
-            objYwidth = y_max - y_min
+            # TODO: take object size into account in placement
+            # x_min, x_max, y_min, y_max, z_min, z_max = getObjBounds(objWnid, objID)
+            # objSmallestWidth = min(x_max - x_min, z_max - z_min)
+            # objYwidth = y_max - y_min
             y_height = getNormalRand(y_height_std, y_sd_std)
-            scale_factor = y_height / objYwidth
+            # scale_factor = y_height / objYwidth
             for i in range(maxIteration):
                 rand_zx = np.random.rand(2)
                 rand_theta_y = np.random.rand()
-                buf = objSmallestWidth * scale_factor / 2
-
-                d_zx = (room_origin + [buf,buf]) + \
-                        rand_zx * [room_zwidth - 2*buf, room_xwidth - 2*buf]
+                # buf = objSmallestWidth * scale_factor / 2
+                d_zx = room_origin + rand_zx * [room_zwidth, room_xwidth]
                 theta_y = np.deg2rad(rand_theta_y * 360)
                 break
 

@@ -38,39 +38,28 @@ def listOflist(size):
     return listOflist
 
 def getRoomsInfo(ocMap, numRooms, cellSide):
-    roomsTopLeftCoord = np.empty((numRooms,2))
-    roomsTopLeftCoord[:] = np.NAN
-    roomsCoords = listOflist(numRooms)
-    
+    # initialise bounding box min and max
+    bbs_min = np.empty((numRooms,2))
+    bbs_max = np.empty((numRooms,2))
+    bbs_min[:] = np.NAN
+    bbs_max[:] = np.NAN
+
     for i, row in enumerate(ocMap):
-        for j, roomIdx in enumerate(row):
-            if not roomIdx == 0.:
-                roomIdx = int(roomIdx-1)
+        for j, roomIdx in enumerate(ocMap):
+            if not roomIdx == 0:
+                thisCell = np.array([i,j])
+                if np.isnan(bbs_min[roomIdx]).all() or 
+                   (thisCell < bbs_min[roomIdx]).all():
+                    bbs_min[roomIdx] = thisCell
+                if np.isnan(bbs_max[roomIdx]).all() or 
+                   (thisCell > bbs_max[roomIdx]).all():
+                    bbs_max[roomIdx] = thisCell
 
-                if np.isnan(roomsTopLeftCoord[roomIdx][0]):
-                    roomsTopLeftCoord[roomIdx] = [i,j]
-                
-                roomsCoords[roomIdx].append([i,j])
-
-    roomsCoords = np.array(roomsCoords)
-    roomsCentreCoord = np.zeros((numRooms,2))
     roomsSize = np.zeros((numRooms,2))
-    
     for r in range(numRooms):
-        roomCoords = roomsCoords[r]
-        roomCoords = np.array(roomCoords)
-        iList = list(set(roomCoords[:,0]))
-        roomHeight = len(iList) 
-        mid_i = iList[(roomHeight-1)/2] #integer division
-        midRow = []
-        for coord in roomCoords:
-            if coord[0] == mid_i:
-                midRow.append(coord)
-        roomWidth = len(midRow)
-        roomsCentreCoord[r] = midRow[(roomWidth-1)/2] #integer division
-        roomsSize[r] = [roomHeight, roomWidth]
+        roomsSize[r] = bbs_max - bbs_min
 
-    return roomsTopLeftCoord, roomsCentreCoord, roomsSize
+    return bbs_min, bbs_max, roomsSize
 
 def visualiseOcMap():
 	fig, ax = plt.subplots()
@@ -116,13 +105,12 @@ for i in range(iwidth):
 				if face.contains_point(cellCentre): ocMap[i,j] = r+1
 				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
 
-roomsTopLeftCoord, roomsCentreCoord, roomsSize = getRoomsInfo(ocMap, 
-                                                    numRooms, cellSide)
+roomsBBmin, roomsBBmax, roomsSize = getRoomsInfo(ocMap, numRooms, cellSide)
 
 floorHeight = readLayout.getFloorHeight(layoutFilePath)
 
 toSave = [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
-		  roomsTopLeftCoord, roomsCentreCoord, roomsSize]
+		  roomsBBmin, roomsBBmax, roomsSize]
 f = open('fromOcMap.pckl','wb')
 pickle.dump(toSave, f)
 f.close()
@@ -210,4 +198,40 @@ f.close()
 
 # print facePoly.contains_point([42.5, 37.6])
 # print facePoly.intersects_bbox(cell, filled=True)
+
+
+# def getRoomsInfo(ocMap, numRooms, cellSide):
+#     roomsTopLeftCoord = np.empty((numRooms,2))
+#     roomsTopLeftCoord[:] = np.NAN
+#     roomsCoords = listOflist(numRooms)
+    
+#     for i, row in enumerate(ocMap):
+#         for j, roomIdx in enumerate(row):
+#             if not roomIdx == 0.:
+#                 roomIdx = int(roomIdx-1)
+
+#                 if np.isnan(roomsTopLeftCoord[roomIdx][0]):
+#                     roomsTopLeftCoord[roomIdx] = [i,j]
+                
+#                 roomsCoords[roomIdx].append([i,j])
+
+#     roomsCoords = np.array(roomsCoords)
+#     roomsCentreCoord = np.zeros((numRooms,2))
+#     roomsSize = np.zeros((numRooms,2))
+    
+#     for r in range(numRooms):
+#         roomCoords = roomsCoords[r]
+#         roomCoords = np.array(roomCoords)
+#         iList = list(set(roomCoords[:,0]))
+#         roomHeight = len(iList) 
+#         mid_i = iList[(roomHeight-1)/2] #integer division
+#         midRow = []
+#         for coord in roomCoords:
+#             if coord[0] == mid_i:
+#                 midRow.append(coord)
+#         roomWidth = len(midRow)
+#         roomsCentreCoord[r] = midRow[(roomWidth-1)/2] #integer division
+#         roomsSize[r] = [roomHeight, roomWidth]
+
+#     return roomsTopLeftCoord, roomsCentreCoord, roomsSize
 
