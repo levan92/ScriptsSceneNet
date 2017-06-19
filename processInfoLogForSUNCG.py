@@ -3,7 +3,7 @@ import csv
 from sys import platform
 
 if platform == "linux" or platform == "linux2":
-    layoutDirectory='/homes/el216/Workspace/SceneNetData/Layouts'
+    layoutDirectory='/homes/el216/Workspace/DataSceneNet/Layouts'
 elif platform == "darwin":
     layoutDirectory='/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts'
 layoutFile='/suncg_houses/house2/house.obj'
@@ -38,8 +38,7 @@ def getWnidMapping():
     wnidList = [] 
     textures = 0
     textureLists = []
-    i=0
-    j = 0
+
     for line in r:
 
         if inFloor or inCeiling or inWall or inObject:
@@ -50,61 +49,44 @@ def getWnidMapping():
 
         if inObject:
             if line.startswith('g Model#'):
-                if not textures == 0: 
-                    textureLists.append(textures)
-                    i += 1
+                if not textures == 0: textureLists.append(textures)
                 textures = []                
                 model_id = line.split('#')[1][:-1]
                 wnid = getWnidFromModelId(model_id)
                 wnidList.append(wnid)
 
-                j += 1
 
         if not inFloor:
             if line.startswith('g Floor#'):
                 inFloor = True
                 inCeiling=inWall=inObject = False
-                if not textures == 0: 
-                    textureLists.append(textures)
-                    i += 1
+                if not textures == 0: textureLists.append(textures)
                 textures = []
                 wnidList.append('03365592') #wnid for Floor
-                j += 1
         
         if not inCeiling:
             if line.startswith('g Ceiling#'):
                 inCeiling = True
                 inFloor=inWall=inObject = False
-                if not textures == 0: 
-                    textureLists.append(textures)
-                    i += 1
-
+                if not textures == 0: textureLists.append(textures)
                 textures = []
                 wnidList.append('02990373') #wnid for Ceiling
-                j += 1
 
         if not inWall:
             if line.startswith('g Wall#'):
                 inWall = True
                 inFloor=inCeiling=inObject = False
-                if not textures == 0: 
-                    textureLists.append(textures)
-                    i += 1
-
+                if not textures == 0: textureLists.append(textures)
                 textures = []
                 wnidList.append('04546855') #wnid for Wall
-                j += 1
 
         if not inObject:
             if line.startswith('g Object#'):
                 inObject = True
                 inFloor=inCeiling=inWall = False
-                
 
-    if not textures == 0: 
-        textureLists.append(textures)
-        i += 1
-    print i, j
+    if not textures == 0: textureLists.append(textures)
+
     return wnidList, textureLists
 
 def matchWnidFromTexture(texture):

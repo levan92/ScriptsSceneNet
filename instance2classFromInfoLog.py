@@ -1,4 +1,24 @@
-NYU_WNID_TO_CLASS = {
+from PIL import Image
+from sys import platform
+import re
+import glob
+import os
+import ntpath
+from datetime import datetime
+
+
+if platform == "linux" or platform == "linux2":
+    outputDirectory='/scratch/el216/output_scenenet'
+elif platform == "darwin":
+    outputDirectory='/Users/lingevan/Workspace/SceneNet'
+
+output = '/26May/OutputSceneNet01'
+
+infoLogFile = outputDirectory + output + '/infoNew.log' 
+pngfile = outputDirectory + output + '/instance/116.png'
+
+
+WNID_TO_NYU_CLASS = {
     '04593077':4, '03262932':4, '02933112':6, '03207941':7, '03063968':10, '04398044':7, '04515003':7,
     '00017222':7, '02964075':10, '03246933':10, '03904060':10, '03018349':6, '03786621':4, '04225987':7,
     '04284002':7, '03211117':11, '02920259':1, '03782190':11, '03761084':7, '03710193':7, '03367059':7,
@@ -37,3 +57,74 @@ NYU_WNID_TO_CLASS = {
     '14974264':7, '04344873':9, '03636649':7, '20000012':6, '02876657':7, '03325088':7, '04253437':7,
     '02992529':7, '03222722':12, '04373704':4, '02851099':13, '04061681':10, '04529681':7,
 }
+
+
+NYU_13_CLASSES = [(0,'Unknown'),
+                  (1,'Bed'),
+                  (2,'Books'),
+                  (3,'Ceiling'),
+                  (4,'Chair'),
+                  (5,'Floor'),
+                  (6,'Furniture'),
+                  (7,'Objects'),
+                  (8,'Picture'),
+                  (9,'Sofa'),
+                  (10,'Table'),
+                  (11,'TV'),
+                  (12,'Wall'),
+                  (13,'Window')
+]
+
+
+THREE_CLASSES = [(0,'Unknown'),
+                 (1,'Floor'),
+                 (2,'Background'),
+                 (3,'Objects')
+]
+
+NYU_CLASS_TO_THREE_CLASSES = {0:0, 1:3, 2:3, 3:2,  4:3,  5:1,  6:3, 
+							  7:3, 8:3, 9:3, 10:3, 11:3, 12:2, 13:2}
+
+def readInfoLog():
+	INSTANCE_TO_WNID = {}
+	f = open(infoLogFile, 'rb')
+	f.readline() #ignore first line
+	for line in f:
+		instance, WNID = re.split(';|:', line)[1:3]
+		INSTANCE_TO_WNID [instance] = WNID
+	return INSTANCE_TO_WNID
+
+
+if __name__ == '__main__':
+
+	startTime = datetime.now()
+
+	INSTANCE_TO_WNID = readInfoLog()
+
+	if not os.path.exists(outputDirectory + output + "/labels"):
+		os.makedirs(outputDirectory + output + "/labels")
+
+	totalNumPng = len(os.listdir(outputDirectory + output + '/instance'))
+	i = 0
+
+	for pngfile in glob.glob(outputDirectory + output + "/instance/*.png"):
+		imageName=ntpath.basename(pngfile)
+		if i%50 == 0:
+			print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
+		im = Image.open(pngfile)
+		pix = im.load()
+
+		for x in range(im.size[0]):
+			for y in range(im.size[1]):
+		 		instance = pix[x,y]
+		 		WNID = INSTANCE_TO_WNID.get(str(instance))
+		 		NYU = WNID_TO_NYU_CLASS.get(WNID)
+		 		CLASS = NYU_CLASS_TO_THREE_CLASSES.get(NYU)
+		 		pix[x,y] = CLASS
+
+		im.save(outputDirectory + output + '/labels/' + imageName)
+		i += 1
+
+
+	print datetime.now() - startTime
+
