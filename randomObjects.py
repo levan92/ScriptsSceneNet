@@ -130,85 +130,86 @@ def writeLogFile():
             i += 1;
     return
 
-f = open ('fromOcMap.pckl','rb')
-[ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
- roomsTopLeftCoord, roomsCentreCoord, roomsSize] = pickle.load(f)
-f.close()
+if __name__ == '__main__':
+    f = open ('fromOcMap.pckl','rb')
+    [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
+     roomsTopLeftCoord, roomsCentreCoord, roomsSize] = pickle.load(f)
+    f.close()
 
-## Parameters
-roomsMessMean = float(sys.argv[1])
-roomsMessSD = float(sys.argv[2])
+    ## Parameters
+    roomsMessMean = float(sys.argv[1])
+    roomsMessSD = float(sys.argv[2])
 
-maxIteration = 500
+    maxIteration = 500
 
-objIDs = []
-objWnids = []
-Ts = []
-scales = []
-objs_cell = np.empty((0,2),int)
-nicknames = []
-numObjInRooms = []
-roomsMessiness = []
-totalNumObjects = 0
+    objIDs = []
+    objWnids = []
+    Ts = []
+    scales = []
+    objs_cell = np.empty((0,2),int)
+    nicknames = []
+    numObjInRooms = []
+    roomsMessiness = []
+    totalNumObjects = 0
 
-for r in range(numRooms):
-    room_origin = cell2WorldCoord(roomsTopLeftCoord[r]) - [cellSide/2., cellSide/2.]
-    room_zwidth, room_xwidth = roomsSize[r] * cellSide
+    for r in range(numRooms):
+        room_origin = cell2WorldCoord(roomsTopLeftCoord[r]) - [cellSide/2., cellSide/2.]
+        room_zwidth, room_xwidth = roomsSize[r] * cellSide
 
-    area = room_zwidth * room_xwidth
-    # objects per 100m^2
-    # roomMessiness = getNormalRand(15, 10) 
-    roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
-    numObjects = int(round(roomMessiness * (area / 100.))) 
-    #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
+        area = room_zwidth * room_xwidth
+        # objects per 100m^2
+        # roomMessiness = getNormalRand(15, 10) 
+        roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
+        numObjects = int(round(roomMessiness * (area / 100.))) 
+        #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 
-    print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
+        print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
-    for obj in range(numObjects):
-        objWnid, objID, y_height_std, y_sd_std, nickname = chooseRandObject()
-        x_min, x_max, y_min, y_max, z_min, z_max = getObjBounds(objWnid, objID)
-        objSmallestWidth = min(x_max - x_min, z_max - z_min)
-        objYwidth = y_max - y_min
-        y_height = getNormalRand(y_height_std, y_sd_std)
-        scale_factor = y_height / objYwidth
-        for i in range(maxIteration):
-            rand_zx = np.random.rand(2)
-            rand_theta_y = np.random.rand()
-            buf = objSmallestWidth * scale_factor / 2
+        for obj in range(numObjects):
+            objWnid, objID, y_height_std, y_sd_std, nickname = chooseRandObject()
+            x_min, x_max, y_min, y_max, z_min, z_max = getObjBounds(objWnid, objID)
+            objSmallestWidth = min(x_max - x_min, z_max - z_min)
+            objYwidth = y_max - y_min
+            y_height = getNormalRand(y_height_std, y_sd_std)
+            scale_factor = y_height / objYwidth
+            for i in range(maxIteration):
+                rand_zx = np.random.rand(2)
+                rand_theta_y = np.random.rand()
+                buf = objSmallestWidth * scale_factor / 2
 
-            d_zx = (room_origin + [buf,buf]) + \
-                    rand_zx * [room_zwidth - 2*buf, room_xwidth - 2*buf]
-            theta_y = np.deg2rad(rand_theta_y * 360)
-            break
+                d_zx = (room_origin + [buf,buf]) + \
+                        rand_zx * [room_zwidth - 2*buf, room_xwidth - 2*buf]
+                theta_y = np.deg2rad(rand_theta_y * 360)
+                break
 
-        # d_y = floorHeight - 0.6 * y_height
-        d_y = floorHeight
+            # d_y = floorHeight - 0.6 * y_height
+            d_y = floorHeight
 
-        d = np.array([d_zx[1], d_y, d_zx[0]])
-        s = np.array([1.,1.,1.])
-        T = getTmatrix(s, theta_y, d)
+            d = np.array([d_zx[1], d_y, d_zx[0]])
+            s = np.array([1.,1.,1.])
+            T = getTmatrix(s, theta_y, d)
 
-        objIDs.append(objID)
-        objWnids.append(objWnid)
-        Ts.append(T[0:3])
-        scales.append(y_height)
-        objs_cell = np.vstack( (objs_cell,world2CellCoord(d_zx)) )
-        nicknames.append(nickname)
+            objIDs.append(objID)
+            objWnids.append(objWnid)
+            Ts.append(T[0:3])
+            scales.append(y_height)
+            objs_cell = np.vstack( (objs_cell,world2CellCoord(d_zx)) )
+            nicknames.append(nickname)
 
-    roomsMessiness.append(roomMessiness)
-    numObjInRooms.append(numObjects)
-    totalNumObjects += numObjects
+        roomsMessiness.append(roomMessiness)
+        numObjInRooms.append(numObjects)
+        totalNumObjects += numObjects
 
-toSave = [totalNumObjects, objIDs, objWnids, scales, Ts]
-f = open('fromRandomObjects.pckl','wb')
-pickle.dump(toSave, f)
-f.close()
+    toSave = [totalNumObjects, objIDs, objWnids, scales, Ts]
+    f = open('fromRandomObjects.pckl','wb')
+    pickle.dump(toSave, f)
+    f.close()
 
-print totalNumObjects, 'random objects generated and saved.'
+    print totalNumObjects, 'random objects generated and saved.'
 
-writeLogFile()
+    writeLogFile()
 
-visualiseMap()
+    visualiseMap()
 
 
 
