@@ -1,22 +1,23 @@
 import numpy as np
 import csv
+import sys
 from sys import platform
+
+houseID = sys.argv[1]
 
 if platform == "linux" or platform == "linux2":
     layoutDirectory='/homes/el216/Workspace/DataSceneNet/Layouts'
 elif platform == "darwin":
     layoutDirectory='/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts'
-layoutFile='/suncg_houses/house2/house.obj'
-layoutFilePath = layoutDirectory+layoutFile
+layoutFile='/suncg/house/' + houseID + '/houseOneFloor.obj'
+layoutFilePath = layoutDirectory + layoutFile
 
 mappingCSV = 'ModelCategoryMapping.csv'
 
 if platform == "linux" or platform == "linux2":
-    outputDirectory='/scratch/el216/output_scenenet'
+    outputDirectory='/homes/el216/Workspace/OutputSceneNet'
 elif platform == "darwin":
     outputDirectory='/Users/lingevan/Workspace/SceneNet'
-
-output = '/26May/OutputSceneNet01'
 
 def getCsvDict():
     reader = csv.DictReader(open(mappingCSV,'rb'))
@@ -98,8 +99,8 @@ def matchWnidFromTexture(texture):
 dictList = getCsvDict()
 wnidList, textureLists = getWnidMapping()
 
-oldLog = open(outputDirectory + output + '/info.log','rb')
-newLog = open(outputDirectory + output + '/infoNew.log','wb')
+oldLog = open(outputDirectory + '/info.log','rb')
+newLog = open(outputDirectory + '/infoNew.log','wb')
 
 # first line 
 newLog.write(oldLog.readline())
