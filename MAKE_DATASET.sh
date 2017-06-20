@@ -28,11 +28,11 @@ python -u occupancyMap.py \
 # Arguments: Room Messiness Mean, SD in num objs per 100m^2
 # Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
 python -u randomObjects.py $roomMessMean $roomMessSD | tee -a makedataset_logfile.log
-# # Generate SceneDescription txt from random objects
-# # Outputs: scene_description.txt
+# Generate SceneDescription txt from random objects
+# Outputs: scene_description.txt
 python -u generateSceneDesc.py $houseID | tee -a makedataset_logfile.log
-# # Generate Poses.txt from room info from occupancymap.py
-# # Outputs: poses.txt
+# Generate Poses.txt from room info from occupancymap.py
+# Outputs: poses.txt
 python -u generatePoses.py $frameStep | tee -a makedataset_logfile.log
 
 
@@ -48,7 +48,7 @@ cp roomsLayout+Objects.png /homes/el216/Workspace/OutputSceneNet
 cd /homes/el216/Workspace/roboteye/build
 ./DynamicPose_SceneNet /homes/el216/Workspace/OutputSceneNet \
 /homes/el216/Workspace/DataSceneNet/scene_description.txt | tee -a makedataset_logfile.log
-
+echo 'Frames rendering completed.'
 
 cd /homes/el216/Workspace/ScriptsSceneNet
 # Generate new Log file
