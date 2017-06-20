@@ -129,13 +129,14 @@ robotV_straight = .3 # forward speed in m/s
 robotV_turn = 45 # turning speed in deg/s
 # simulation parameters
 timeStep = 0.1 # simulation time step in sec
-# frameStep = 10 # capture a frame every [frameStep] timeSteps
-frameStep = 50 # capture a frame every [frameStep] timeSteps
+# capture a frame every [frameStep] timeSteps
+# frameStep = 20 
+frameStep = sys.argv[1]
 
 ### Main
 f = open ('fromOcMap.pckl','rb')
 [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
- roomsTopLeftCoord, roomsCentreCoord, roomsSize] = pickle.load(f)
+              roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
 f.close()
 
 wf = initPoseFile()
@@ -145,16 +146,19 @@ poses_cell = []
 framesCountTotal = 0
 for r in range(numRooms):
 
-    # if not r == 1: continue
+    if ( (roomsSize[r]*cellSide) < robotD ).any():
+        print 'Room ', r,'too small, skipping..'
+        continue
 
     print 'Cleaning Room: ', r, '/', numRooms 
     #start with top left of each room, facing right
-    topLeftCoord = cell2WorldCoord(roomsTopLeftCoord[r])
+    topLeftCoord = cell2WorldCoord(roomsBBmin[r])
     pose = np.array([topLeftCoord[0] + robotR,    #z
                      topLeftCoord[1] + robotR,    #x
                      np.deg2rad(90)])  #theta
-    if robotOutOfRoom(pose,r):
-        print 'initial position in room',r,'wrong, exitting.'
+    
+    while robotOutOfRoom(pose,r):
+        pose = pose + np.array([cellSide, 0, 0])
 
     i = 0
     turnToggle = -1 # first uturn is right, second is left, ...
@@ -243,7 +247,7 @@ for r in range(numRooms):
 
     #end while true loop
     # print "num uturns done for Room", r+1,":",uturnCount
-    print "frames generated for Room", r+1,":",framesCountRoom
+    print "frames generated for Room", r,":",framesCountRoom
     framesCountTotal += framesCountRoom
 
 

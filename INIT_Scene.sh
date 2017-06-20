@@ -2,10 +2,10 @@
 
 # User Parameters
 houseID=fffeb1ec4c22ee4b96aa8f8acc564721
-# ocMapCellSide=0.1 # in m 
 ocMapCellSide=0.1 # in m, must be small enough 
 roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
+frameStep=20 # for poses, Frame period = frameStep * 0.1s
 
 echo 'houseID: '$houseID
 
@@ -36,9 +36,6 @@ python generateSceneDesc.py $houseID
 
 # # Generate Poses.txt from room info from occupancymap.py
 # # Outputs: poses.txt
-# python generatePoses.py
+python generatePoses.py $frameStep
 
 
-# Create Output Folder named after houseID
-
-# Copy roomsLayout+Objects.png and randomObjectsLocations.txt
