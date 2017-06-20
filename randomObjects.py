@@ -147,7 +147,7 @@ if __name__ == '__main__':
     roomsMessMean = float(sys.argv[1])
     roomsMessSD = float(sys.argv[2])
 
-    maxIteration = 500
+    maxIteration = 10000
 
     objIDs = []
     objWnids = []
@@ -187,7 +187,7 @@ if __name__ == '__main__':
                 d_zx = room_origin + rand_zx * [room_zwidth, room_xwidth]
                 theta_y = np.deg2rad(rand_theta_y * 360)
                 [i,j] = world2CellCoord(d_zx)
-                if ocMap[i,j]==r: 
+                if ocMap[i,j]==(r+1):
                     found = True
                     break
 
