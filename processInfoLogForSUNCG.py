@@ -96,6 +96,9 @@ def matchWnidFromTexture(texture):
             return wnidList[i]
     return ''
 
+print 'Generating infoNew.log ...'
+
+
 dictList = getCsvDict()
 wnidList, textureLists = getWnidMapping()
 
@@ -112,6 +115,7 @@ for line in oldLog:
         wnid = matchWnidFromTexture(desc)
     newLog.write('%s;%s;%s;%s\n' % (instance, wnid, desc, rest[:-1]))
 
+print 'infoNew.log generated.'
 
 
 

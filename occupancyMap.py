@@ -103,8 +103,10 @@ if __name__ == "__main__":
 
     floorsOfRooms, numRooms = readLayout.getRoomsFloor(layoutFilePath)
 
+    print 'Acquiring occupancy map...'
+
     for i in range(iwidth):
-    	print 'Occupancy mapping progress: ',round(float(i)/iwidth * 100,2),'%'
+    	# print 'Occupancy mapping progress: ',round(float(i)/iwidth * 100,2),'%'
     	for j in range(jwidth):
     		cell = getCellBbox(i,j)
     		cellCentre = getCellCentre(i,j)
@@ -113,6 +115,8 @@ if __name__ == "__main__":
     			for face in faces:
     				if face.contains_point(cellCentre): ocMap[i,j] = r+1
     				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
+    
+    print 'Occupancy map built. Getting Rooms info...'
 
     roomsBBmin, roomsBBmax, roomsSize = getRoomsInfo(ocMap, numRooms, cellSide)
 
@@ -123,6 +127,9 @@ if __name__ == "__main__":
     f = open('fromOcMap.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
+
+    print 'Occupancy map & Rooms info saved.'
+
 
 # visualiseOcMap()			
 

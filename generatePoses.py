@@ -144,13 +144,16 @@ wf = initPoseFile()
 poses_cell = []
 
 framesCountTotal = 0
+
+print 'Cleaning house... (generating poses)'
+
 for r in range(numRooms):
 
     if ( (roomsSize[r]*cellSide) < robotD ).any():
         print 'Room ', r,'too small, skipping..'
         continue
 
-    print 'Cleaning Room: ', r, '/', numRooms 
+    # print 'Cleaning Room: ', r, '/', numRooms 
     #start with top left of each room, facing right
     topLeftCoord = cell2WorldCoord(roomsBBmin[r])
     pose = np.array([topLeftCoord[0] + robotR,    #z
@@ -247,7 +250,7 @@ for r in range(numRooms):
 
     #end while true loop
     # print "num uturns done for Room", r+1,":",uturnCount
-    print "frames generated for Room", r,":",framesCountRoom
+    print "frames generated for Room", (r+1),":",framesCountRoom
     framesCountTotal += framesCountRoom
 
 

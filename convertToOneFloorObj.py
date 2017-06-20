@@ -10,6 +10,8 @@ new = open(housePath + '/houseOneFloor.obj','w')
 # textures = 0
 # textureLists = []
 
+print 'Generating obj file for only the ground floor...'
+
 for line in old:
 	if line.startswith('g Level#1'): break
 	new.write(line)

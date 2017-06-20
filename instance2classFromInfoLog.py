@@ -105,10 +105,12 @@ if __name__ == '__main__':
     totalNumPng = len(os.listdir(outputDirectory + '/instance'))
     i = 0
 
+    print 'Generating label pngs from instance pngs and infoNew.log'
+
     for pngfile in glob.glob(outputDirectory + "/instance/*.png"):
         imageName=ntpath.basename(pngfile)
         # if i%50 == 0:
-        print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
+        # print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
         im = Image.open(pngfile)
         pix = im.load()
 
@@ -126,6 +128,6 @@ if __name__ == '__main__':
         im.save(outputDirectory + '/labels/' + imageName)
         i += 1
 
-
+    print 'Labels generated.'
     # print datetime.now() - startTime
 

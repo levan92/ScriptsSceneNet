@@ -159,6 +159,8 @@ if __name__ == '__main__':
     roomsMessiness = []
     totalNumObjects = 0
 
+    print 'Generating random objects for each room...'
+
     for r in range(numRooms):
         room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
         room_zwidth, room_xwidth = roomsSize[r] * cellSide
@@ -168,7 +170,7 @@ if __name__ == '__main__':
         numObjects = int(round(roomMessiness * (area / 100.))) 
         #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 
-        print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
+        # print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
         for obj in range(numObjects):
             [objWnid, objID, y_height_std, 
@@ -210,13 +212,14 @@ if __name__ == '__main__':
         roomsMessiness.append(roomMessiness)
         numObjInRooms.append(numObjects)
         totalNumObjects += numObjects
+        print numObjects, 'random objects generated for Room', (r+1)
 
     toSave = [totalNumObjects, objIDs, objWnids, scales, Ts]
     f = open('fromRandomObjects.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
 
-    print totalNumObjects, 'random objects generated and saved.'
+    print totalNumObjects, 'random objects generated altogether and saved.'
 
     writeLogFile()
 
