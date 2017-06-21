@@ -164,6 +164,7 @@ if __name__ == '__main__':
 
         if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize[r]).any():
             numObjects = roomMessiness = 0
+            print 'Note: Room', (r+1),'is a null room.'
         else:
             room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
             room_zwidth, room_xwidth = roomsSize[r] * cellSide
