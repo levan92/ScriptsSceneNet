@@ -132,7 +132,6 @@ timeStep = 0.1 # simulation time step in sec
 # capture a frame every [frameStep] timeSteps
 # frameStep = 20 
 frameStep = int(sys.argv[1])
-print sys.argv[1], frameStep
 
 ### Main
 f = open ('fromOcMap.pckl','rb')

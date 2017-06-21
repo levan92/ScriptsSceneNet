@@ -142,11 +142,9 @@ if __name__ == '__main__':
     [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
      roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
     f.close()
-
     ## Parameters
     roomsMessMean = float(sys.argv[1])
     roomsMessSD = float(sys.argv[2])
-    print roomsMessMean, roomsMessSD
     
     maxIteration = 10000
 
@@ -166,7 +164,7 @@ if __name__ == '__main__':
         room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
         room_zwidth, room_xwidth = roomsSize[r] * cellSide
         area = room_zwidth * room_xwidth
-        # objects per 100m^2
+	# objects per 100m^2
         roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
         numObjects = int(round(roomMessiness * (area / 100.))) 
         #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
