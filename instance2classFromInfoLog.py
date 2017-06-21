@@ -105,7 +105,7 @@ if __name__ == '__main__':
     totalNumPng = len(os.listdir(outputDirectory + '/instance'))
     i = 0
 
-    print 'Generating label pngs from instance pngs and infoNew.log'
+    print 'Generating label pngs from instance pngs and infoNew.log...'
 
     for pngfile in glob.glob(outputDirectory + "/instance/*.png"):
         imageName=ntpath.basename(pngfile)
