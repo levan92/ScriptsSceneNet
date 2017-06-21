@@ -79,6 +79,7 @@ def getPose_turn(pose, R, deltaTheta):
     newPose[2] = wrap(pose[2] + deltaTheta_rad)
     return newPose
 
+#returns world coordinate of the centre of a given cell
 def cell2WorldCoord(cell):
     [i,j] = cell
     z = origin_ocMap[0] + cellSide * (i + 0.5)
