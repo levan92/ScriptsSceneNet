@@ -148,9 +148,12 @@ framesCountTotal = 0
 print 'Cleaning house... (generating poses)'
 
 for r in range(numRooms):
+    if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize).any():
+        print 'Room ', (r+1),'is a null room, skipping..'
+        continue
 
     if ( (roomsSize[r]*cellSide) < robotD ).any():
-        print 'Room ', r,'too small, skipping..'
+        print 'Room ', (r+1),'too small, skipping..'
         continue
 
     # print 'Cleaning Room: ', r, '/', numRooms 
@@ -160,8 +163,14 @@ for r in range(numRooms):
                      topLeftCoord[1] + robotR,    #x
                      np.deg2rad(90)])  #theta
     
-    while robotOutOfRoom(pose,r):
-        pose = pose + np.array([cellSide, 0, 0])
+    for i in range(int(roomsSize[r][0])):
+        if not robotOutOfRoom(pose,r): break
+        else: 
+            pose = pose + np.array([cellSide, 0, 0])
+
+    if robotOutOfRoom(pose,r): 
+        print 'Room',(r+1),'is oddly shaped, skipping..'
+        continue
 
     i = 0
     turnToggle = -1 # first uturn is right, second is left, ...
@@ -246,13 +255,11 @@ for r in range(numRooms):
 
         i += 1;
         poses_cell.append(world2CellCoord(pose[:2]))
-
-
     #end while true loop
+
     # print "num uturns done for Room", r+1,":",uturnCount
     print "frames generated for Room", (r+1),":",framesCountRoom
     framesCountTotal += framesCountRoom
-
 
 
 print 'poses.txt generated, num of rooms:', numRooms, \
