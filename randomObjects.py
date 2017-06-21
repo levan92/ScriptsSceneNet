@@ -146,7 +146,7 @@ if __name__ == '__main__':
     roomsMessMean = float(sys.argv[1])
     roomsMessSD = float(sys.argv[2])
     
-    maxIteration = 10000
+    # maxIteration = 10000
 
     objIDs = []
     objWnids = []
@@ -161,13 +161,17 @@ if __name__ == '__main__':
     print 'Generating random objects for each room...'
 
     for r in range(numRooms):
-        room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
-        room_zwidth, room_xwidth = roomsSize[r] * cellSide
-        area = room_zwidth * room_xwidth
-	# objects per 100m^2
-        roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
-        numObjects = int(round(roomMessiness * (area / 100.))) 
-        #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
+
+        if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize[r]).any():
+            numObjects = roomMessiness = 0
+        else:
+            room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
+            room_zwidth, room_xwidth = roomsSize[r] * cellSide
+            area = room_zwidth * room_xwidth
+        	# objects per 100m^2
+            roomMessiness = getNormalRand(roomsMessMean, roomsMessSD) 
+            numObjects = int(round(roomMessiness * (area / 100.))) 
+            #numObjects = int(round(getNormalRand(5, 2))) # mean, SD
 
         # print 'Random objects progress: ', round(float(r)/numRooms * 100,2),'%'
 
@@ -181,7 +185,7 @@ if __name__ == '__main__':
             y_height = getNormalRand(y_height_std, y_sd_std)
             # scale_factor = y_height / objYwidth
             found = False
-            for i in range(maxIteration):
+            while True:
                 rand_zx = np.random.rand(2)
                 rand_theta_y = np.random.rand()
                 # buf = objSmallestWidth * scale_factor / 2
@@ -192,7 +196,7 @@ if __name__ == '__main__':
                     found = True
                     break
 
-            if not found: print 'ERROR: Please check parameters and re-run script. Object location cannot be found within',maxIteration,'iterations.'
+            # if not found: print 'ERROR: Please check parameters and re-run script. Object location cannot be found within',maxIteration,'iterations.'
 
             # d_y = floorHeight - 0.6 * y_height
             d_y = floorHeight
