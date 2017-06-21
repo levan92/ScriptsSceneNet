@@ -146,7 +146,8 @@ if __name__ == '__main__':
     ## Parameters
     roomsMessMean = float(sys.argv[1])
     roomsMessSD = float(sys.argv[2])
-
+    print roomsMessMean, roomsMessSD
+    
     maxIteration = 10000
 
     objIDs = []

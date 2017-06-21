@@ -12,20 +12,20 @@ frameStep=20 # for poses, Frame period = frameStep * 0.1s
 
 echo 'houseID: '$houseID | tee makedataset_logfile.log
 
-# Generate .obj and .mtl files from .json
-cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
-/homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
+# # Generate .obj and .mtl files from .json
+# cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
+# /homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
 
 
-cd /homes/el216/Workspace/ScriptsSceneNet
-# Convert .obj file to only one floor
-python -u convertToOneFloorObj.py \
-	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a makedataset_logfile.log
-# Create occupancy map from house obj
-# Outputs: fromOcMap.pckl, roomsLayout.png
-python -u occupancyMap.py \
-	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
-	$ocMapCellSide | tee -a makedataset_logfile.log
+# cd /homes/el216/Workspace/ScriptsSceneNet
+# # Convert .obj file to only one floor
+# python -u convertToOneFloorObj.py \
+# 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a makedataset_logfile.log
+# # Create occupancy map from house obj
+# # Outputs: fromOcMap.pckl, roomsLayout.png
+# python -u occupancyMap.py \
+# 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
+# 	$ocMapCellSide | tee -a makedataset_logfile.log
 # Generate random objects for house
 # Arguments: Room Messiness Mean, SD in num objs per 100m^2
 # Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
@@ -49,8 +49,7 @@ cp roomsLayout+Objects.png /homes/el216/Workspace/OutputSceneNet
 # Run renderer
 cd /homes/el216/Workspace/roboteye/build
 ./DynamicPose_SceneNet /homes/el216/Workspace/OutputSceneNet \
-/homes/el216/Workspace/DataSceneNet/scene_description.txt \ 
-| tee -a /homes/el216/Workspace/ScriptsSceneNet/makedataset_logfile.log
+/homes/el216/Workspace/DataSceneNet/scene_description.txt | tee -a /homes/el216/Workspace/ScriptsSceneNet/makedataset_logfile.log
 
 cd /homes/el216/Workspace/ScriptsSceneNet
 echo 'Frames rendering completed.' | tee -a makedataset_logfile.log
