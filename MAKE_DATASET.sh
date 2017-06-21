@@ -3,7 +3,8 @@
 # User Parameters
 # houseID=fffeb1ec4c22ee4b96aa8f8acc564721
 # houseID=a55f64ca8fdee38a554429d7f7ac8b50
-houseID=c02204618dd6f07f03e46c725edd9009
+# houseID=fff3ca3254c364df22f15646ad160400
+houseID=ffe9e14822570206cce1fc7259adda71
 
 ocMapCellSide=0.1 # in m, must be small enough 
 roomMessMean=40 # in num objs per 100m^2
