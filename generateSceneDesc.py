@@ -48,7 +48,7 @@ for obj in range(totalNumObjects):
     w.write('transformation\n')
     np.savetxt(w,Ts[obj], fmt='%1.3f')
 
-w.write('end')
+w.write('end\n')
 
 # Room Information for lighting
 print >> w, 'rooms'
@@ -59,4 +59,4 @@ for r in range(numRooms):
         print >> w, round(bbMin_zx[0],2), round(bbMin_zx[1],2), \
                 round(bbSize_zx[0],2), round(bbSize_zx[1],2)
 
-print 'scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,' rooms in scene'
+print 'scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,'rooms in scene'
