@@ -33,15 +33,6 @@ w = open("scene_description.txt","w")
 w.write('layout_file: ./')
 w.write(houseObj_filepath + '\n')
 
-# Room Information for lighting
-print >> w, 'rooms'
-for r in range(numRooms):
-    if not ( np.isnan(roomsBBmin).any() or np.isnan(roomsBBmax).any() ):
-        bbMin_zx = cell2WorldCoord_TopLeft(roomsBBmin[r])
-        bbSize_zx = roomsSize[r] * cellSide
-        print >> w, round(bbMin_zx[0],2), round(bbMin_zx[1],2), \
-                round(bbSize_zx[0],2), round(bbSize_zx[1],2)
-
 # Objects
 for obj in range(totalNumObjects):
     w.write('object\n')
@@ -59,4 +50,13 @@ for obj in range(totalNumObjects):
 
 w.write('end')
 
-print 'scene_description.txt generated with', totalNumObjects, 'objects in scene'
+# Room Information for lighting
+print >> w, 'rooms'
+for r in range(numRooms):
+    if not ( np.isnan(roomsBBmin).any() or np.isnan(roomsBBmax).any() ):
+        bbMin_zx = cell2WorldCoord_TopLeft(roomsBBmin[r])
+        bbSize_zx = roomsSize[r] * cellSide
+        print >> w, round(bbMin_zx[0],2), round(bbMin_zx[1],2), \
+                round(bbSize_zx[0],2), round(bbSize_zx[1],2)
+
+print 'scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,' rooms in scene'
