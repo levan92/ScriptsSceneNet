@@ -29,16 +29,16 @@ python -u convertToOneFloorObj.py \
 python -u occupancyMap.py \
 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
 	$ocMapCellSide | tee -a makedataset_logfile.log
-Generate random objects for house
-Arguments: Room Messiness Mean, SD in num objs per 100m^2
-Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
-python -u randomObjects.py $roomMessMean $roomMessSD | tee -a makedataset_logfile.log
+# Generate random objects for house
+# Arguments: Room Messiness Mean, SD in num objs per 100m^2
+# Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
+python -u randomObjects.py $roomMessMean $roomMessSD $houseID | tee -a makedataset_logfile.log
 # Generate SceneDescription txt from random objects
 # Outputs: scene_description.txt
 python -u generateSceneDesc.py $houseID | tee -a makedataset_logfile.log
 # Generate Poses.txt from room info from occupancymap.py
 # Outputs: poses.txt
-python -u generatePoses.py $frameStep | tee -a makedataset_logfile.log
+python -u generatePoses.py $frameStep $houseID | tee -a makedataset_logfile.log
 
 
 # Copy generated files to respective directories
