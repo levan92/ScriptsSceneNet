@@ -11,6 +11,7 @@
 houseID=e9919704131fe1069f73827b53139ff9
 
 export $CUDA_VISIBLE_DEVICES="4"
+echo 'Using GPU device '${CUDA_VISIBLE_DEVICES}'..'
 
 ocMapCellSide=0.1 # in m, must be small enough 
 roomMessMean=40 # in num objs per 100m^2
