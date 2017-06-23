@@ -1,0 +1,8 @@
+Dataset Allocation 
+
+Train:
+ffe9e14822570206cce1fc7259adda71 1538
+
+Validation:
+a55f64ca8fdee38a554429d7f7ac8b50 677
+fff3ca3254c364df22f15646ad160400 338
