@@ -2,11 +2,14 @@ import numpy as np
 import pickle
 import sys
 
-f = open('fromRandomObjects.pckl','rb')
+houseID = sys.argv[1]
+houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
+
+f = open(houseID+'_fromRandomObjects.pckl','rb')
 totalNumObjects, objIDs, objWnids, scales, Ts = pickle.load(f)
 f.close()
 
-f2 = open('fromOcMap.pckl','rb')
+f2 = open(houseID+'_fromOcMap.pckl','rb')
 [_, numRooms, cellSide, origin_ocMap, _,
               roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f2)
 f2.close()
@@ -25,11 +28,8 @@ def cell2WorldCoord_BotRight(cell):
     x = origin_ocMap[1] + cellSide * (j+1)
     return np.array([z,x])
 
-houseID = sys.argv[1]
-houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
-
 # Header
-w = open("scene_description.txt","w")
+w = open(houseID+"_scene_description.txt","w")
 w.write('layout_file: ./')
 w.write(houseObj_filepath + '\n')
 
@@ -59,4 +59,4 @@ for r in range(numRooms):
         print >> w, round(bbMin_zx[0],2), round(bbMin_zx[1],2), \
                 round(bbSize_zx[0],2), round(bbSize_zx[1],2)
 
-print 'scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,'rooms in scene'
+print houseID,'_scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,'rooms in scene'
