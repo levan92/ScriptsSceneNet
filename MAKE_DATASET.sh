@@ -29,9 +29,9 @@ python -u convertToOneFloorObj.py \
 python -u occupancyMap.py \
 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
 	$ocMapCellSide | tee -a makedataset_logfile.log
-Generate random objects for house
-Arguments: Room Messiness Mean, SD in num objs per 100m^2
-Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
+# Generate random objects for house
+# Arguments: Room Messiness Mean, SD in num objs per 100m^2
+# Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
 python -u randomObjects.py $roomMessMean $roomMessSD | tee -a makedataset_logfile.log
 # Generate SceneDescription txt from random objects
 # Outputs: scene_description.txt
