@@ -6,6 +6,7 @@ from pylab import *
 import readLayout
 import pickle
 import sys
+import os.path
 
 def getCellBbox(i, j):
     z0 = origin_ocMap[0] + cellSide * i
@@ -94,6 +95,7 @@ def visualiseOcMap():
 ### 
 if __name__ == "__main__":
     houseFilePath = sys.argv[1]
+    houseID = os.path.basename(houseFilePath)
     layoutFilePath = houseFilePath + '/houseOneFloor.obj'
     
     # cellSide = .10 # in m
@@ -124,7 +126,7 @@ if __name__ == "__main__":
 
     toSave = [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
     		  roomsBBmin, roomsBBmax, roomsSize]
-    f = open('fromOcMap.pckl','wb')
+    f = open(houseID+'_fromOcMap.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
 
