@@ -46,7 +46,7 @@ cp ${houseID}_poses.txt /homes/el216/Workspace/DataSceneNet
 cp ${houseID}_scene_description.txt /homes/el216/Workspace/DataSceneNet
 #find /homes/el216/Workspace/OutputSceneNet -type f -delete
 output_temp_dir=/homes/el216/Workspace/OutputSceneNet/${houseID}
-mkdir $output_temp_dir
+mkdir -p $output_temp_dir
 cp ${houseID}_randomObjectsLocations.txt $output_temp_dir
 cp ${houseID}_LayoutAndObjects.png $output_temp_dir
 
