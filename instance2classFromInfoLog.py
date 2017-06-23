@@ -6,13 +6,16 @@ import os
 import ntpath
 from datetime import datetime
 
+houseID = sys.argv[1]
+
 if platform == "linux" or platform == "linux2":
         outputDirectory='/homes/el216/Workspace/OutputSceneNet'
 elif platform == "darwin":
         outputDirectory='/Users/lingevan/Workspace/SceneNet'
 
-infoLogFile = outputDirectory + '/infoNew.log' 
+house_output_dir = outputDirectory + "/" + houseID
 
+infoLogFile = house_output_dir + '/infoNew.log' 
 
 WNID_TO_NYU_CLASS = {
         '04593077':4, '03262932':4, '02933112':6, '03207941':7, '03063968':10, '04398044':7, '04515003':7,
@@ -99,15 +102,15 @@ if __name__ == '__main__':
 
     INSTANCE_TO_WNID = readInfoLog()
     
-    if not os.path.exists(outputDirectory + "/labels"):
-        os.makedirs(outputDirectory + "/labels")
+    if not os.path.exists(house_output_dir + "/labels"):
+        os.makedirs(house_output_dir + "/labels")
 
-    totalNumPng = len(os.listdir(outputDirectory + '/instance'))
+    totalNumPng = len(os.listdir(house_output_dir + '/instance'))
     i = 0
 
     print 'Generating label pngs from instance pngs and infoNew.log...'
 
-    for pngfile in glob.glob(outputDirectory + "/instance/*.png"):
+    for pngfile in glob.glob(house_output_dir + "/instance/*.png"):
         imageName=ntpath.basename(pngfile)
         # if i%50 == 0:
         # print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
@@ -125,7 +128,7 @@ if __name__ == '__main__':
                 # if NYU == 0: print instance, WNID, NYU, CLASS
 
 
-        im.save(outputDirectory + '/labels/' + imageName)
+        im.save(house_output_dir + '/labels/' + imageName)
         i += 1
 
     print 'Labels generated.'

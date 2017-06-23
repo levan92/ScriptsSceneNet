@@ -19,6 +19,8 @@ if platform == "linux" or platform == "linux2":
 elif platform == "darwin":
     outputDirectory='/Users/lingevan/Workspace/SceneNet'
 
+house_output_dir = outputDirectory + "/" + houseID
+
 def getCsvDict():
     reader = csv.DictReader(open(mappingCSV,'rb'))
     dictList = []
@@ -102,8 +104,8 @@ print 'Generating infoNew.log ...'
 dictList = getCsvDict()
 wnidList, textureLists = getWnidMapping()
 
-oldLog = open(outputDirectory + '/info.log','rb')
-newLog = open(outputDirectory + '/infoNew.log','wb')
+oldLog = open(house_output_dir + '/info.log','rb')
+newLog = open(house_output_dir + '/infoNew.log','wb')
 
 # first line 
 newLog.write(oldLog.readline())
