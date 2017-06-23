@@ -1,3 +1,4 @@
 *.[Oo]bj
 *.[Pp]yc
-makedtaset_logfile.log
+*.log
+makedataset_logfile.log
