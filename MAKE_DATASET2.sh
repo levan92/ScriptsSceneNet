@@ -45,16 +45,16 @@ cd /homes/el216/Workspace/ScriptsSceneNet
 cp ${houseID}_poses.txt /homes/el216/Workspace/DataSceneNet
 cp ${houseID}_scene_description.txt /homes/el216/Workspace/DataSceneNet
 #find /homes/el216/Workspace/OutputSceneNet -type f -delete
-output_temp_dir=/homes/el216/Workspace/OutputSceneNet/${houseID}
-mkdir -p $output_temp_dir
+output_temp_dir=/homes/el216/Workspace/OutputSceneNet2/${houseID}
+mkdir -p ${output_temp_dir}
+mkdir -p ${output_temp_dir}/{depth,photo,instance}
 cp ${houseID}_randomObjectsLocations.txt $output_temp_dir
 cp ${houseID}_LayoutAndObjects.png $output_temp_dir
 
 # Run renderer
 cd /homes/el216/Workspace/roboteye/build
 ./DynamicPose_SceneNet $output_temp_dir \
-    /homes/el216/Workspace/DataSceneNet/${houseID}_scene_description.txt \ 
-    /homes/el216/Workspace/DataSceneNet/${houseID}_poses.txt \
+    /homes/el216/Workspace/DataSceneNet/${houseID}_scene_description.txt /homes/el216/Workspace/DataSceneNet/${houseID}_poses.txt \
     | tee -a /homes/el216/Workspace/ScriptsSceneNet/logs/$houseID"_run.log"
 
 cd /homes/el216/Workspace/ScriptsSceneNet
@@ -69,7 +69,7 @@ python -u instance2classFromInfoLog_temp.py $houseID | tee -a logs/$houseID"_run
 if [ ! -e /scratch/el216/output_scenenet/${houseID}/ ];
 then
     mkdir /scratch/el216/output_scenenet/$houseID
-    cp -r /homes/el216/Workspace/OutputSceneNet/${houseID}/* /scratch/el216/output_scenenet/$houseID
+    cp -r ${output_temp_dir}/${houseID}/* /scratch/el216/output_scenenet/$houseID
     echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a logs/$houseID"_run.log"
         
 else
@@ -78,7 +78,7 @@ else
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
         rm -r /scratch/el216/output_scenenet/$houseID/* 
-        cp -r /homes/el216/Workspace/OutputSceneNet/$houseID/* /scratch/el216/output_scenenet/$houseID
+        cp -r ${output_temp_dir}/$houseID/* /scratch/el216/output_scenenet/$houseID
         echo 'Output files of house '$houseID' overwritten to /scratch/el216/output_scenenet/'$houseID | tee -a logs/$houseID"_run.log"
            
     else
