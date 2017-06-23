@@ -120,12 +120,12 @@ def visualiseMap():
     plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
                     ticks=bounds, boundaries=bounds, format='%1i')
     ax.set_title('Rooms Layout with objects')
-    savefig('roomsLayout+Objects.png')
+    savefig(houseID+'_LayoutAndObjects.png')
     # show()
     return
 
 def writeLogFile():
-    f = open('randomObjectsLocations.txt','w')
+    f = open(houseID+'_randomObjectsLocations.txt','w')
     print >> f, 'Total: ', totalNumObjects, 'objects'
     i = 0
     for r in range(numRooms):
@@ -138,7 +138,8 @@ def writeLogFile():
     return
 
 if __name__ == '__main__':
-    f = open ('fromOcMap.pckl','rb')
+    houseID = sys.argv[3]
+    f = open (houseID+'_fromOcMap.pckl','rb')
     [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
      roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
     f.close()
@@ -219,7 +220,7 @@ if __name__ == '__main__':
         print numObjects, 'random objects generated for Room', (r+1)
 
     toSave = [totalNumObjects, objIDs, objWnids, scales, Ts]
-    f = open('fromRandomObjects.pckl','wb')
+    f = open(houseID+'_fromRandomObjects.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
 
