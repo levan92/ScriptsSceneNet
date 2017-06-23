@@ -9,7 +9,7 @@ from datetime import datetime
 houseID = sys.argv[1]
 
 if platform == "linux" or platform == "linux2":
-        outputDirectory='/homes/el216/Workspace/OutputSceneNet'
+        outputDirectory='/homes/el216/Workspace/OutputSceneNet2'
 elif platform == "darwin":
         outputDirectory='/Users/lingevan/Workspace/SceneNet'
 

@@ -15,7 +15,7 @@ layoutFilePath = layoutDirectory + layoutFile
 mappingCSV = 'ModelCategoryMapping.csv'
 
 if platform == "linux" or platform == "linux2":
-    outputDirectory='/homes/el216/Workspace/OutputSceneNet'
+    outputDirectory='/homes/el216/Workspace/OutputSceneNet2'
 elif platform == "darwin":
     outputDirectory='/Users/lingevan/Workspace/SceneNet'
 
