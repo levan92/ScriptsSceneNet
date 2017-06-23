@@ -1,10 +1,13 @@
 #!/bin/bash
 
 # User Parameters
-houseID=a55f64ca8fdee38a554429d7f7ac8b50
+houseID=ffe9e14822570206cce1fc7259adda71
+#houseID=a55f64ca8fdee38a554429d7f7ac8b50
+#houseID=fff3ca3254c364df22f15646ad160400
 output_directory=/scratch/el216/output_scenenet
 dataset_directory=/scratch/el216/scenenet_dataset
 SET=train
+#SET=val
 
 echo 'parsing house '$houseID' into dataset format and copying to '$dataset_directory/$SET'.' 
 
@@ -35,3 +38,8 @@ do
 done
 
 echo 'Copied to '$dataset_directory/$SET'.'
+
+size=$(ls -1 $dataset_directory/$SET | wc -l)
+echo "$SET set current size: $((size/3))"
+
+
