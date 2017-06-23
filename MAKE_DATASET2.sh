@@ -14,7 +14,7 @@ roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
 frameStep=20 # for poses, Frame period = frameStep * 0.1s
 
-echo 'houseID: '$houseID | tee $houseID_logfile.log
+echo 'houseID: '$houseID | tee logs/$houseID"_run.log"
 
 # Generate .obj and .mtl files from .json
 cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
@@ -24,22 +24,22 @@ cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
 cd /homes/el216/Workspace/ScriptsSceneNet
 # Convert .obj file to only one floor
 python -u convertToOneFloorObj.py \
-	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a $houseID_logfile.log
+	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a logs/$houseID"_run.log"
 # Create occupancy map from house obj
 # Outputs: fromOcMap.pckl, roomsLayout.png
 python -u occupancyMap.py \
 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
-	$ocMapCellSide | tee -a $houseID_logfile.log
+	$ocMapCellSide | tee -a logs/$houseID"_run.log"
 # Generate random objects for house
 # Arguments: Room Messiness Mean, SD in num objs per 100m^2
 # Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
-python -u randomObjects.py $roomMessMean $roomMessSD $houseID | tee -a $houseID_logfile.log
+python -u randomObjects.py $roomMessMean $roomMessSD $houseID | tee -a logs/$houseID"_run.log"
 # Generate SceneDescription txt from random objects
 # Outputs: scene_description.txt
-python -u generateSceneDesc.py $houseID | tee -a $houseID_logfile.log
+python -u generateSceneDesc.py $houseID | tee -a logs/$houseID"_run.log"
 # Generate Poses.txt from room info from occupancymap.py
 # Outputs: poses.txt
-python -u generatePoses.py $frameStep $houseID | tee -a $houseID_logfile.log
+python -u generatePoses.py $frameStep $houseID | tee -a logs/$houseID"_run.log"
 
 
 # Copy generated files to respective directories
@@ -56,22 +56,22 @@ cd /homes/el216/Workspace/roboteye/build
 ./DynamicPose_SceneNet $output_temp_dir \
     /homes/el216/Workspace/DataSceneNet/$houseID_scene_description.txt \ 
     /homes/el216/Workspace/DataSceneNet/$houseID_poses.txt \
-    | tee -a /homes/el216/Workspace/ScriptsSceneNet/$houseID_logfile.log
+    | tee -a /homes/el216/Workspace/ScriptsSceneNet/logs/$houseID"_run.log"
 
 cd /homes/el216/Workspace/ScriptsSceneNet
-echo 'Frames rendering completed.' | tee -a $houseID_logfile.log
+echo 'Frames rendering completed.' | tee -a logs/$houseID"_run.log"
 
 # Generate new Log file
-python -u processInfoLogForSUNCG_temp.py $houseID | tee -a $houseID_logfile.log
+python -u processInfoLogForSUNCG_temp.py $houseID | tee -a logs/$houseID"_run.log"
 # Generate Label pngs from Instance pngs
-python -u instance2classFromInfoLog_temp.py $houseID | tee -a $houseID_logfile.log
+python -u instance2classFromInfoLog_temp.py $houseID | tee -a logs/$houseID"_run.log"
 
 # Copy output to folder named after houseID saved in /scratch drive's output directory
 if [ ! -e /scratch/el216/output_scenenet/$houseID/ ];
 then
     mkdir /scratch/el216/output_scenenet/$houseID
     cp -r /homes/el216/Workspace/OutputSceneNet/$houseID/* /scratch/el216/output_scenenet/$houseID
-    echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a $houseID_logfile.log
+    echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a logs/$houseID"_run.log"
         
 else
     read -p "House "$houseID" output folder exists already. Overwrite contents?" -n 1 -r
@@ -80,11 +80,11 @@ else
     then
         rm -r /scratch/el216/output_scenenet/$houseID/* 
         cp -r /homes/el216/Workspace/OutputSceneNet/$houseID/* /scratch/el216/output_scenenet/$houseID
-        echo 'Output files of house '$houseID' overwritten to /scratch/el216/output_scenenet/'$houseID | tee -a $houseID_logfile.log
+        echo 'Output files of house '$houseID' overwritten to /scratch/el216/output_scenenet/'$houseID | tee -a logs/$houseID"_run.log"
            
     else
         echo 'Output files not moved to /scratch drive' \
-            | tee -a $houseID_logfile.log
+            | tee -a logs/$houseID"_run.log"
     fi
 fi
 
