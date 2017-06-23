@@ -4,11 +4,12 @@ import math
 from pylab import *
 np.set_printoptions(threshold=np.nan)
 
-### Functions
+houseID = sys.argv[2]
 
+### Functions
 #initialise poses.txt with default heading lines
 def initPoseFile():
-    w = open("poses.txt","w")
+    w = open(houseID + "_poses.txt","w")
     w.write('#first three elements, eye and last three, lookAt\n')
     w.write('#frame rate\n')
     w.write('#shutter_speed\n') 
@@ -135,7 +136,7 @@ timeStep = 0.1 # simulation time step in sec
 frameStep = int(sys.argv[1])
 
 ### Main
-f = open ('fromOcMap.pckl','rb')
+f = open (houseID + '_fromOcMap.pckl','rb')
 [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
               roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
 f.close()
