@@ -41,21 +41,20 @@ python -u generateSceneDesc.py $houseID | tee -a logs/$houseID"_run.log"
 # Outputs: poses.txt
 python -u generatePoses.py $frameStep $houseID | tee -a logs/$houseID"_run.log"
 
-
 # Copy generated files to respective directories
-cp $houseID_poses.txt /homes/el216/Workspace/DataSceneNet
-cp $houseID_scene_description.txt /homes/el216/Workspace/DataSceneNet
+cp ${houseID}_poses.txt /homes/el216/Workspace/DataSceneNet
+cp ${houseID}_scene_description.txt /homes/el216/Workspace/DataSceneNet
 #find /homes/el216/Workspace/OutputSceneNet -type f -delete
-output_temp_dir=/homes/el216/Workspace/OutputSceneNet/$houseID
+output_temp_dir=/homes/el216/Workspace/OutputSceneNet/${houseID}
 mkdir $output_temp_dir
-cp $houseID_randomObjectsLocations.txt $output_temp_dir
-cp $houseID_LayoutAndObjects.png $output_temp_dir
+cp ${houseID}_randomObjectsLocations.txt $output_temp_dir
+cp ${houseID}_LayoutAndObjects.png $output_temp_dir
 
 # Run renderer
 cd /homes/el216/Workspace/roboteye/build
 ./DynamicPose_SceneNet $output_temp_dir \
-    /homes/el216/Workspace/DataSceneNet/$houseID_scene_description.txt \ 
-    /homes/el216/Workspace/DataSceneNet/$houseID_poses.txt \
+    /homes/el216/Workspace/DataSceneNet/${houseID}_scene_description.txt \ 
+    /homes/el216/Workspace/DataSceneNet/${houseID}_poses.txt \
     | tee -a /homes/el216/Workspace/ScriptsSceneNet/logs/$houseID"_run.log"
 
 cd /homes/el216/Workspace/ScriptsSceneNet
@@ -67,10 +66,10 @@ python -u processInfoLogForSUNCG_temp.py $houseID | tee -a logs/$houseID"_run.lo
 python -u instance2classFromInfoLog_temp.py $houseID | tee -a logs/$houseID"_run.log"
 
 # Copy output to folder named after houseID saved in /scratch drive's output directory
-if [ ! -e /scratch/el216/output_scenenet/$houseID/ ];
+if [ ! -e /scratch/el216/output_scenenet/${houseID}/ ];
 then
     mkdir /scratch/el216/output_scenenet/$houseID
-    cp -r /homes/el216/Workspace/OutputSceneNet/$houseID/* /scratch/el216/output_scenenet/$houseID
+    cp -r /homes/el216/Workspace/OutputSceneNet/${houseID}/* /scratch/el216/output_scenenet/$houseID
     echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a logs/$houseID"_run.log"
         
 else
