@@ -1,0 +1,6 @@
+SceneNet Dataset -  Houses Overview
+House;Size
+fff3ca3254c364df22f15646ad160400 338
+ffe9e14822570206cce1fc7259adda71 1538
+a55f64ca8fdee38a554429d7f7ac8b50 677
+fffeb1ec4c22ee4b96aa8f8acc564721 1124
