@@ -10,6 +10,8 @@
 # houseID=fe3649f602f371d76660b5cb7219c3d0
 houseID=e9919704131fe1069f73827b53139ff9
 
+export $CUDA_VISIBLE_DEVICES="4"
+
 ocMapCellSide=0.1 # in m, must be small enough 
 roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
