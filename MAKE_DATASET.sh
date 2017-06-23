@@ -14,23 +14,23 @@ frameStep=20 # for poses, Frame period = frameStep * 0.1s
 
 echo 'houseID: '$houseID | tee makedataset_logfile.log
 
-# # Generate .obj and .mtl files from .json
-# cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
-# /homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
+# Generate .obj and .mtl files from .json
+cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
+/homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
 
 
-# cd /homes/el216/Workspace/ScriptsSceneNet
-# # Convert .obj file to only one floor
-# python -u convertToOneFloorObj.py \
-# 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a makedataset_logfile.log
-# # Create occupancy map from house obj
-# # Outputs: fromOcMap.pckl, roomsLayout.png
-# python -u occupancyMap.py \
-# 	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
-# 	$ocMapCellSide | tee -a makedataset_logfile.log
-# Generate random objects for house
-# Arguments: Room Messiness Mean, SD in num objs per 100m^2
-# Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
+cd /homes/el216/Workspace/ScriptsSceneNet
+# Convert .obj file to only one floor
+python -u convertToOneFloorObj.py \
+	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a makedataset_logfile.log
+# Create occupancy map from house obj
+# Outputs: fromOcMap.pckl, roomsLayout.png
+python -u occupancyMap.py \
+	/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
+	$ocMapCellSide | tee -a makedataset_logfile.log
+Generate random objects for house
+Arguments: Room Messiness Mean, SD in num objs per 100m^2
+Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
 python -u randomObjects.py $roomMessMean $roomMessSD | tee -a makedataset_logfile.log
 # Generate SceneDescription txt from random objects
 # Outputs: scene_description.txt
