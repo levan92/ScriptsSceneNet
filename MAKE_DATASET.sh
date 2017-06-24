@@ -73,7 +73,7 @@ python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 if [ ! -e /scratch/el216/output_scenenet/${houseID}/ ];
 then
     mkdir /scratch/el216/output_scenenet/$houseID
-    cp -r ${output_temp_dir}/${houseID}/* /scratch/el216/output_scenenet/$houseID
+    cp -r ${output_temp_dir}/* /scratch/el216/output_scenenet/$houseID
     echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a logs/${houseID}_run.log
         
 else
