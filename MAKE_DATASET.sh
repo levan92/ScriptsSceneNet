@@ -20,30 +20,30 @@ frameStep=20 # for poses, Frame period = frameStep * 0.1s
 
 echo 'houseID: '$houseID | tee logs/${houseID}_run.log
 
-# Generate .obj and .mtl files from .json
-cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
-/homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
+# # Generate .obj and .mtl files from .json
+# cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
+# /homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
 
 
-cd /homes/el216/Workspace/ScriptsSceneNet
-# Convert .obj file to only one floor
-python -u convertToOneFloorObj.py \
-  /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a logs/${houseID}_run.log
-# Create occupancy map from house obj
-# Outputs: fromOcMap.pckl, roomsLayout.png
-python -u occupancyMap.py \
-  /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
-  $ocMapCellSide | tee -a logs/${houseID}_run.log
-# Generate random objects for house
-# Arguments: Room Messiness Mean, SD in num objs per 100m^2
-# Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
-python -u randomObjects.py $roomMessMean $roomMessSD $houseID | tee -a logs/${houseID}_run.log
-# Generate SceneDescription txt from random objects
-# Outputs: scene_description.txt
-python -u generateSceneDesc.py $houseID | tee -a logs/${houseID}_run.log
-# Generate Poses.txt from room info from occupancymap.py
-# Outputs: poses.txt
-python -u generatePoses.py $frameStep $houseID | tee -a logs/${houseID}_run.log
+# cd /homes/el216/Workspace/ScriptsSceneNet
+# # Convert .obj file to only one floor
+# python -u convertToOneFloorObj.py \
+#   /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID | tee -a logs/${houseID}_run.log
+# # Create occupancy map from house obj
+# # Outputs: fromOcMap.pckl, roomsLayout.png
+# python -u occupancyMap.py \
+#   /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
+#   $ocMapCellSide | tee -a logs/${houseID}_run.log
+# # Generate random objects for house
+# # Arguments: Room Messiness Mean, SD in num objs per 100m^2
+# # Outputs: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
+# python -u randomObjects.py $roomMessMean $roomMessSD $houseID | tee -a logs/${houseID}_run.log
+# # Generate SceneDescription txt from random objects
+# # Outputs: scene_description.txt
+# python -u generateSceneDesc.py $houseID | tee -a logs/${houseID}_run.log
+# # Generate Poses.txt from room info from occupancymap.py
+# # Outputs: poses.txt
+# python -u generatePoses.py $frameStep $houseID | tee -a logs/${houseID}_run.log
 
 # Copy generated files to respective directories
 cp ${houseID}_poses.txt /homes/el216/Workspace/DataSceneNet
