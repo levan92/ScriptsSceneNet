@@ -75,6 +75,9 @@ then
     mkdir /scratch/el216/output_scenenet/$houseID
     cp -r ${output_temp_dir}/* /scratch/el216/output_scenenet/$houseID
     echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a logs/${houseID}_run.log
+    rm -r ${output_temp_dir}
+    echo "Removed temp output directory: "${output_temp_dir} \
+        tee -a logs/${houseID}_run.log
         
 else
     read -p "House "$houseID" output folder exists already. Overwrite contents?" -n 1 -r
@@ -82,21 +85,24 @@ else
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
         rm -r /scratch/el216/output_scenenet/$houseID/* 
-        cp -r ${output_temp_dir}/$houseID/* /scratch/el216/output_scenenet/$houseID
+        cp -r ${output_temp_dir}/* /scratch/el216/output_scenenet/$houseID
         echo 'Output files of house '$houseID' overwritten to /scratch/el216/output_scenenet/'$houseID | tee -a logs/${houseID}_run.log
-           
+        rm -r ${output_temp_dir}
+        echo "Removed temp output directory: "${output_temp_dir} \
+            tee -a logs/${houseID}_run.log   
     else
         echo 'Output files not moved to /scratch drive' \
             | tee -a logs/${houseID}_run.log
+            rm -r ${output_temp_dir}
+        echo "Output staying in temp output directory: "${output_temp_dir} \
+        tee -a logs/${houseID}_run.log
     fi
 fi
 
-rm -r ${output_temp_dir}
-echo "Removed temp output directory: "${output_temp_dir}
 rm -r /homes/el216/Workspace/DataSceneNet/${houseID}_*
 echo "Removed scene desc txt and pose txt from DataSceneNet directory."
 
-read -p "Remove "$houseID" files from preprocessing? E.g., fromOcMap.pckl, etc." -n 1 -r
+read -p "Remove "$houseID" files from preprocessing? (e.g., fromOcMap.pckl, etc." -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
