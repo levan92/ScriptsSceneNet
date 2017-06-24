@@ -11,14 +11,14 @@
 houseID=e9919704131fe1069f73827b53139ff9
 
 export CUDA_VISIBLE_DEVICES="4"
-echo 'Using GPU device '${CUDA_VISIBLE_DEVICES}'..'
+echo 'Using GPU device '${CUDA_VISIBLE_DEVICES}'..' | tee logs/${houseID}_run.log
 
 ocMapCellSide=0.1 # in m, must be small enough 
 roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
 frameStep=20 # for poses, Frame period = frameStep * 0.1s
 
-echo 'houseID: '$houseID | tee logs/${houseID}_run.log
+echo 'houseID: '$houseID | tee -a logs/${houseID}_run.log
 
 # # Generate .obj and .mtl files from .json
 # cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
