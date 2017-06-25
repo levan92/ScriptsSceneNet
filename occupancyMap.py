@@ -285,7 +285,7 @@ if __name__ == "__main__":
 
     print 'Occupancy map & Rooms info saved.'
 
-    visualiseOcMap()			
+    # visualiseOcMap()			
 
 
 
