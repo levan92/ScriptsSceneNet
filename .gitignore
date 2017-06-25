@@ -1,3 +1,8 @@
 *.[Oo]bj
 *.[Pp]yc
 *.log
+*.pckl
+*.png
+*_poses.txt
+*_randomObjectsLocations.txt
+*_scene_description.txt
