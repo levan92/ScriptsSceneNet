@@ -2,7 +2,9 @@
 
 # User Parameters
 #houseID=ffe9e14822570206cce1fc7259adda71
-houseID=0004dd3cb11e50530676f77b55262d38
+#houseID=0004dd3cb11e50530676f77b55262d38
+houseID=ffce180f296526fc7488864978f3019a
+#houseID=fe3649f602f371d76660b5cb7219c3d0
 #houseID=a55f64ca8fdee38a554429d7f7ac8b50
 #houseID=fff3ca3254c364df22f15646ad160400
 output_directory=/scratch/el216/output_scenenet
