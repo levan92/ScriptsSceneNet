@@ -9,28 +9,133 @@ import sys
 import os.path
 
 def getCellBbox(i, j):
-    z0 = origin_ocMap[0] + cellSide * i
+    z0 = origin[0] + cellSide * i
     z1 = z0 + cellSide
-    x0 = origin_ocMap[1] + cellSide * j
+    x0 = origin[1] + cellSide * j
     x1 = x0 + cellSide
     return mplTrans.Bbox(np.array([[z0,x0],[z1,x1]]))
 
 def getCellCentre(i, j):
-    z = origin_ocMap[0] + cellSide * (i + 0.5)
-    x = origin_ocMap[1] + cellSide * (j + 0.5)
+    z = origin[0] + cellSide * (i + 0.5)
+    x = origin[1] + cellSide * (j + 0.5)
     return np.array([z,x])
 
-def initialiseOcMap():
-    x_min, x_max, _, _, z_min, z_max = readLayout.getLayoutBounds(layoutFilePath)
-    zwidth = z_max - z_min
+# def initialiseOcMap():
+#     x_min, x_max, _, _, z_min, z_max = readLayout.getLayoutBounds(layoutFilePath)
+#     zwidth = z_max - z_min
+#     iwidth = int(math.ceil(zwidth / cellSide))
+#     xwidth = x_max - x_min
+#     jwidth = int(math.ceil(xwidth / cellSide))
+
+#     origin_ocMap = [z_min, x_min]
+#     ocMap = np.zeros((iwidth,jwidth))
+
+#     return ocMap, iwidth, jwidth, origin_ocMap
+
+def parseObj(layoutFilePath):
+    r = open(layoutFilePath,'rb')
+    rooms = []
+    faces = []
+    verts = []
+    houseBB = np.empty((3,2)) # 1st col: min x,y,z min, 2nd col: max x,y,z
+    houseBB[:] = np.NAN
+    roomsBB_zx = []
+    roomBB = np.empty((3,2)) # 1st col: min z,x ; 2nd col: max z,x 
+    roomBB[:] = np.NAN
+    roomCount = 0
+    vertIdxCount = 0
+    inFloor = False
+    
+    for line in r:
+        if line.startswith('v '): vertIdxCount += 1
+        
+        if inFloor: 
+            #read verts
+            if line.startswith('v '):
+                numStr = line[2:].split()
+                vert = [float(numStr[0]), 
+                        float(numStr[1]), 
+                        float(numStr[2])]
+                verts.append(vert)
+
+                if np.isnan(roomBB[0,0]) or vert[0] < roomBB[0,0]: 
+                    roomBB[0,0] = vert[0] #x_min
+                if np.isnan(roomBB[0,1]) or vert[0] > roomBB[0,1]: 
+                    roomBB[0,1] = vert[0] #x_max
+                if np.isnan(roomBB[1,0]) or vert[1] < roomBB[1,0]: 
+                    roomBB[1,0] = vert[1] #y_min
+                if np.isnan(roomBB[1,1]) or vert[1] > roomBB[1,1]: 
+                    roomBB[1,1] = vert[1] #y_max
+                if np.isnan(roomBB[2,0]) or vert[2] < roomBB[2,0]: 
+                    roomBB[2,0] = vert[2] #z_min
+                if np.isnan(roomBB[2,1]) or vert[2] > roomBB[2,1]: 
+                    roomBB[2,1] = vert[2] #z_max
+            #read face, form polygons
+            elif line.startswith('f '):
+                numStr = line[2:].split()
+                faceIndices = [int(numStr[0].split('/')[0]), 
+                               int(numStr[1].split('/')[0]), 
+                               int(numStr[2].split('/')[0])]
+                v1 = verts[faceIndices[0]-startVertIdx-1]
+                v2 = verts[faceIndices[1]-startVertIdx-1]
+                v3 = verts[faceIndices[2]-startVertIdx-1]
+                face = mplPath.Path( np.array([[v1[2],v1[0]],
+                                               [v2[2],v2[0]],
+                                               [v3[2],v3[0]]]) )
+                faces.append(face)
+            # exit room
+            elif line.startswith('g ') and 'Floor#' not in line:
+                roomCount += 1
+                rooms.append(faces)
+                roomBB_zx = np.vstack((roomBB[2],roomBB[0])) 
+                roomsBB_zx.append(roomBB_zx)
+                if np.isnan(houseBB[0,0]) or roomBB[0,0] < houseBB[0,0]: 
+                    houseBB[0,0] = roomBB[0,0] #x_min
+                if np.isnan(houseBB[0,1]) or roomBB[0,1] > houseBB[0,1]: 
+                    houseBB[0,1] = roomBB[0,1] #x_max
+                if np.isnan(houseBB[1,0]) or roomBB[1,0] < houseBB[1,0]: 
+                    houseBB[1,0] = roomBB[1,0] #y_min
+                if np.isnan(houseBB[1,1]) or roomBB[1,1] > houseBB[1,1]: 
+                    houseBB[1,1] = roomBB[1,1] #y_max
+                if np.isnan(houseBB[2,0]) or roomBB[2,0] < houseBB[2,0]: 
+                    houseBB[2,0] = roomBB[2,0] #z_min
+                if np.isnan(houseBB[2,1]) or roomBB[2,1] > houseBB[2,1]: 
+                    houseBB[2,1] = roomBB[2,1] #z_max
+                faces = []
+                verts = []
+                roomBB[:]=np.NAN
+                inFloor = False
+
+        elif line.startswith('g Floor#'):
+            inFloor = True
+            startVertIdx = vertIdxCount
+
+
+    zwidth = houseBB[2,1] - houseBB[2,0] # z_max - z_min
     iwidth = int(math.ceil(zwidth / cellSide))
-    xwidth = x_max - x_min
+
+    xwidth = houseBB[0,1] - houseBB[0,0] # x_max - x_min
     jwidth = int(math.ceil(xwidth / cellSide))
 
-    origin_ocMap = [z_min, x_min]
+    origin = [houseBB[2,0], houseBB[0,0]]
     ocMap = np.zeros((iwidth,jwidth))
 
-    return ocMap, iwidth, jwidth, origin_ocMap
+    floorHeight = houseBB[1,1] # y_max
+
+    return [ocMap, iwidth, jwidth, origin, floorHeight, 
+            rooms, roomCount, roomsBB_zx]
+
+def world2CellCoord(world):
+    [z,x] = world
+    i = int( np.floor((z - origin[0]) / cellSide) )
+    j = int( np.floor((x - origin[1]) / cellSide) )
+    return np.array([i,j])
+
+def cell2WorldCoord(cell):
+    [i,j] = cell
+    z = origin[0] + cellSide * (i + 0.5)
+    x = origin[1] + cellSide * (j + 0.5)
+    return np.array([z,x])
 
 def listOflist(size):
     listOflist = list()
@@ -44,32 +149,52 @@ def getRoomsInfo(ocMap, numRooms, cellSide):
     bbs_max = np.empty((numRooms,2))
     bbs_min[:] = np.NAN
     bbs_max[:] = np.NAN
+    roomsSize = np.empty((numRooms,2))
+    roomsSize[:] = np.NAN
 
-    for i, row in enumerate(ocMap):
-        for j, roomIdx in enumerate(row):
-            if not roomIdx == 0:
-                roomIdx = int(roomIdx-1)
-                thisCell = np.array([i,j])
-                
-                if np.isnan(bbs_min[roomIdx][0]).all() or \
-                   (thisCell[0] < bbs_min[roomIdx][0]).all():
-                    bbs_min[roomIdx][0] = thisCell[0]
-                if np.isnan(bbs_min[roomIdx][1]).all() or \
-                   (thisCell[1] < bbs_min[roomIdx][1]).all():
-                    bbs_min[roomIdx][1] = thisCell[1]
-
-                if np.isnan(bbs_max[roomIdx][0]).all() or \
-                   (thisCell[0] > bbs_max[roomIdx][0]).all():
-                    bbs_max[roomIdx][0] = thisCell[0]
-                if np.isnan(bbs_max[roomIdx][1]).all() or \
-                   (thisCell[1] > bbs_max[roomIdx][1]).all():
-                    bbs_max[roomIdx][1] = thisCell[1]
-
-    roomsSize = np.zeros((numRooms,2))
     for r in range(numRooms):
-        roomsSize[r] = bbs_max[r] - bbs_min[r]
+        (i_vec,j_vec) = np.where(ocMap == r+1)
+        if i_vec.size:
+            bbs_min[r,0] = min(i_vec)
+            bbs_min[r,1] = min(j_vec)
+            bbs_max[r,0] = max(i_vec)
+            bbs_max[r,1] = max(j_vec)
+            roomsSize[r] = bbs_max[r] - bbs_min[r]
 
     return bbs_min, bbs_max, roomsSize
+
+# def getRoomsInfo_old(ocMap, numRooms, cellSide):
+#     # initialise bounding box min and max
+#     bbs_min = np.empty((numRooms,2))
+#     bbs_max = np.empty((numRooms,2))
+#     bbs_min[:] = np.NAN
+#     bbs_max[:] = np.NAN
+
+#     for i, row in enumerate(ocMap):
+#         for j, roomIdx in enumerate(row):
+#             if not roomIdx == 0:
+#                 roomIdx = int(roomIdx-1)
+#                 thisCell = np.array([i,j])
+                
+#                 if np.isnan(bbs_min[roomIdx][0]).all() or \
+#                    (thisCell[0] < bbs_min[roomIdx][0]).all():
+#                     bbs_min[roomIdx][0] = thisCell[0]
+#                 if np.isnan(bbs_min[roomIdx][1]).all() or \
+#                    (thisCell[1] < bbs_min[roomIdx][1]).all():
+#                     bbs_min[roomIdx][1] = thisCell[1]
+
+#                 if np.isnan(bbs_max[roomIdx][0]).all() or \
+#                    (thisCell[0] > bbs_max[roomIdx][0]).all():
+#                     bbs_max[roomIdx][0] = thisCell[0]
+#                 if np.isnan(bbs_max[roomIdx][1]).all() or \
+#                    (thisCell[1] > bbs_max[roomIdx][1]).all():
+#                     bbs_max[roomIdx][1] = thisCell[1]
+
+#     roomsSize = np.zeros((numRooms,2))
+#     for r in range(numRooms):
+#         roomsSize[r] = bbs_max[r] - bbs_min[r]
+
+#     return bbs_min, bbs_max, roomsSize
 
 def visualiseOcMap():
 	fig, ax = plt.subplots()
@@ -80,51 +205,79 @@ def visualiseOcMap():
 	cmaplist[0] = (.5,.5,.5,1.0)
 	cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
 
-	bounds = np.linspace(0,numRooms+1,numRooms+2)
-	norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+	ticks = np.linspace(0,numRooms+1,numRooms+2)
+	norm = mpl.colors.BoundaryNorm(ticks, cmap.N)
 
 	img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
 
 	plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
-					ticks=bounds, boundaries=bounds, format='%1i')
+					ticks=ticks, boundaries=ticks, format='%1i')
 	ax.set_title('Rooms Layout of House')
-	savefig('roomsLayout.png')
+	savefig(houseID + '_roomsLayout.png')
 	# show()
 	return
 
 ### 
 if __name__ == "__main__":
-    houseFilePath = sys.argv[1]
-    houseID = os.path.basename(houseFilePath)
-    layoutFilePath = houseFilePath + '/houseOneFloor.obj'
-    
-    # cellSide = .10 # in m
-    cellSide = float(sys.argv[2])
-
-    ocMap, iwidth, jwidth, origin_ocMap = initialiseOcMap()
-
-    floorsOfRooms, numRooms = readLayout.getRoomsFloor(layoutFilePath)
-
     print 'Acquiring occupancy map...'
 
-    for i in range(iwidth):
-    	# print 'Occupancy mapping progress: ',round(float(i)/iwidth * 100,2),'%'
-    	for j in range(jwidth):
-    		cell = getCellBbox(i,j)
-    		cellCentre = getCellCentre(i,j)
-    		for r in range(numRooms):
-    			faces = floorsOfRooms[r]
-    			for face in faces:
-    				if face.contains_point(cellCentre): ocMap[i,j] = r+1
-    				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
+    houseFilePath = sys.argv[1]
+    # houseFilePath = '/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts/suncg_houses/house1'
+    houseID = os.path.basename(houseFilePath)
+    # print houseID
+    layoutFilePath = houseFilePath + '/houseOneFloor.obj'
+
+    cellSide = float(sys.argv[2])
+    # cellSide = .10 # in m
+
+    [ocMap, iwidth, jwidth, origin, floorHeight, 
+    floorsOfRooms, numRooms, roomsBB_zx] = parseObj(layoutFilePath)
+
+    roomsBB_min_cell = np.empty((0,2), int)    
+    roomsBB_max_cell = np.empty((0,2), int)
+    roomsBB_size_cell = np.empty((0,2), int)
+
+    for r in range(numRooms):
+        print 'Updating ocMap with Room',r+1,'out of',numRooms,'rooms'
+        roomBB_zx = roomsBB_zx[r]
+        topleft_cell = world2CellCoord(roomBB_zx[:,0])
+        botright_cell = world2CellCoord(roomBB_zx[:,1])
+        num_rows = botright_cell[0] - topleft_cell[0]
+        num_cols = botright_cell[1] - topleft_cell[1]
+        faces = floorsOfRooms[r]
+
+        # roomsBB_min_cell = np.vstack((roomsBB_min_cell,topleft_cell))
+        # roomsBB_max_cell = np.vstack((roomsBB_max_cell,botright_cell))
+        # roomsBB_size_cell = np.vstack((roomsBB_size_cell, 
+        #                                np.array([num_rows, num_cols])))
+
+        for i in range(num_rows):
+            for j in range(num_cols):
+                cell = topleft_cell + np.array([i,j])
+                if ocMap[cell[0],cell[1]] == 0:
+                    cell_bbox = getCellBbox(cell[0],cell[1])
+                    cellCentre_zx = cell2WorldCoord(cell)
+                    for f in faces: 
+                        if f.contains_point(cellCentre_zx) or \
+                           f.intersects_bbox(cell_bbox, filled=True):
+                            ocMap[cell[0],cell[1]] = r+1
+
+    # for i in range(iwidth):
+    # 	print 'Occupancy mapping progress: ',round(float(i)/iwidth * 100,2),'%'
+    # 	for j in range(jwidth):
+    # 		cell = getCellBbox(i,j)
+    # 		cellCentre = getCellCentre(i,j)
+    # 		for r in range(numRooms):
+    # 			faces = floorsOfRooms[r]
+    # 			for face in faces:
+    # 				if face.contains_point(cellCentre): ocMap[i,j] = r+1
+    # 				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
     
     print 'Occupancy map built. Getting Rooms info...'
 
     roomsBBmin, roomsBBmax, roomsSize = getRoomsInfo(ocMap, numRooms, cellSide)
 
-    floorHeight = readLayout.getFloorHeight(layoutFilePath)
-
-    toSave = [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
+    toSave = [ocMap, numRooms, cellSide, origin, floorHeight,
     		  roomsBBmin, roomsBBmax, roomsSize]
     f = open(houseID+'_fromOcMap.pckl','wb')
     pickle.dump(toSave, f)
@@ -132,13 +285,12 @@ if __name__ == "__main__":
 
     print 'Occupancy map & Rooms info saved.'
 
-
-# visualiseOcMap()			
-
+    visualiseOcMap()			
 
 
-			# if face.intersects_bbox(cell, filled=True): 
-			# 	ocMap[i,j] = 1
+
+# if face.intersects_bbox(cell, filled=True): 
+# 	ocMap[i,j] = 1
 
 # Visualisation of ocMap
 # fig, ax = plt.subplots(1,1, figsize=(6,6))
