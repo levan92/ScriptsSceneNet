@@ -3,7 +3,6 @@ import matplotlib.transforms as mplTrans
 import numpy as np
 import math
 from pylab import *
-import readLayout
 import pickle
 import sys
 import os.path
