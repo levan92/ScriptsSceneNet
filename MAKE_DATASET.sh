@@ -8,11 +8,12 @@
 # houseID=0004dd3cb11e50530676f77b55262d38
 # houseID=ffce180f296526fc7488864978f3019a
 # houseID=fe3649f602f371d76660b5cb7219c3d0
-houseID=e9919704131fe1069f73827b53139ff9
-# houseID=dbf9875797a788bd40f7eea3659e7fae
+#houseID=e9919704131fe1069f73827b53139ff9
+# doesnt work houseID=dbf9875797a788bd40f7eea3659e7fae
+houseID=03353fe273b81f93a11285c759e8a98b
 
-export CUDA_VISIBLE_DEVICES="4"
-echo 'Using GPU device '${CUDA_VISIBLE_DEVICES}'..' \
+#export CUDA_VISIBLE_DEVICES="4"
+echo "Using GPU device "${CUDA_VISIBLE_DEVICES}".." \
     | tee logs/${houseID}_run.log
 
 ocMapCellSide=0.1 # in m, must be small enough 
