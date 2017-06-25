@@ -10,7 +10,8 @@
 # houseID=fe3649f602f371d76660b5cb7219c3d0
 #houseID=e9919704131fe1069f73827b53139ff9
 # doesnt work houseID=dbf9875797a788bd40f7eea3659e7fae
-houseID=03353fe273b81f93a11285c759e8a98b
+# houseID=03353fe273b81f93a11285c759e8a98b
+houseID=b1f1efd51cfa771708d3cf30788d25a0
 
 #export CUDA_VISIBLE_DEVICES="4"
 echo "Using GPU device "${CUDA_VISIBLE_DEVICES}".." \
@@ -105,7 +106,8 @@ else
 fi
 
 rm -r /homes/el216/Workspace/DataSceneNet/${houseID}_*
-echo "Removed scene desc txt and pose txt from DataSceneNet directory."
+echo "Removed scene desc txt and pose txt from DataSceneNet directory." \
+     | tee -a logs/${houseID}_run.log
 
 read -p "Remove "$houseID" files from preprocessing? (e.g., fromOcMap.pckl, etc." -n 1 -r
     echo
