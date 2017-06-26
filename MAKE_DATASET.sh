@@ -11,7 +11,10 @@
 #houseID=e9919704131fe1069f73827b53139ff9
 # doesnt work houseID=dbf9875797a788bd40f7eea3659e7fae
 # houseID=03353fe273b81f93a11285c759e8a98b
-houseID=b1f1efd51cfa771708d3cf30788d25a0
+# doesnt work houseID=b1f1efd51cfa771708d3cf30788d25a0
+#houseID=7bee7018f8b103d2cb1e4c63202a8a52
+# doesnt work houseID=6ff9ea29b5bb4b3826585783b4f9c916
+houseID=56fe7c2316c15cf891a93a2ededbcc00
 
 #export CUDA_VISIBLE_DEVICES="4"
 echo "Using GPU device "${CUDA_VISIBLE_DEVICES}".." \
