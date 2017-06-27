@@ -113,15 +113,17 @@ for node in nodes_list:
                     rooms_with_light.append(r) 
 
 print 'Total num of lights:',len(lights_info)
+
 rooms_with_light = set(rooms_with_light) #room index starts from 0 (NOT 1)
+
 print 'Rooms with lights:', list(rooms_with_light)
+
 
 ## Format for lights_info:
 # PointLight power rgb pos(xyz) radius
 # SpotLight/LineLight  power rgb pos(xyz) v1 v2
-toSave = [lights_info, rooms_with_light]
-f = open(houseID+'_lighting.pckl','wb')
-pickle.dump(toSave, f)
-f.close()
+# toSave = [lights_info, rooms_with_light]
+# f = open(houseID+'_lighting.pckl','wb')
+# pickle.dump(toSave, f)
+# f.close()
 
-print 'Lighting info saved.'
