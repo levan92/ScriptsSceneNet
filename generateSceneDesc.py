@@ -14,6 +14,10 @@ f2 = open(houseID+'_fromOcMap.pckl','rb')
               roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f2)
 f2.close()
 
+f3 = open(houseID+'_lighting.pckl','rb')
+[lights_info, rooms_with_light] = pickle.load(f3)
+f3.close()
+
 #returns world coordinate of the top-left of a given cell
 def cell2WorldCoord_TopLeft(cell):
     [i,j] = cell
@@ -50,13 +54,19 @@ for obj in range(totalNumObjects):
 
 w.write('end\n')
 
-# Room Information for lighting
-print >> w, 'rooms'
-for r in range(numRooms):
-    if not ( np.isnan(roomsBBmin).any() or np.isnan(roomsBBmax).any() ):
-        bbMin_zx = cell2WorldCoord_TopLeft(roomsBBmin[r])
-        bbSize_zx = roomsSize[r] * cellSide
-        print >> w, round(bbMin_zx[0],2), round(bbMin_zx[1],2), \
-                round(bbSize_zx[0],2), round(bbSize_zx[1],2)
+## Lighting info
+print >> w, 'lighting'
+for line in lights_info:
+    print >> w, line
 
-print houseID,'_scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,'rooms in scene'
+
+# # Room Information for lighting
+# print >> w, 'rooms'
+# for r in range(numRooms):
+#     if not ( np.isnan(roomsBBmin).any() or np.isnan(roomsBBmax).any() ):
+#         bbMin_zx = cell2WorldCoord_TopLeft(roomsBBmin[r])
+#         bbSize_zx = roomsSize[r] * cellSide
+#         print >> w, round(bbMin_zx[0],2), round(bbMin_zx[1],2), \
+#                 round(bbSize_zx[0],2), round(bbSize_zx[1],2)
+
+# print houseID,'_scene_description.txt generated with', totalNumObjects, 'objects in and', numRooms,'rooms in scene'

@@ -141,15 +141,22 @@ f = open (houseID + '_fromOcMap.pckl','rb')
               roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
 f.close()
 
+f2 = open (houseID + '_lighting.pckl','rb')
+[_, rooms_with_light] = pickle.load(f2)
+f2.close()
+
+
 wf = initPoseFile()
 
 poses_cell = []
 
 framesCountTotal = 0
 
-print 'Cleaning house... (generating poses)'
+print 'Cleaning house (generating poses) for rooms', \
+        ','.join(str(r+1) for r in list(rooms_with_light)),'..'
 
-for r in range(numRooms):
+
+for r in rooms_with_light:
     if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize).any():
         print 'Room ', (r+1),'is a null room, skipping..'
         continue
