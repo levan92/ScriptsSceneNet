@@ -14,7 +14,9 @@
 # doesnt work houseID=b1f1efd51cfa771708d3cf30788d25a0
 #houseID=7bee7018f8b103d2cb1e4c63202a8a52
 # doesnt work houseID=6ff9ea29b5bb4b3826585783b4f9c916
-houseID=56fe7c2316c15cf891a93a2ededbcc00
+# houseID=56fe7c2316c15cf891a93a2ededbcc00
+# houseID=fff3ca3254c364df22f15646ad160400
+houseID=7c1c4ca425074956b2ff4587633233e4
 
 #export CUDA_VISIBLE_DEVICES="4"
 echo "Using GPU device "${CUDA_VISIBLE_DEVICES}".." \
@@ -37,6 +39,9 @@ cd /homes/el216/Workspace/ScriptsSceneNet
 python -u convertToOneFloorObj.py \
   /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
   | tee -a logs/${houseID}_run.log
+# Get lighting information from house json file
+# Outputs: $houseID_lighting.pckl
+python -u getLighting.py ${houseID} | tee -a logs/${houseID}_run.log
 # Create occupancy map from house obj
 # Outputs: fromOcMap.pckl, roomsLayout.png
 python -u occupancyMap.py \
@@ -65,7 +70,7 @@ cp ${houseID}_randomObjectsLocations.txt $output_temp_dir
 cp ${houseID}_LayoutAndObjects.png $output_temp_dir
 
 # Run renderer
-cd /homes/el216/Workspace/roboteye/build
+cd /homes/el216/Workspace/scenenet/build
 ./DynamicPose_SceneNet $output_temp_dir \
     /homes/el216/Workspace/DataSceneNet/${houseID}_scene_description.txt /homes/el216/Workspace/DataSceneNet/${houseID}_poses.txt \
     | tee -a /homes/el216/Workspace/ScriptsSceneNet/logs/${houseID}_run.log
