@@ -157,7 +157,7 @@ print 'Cleaning house (generating poses) for rooms', \
 
 
 for r in rooms_with_light:
-    if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize).any():
+    if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize[r]).any():
         print 'Room ', (r+1),'is a null room, skipping..'
         continue
 
