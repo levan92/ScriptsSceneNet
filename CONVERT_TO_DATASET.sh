@@ -12,7 +12,7 @@ houseID=e9919704131fe1069f73827b53139ff9
 output_directory=/scratch/el216/output_scenenet
 dataset_directory=/scratch/el216/scenenet_dataset
 SET=train
-#SET=val
+#SET=test
 
 echo 'parsing house '$houseID' into dataset format and copying to '$dataset_directory/$SET'.' 
 
