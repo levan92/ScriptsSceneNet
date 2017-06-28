@@ -1,11 +1,14 @@
-import matplotlib.path as mplPath
-import matplotlib.transforms as mplTrans
 import numpy as np
 import math
-from pylab import *
 import pickle
 import sys
 import os.path
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
+import matplotlib.path as mplPath
+import matplotlib.transforms as mplTrans
+from pylab import *
 
 def getCellBbox(i, j):
     z0 = origin[0] + cellSide * i
@@ -212,7 +215,7 @@ def visualiseOcMap():
 	plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
 					ticks=ticks, boundaries=ticks, format='%1i')
 	ax.set_title('Rooms Layout of House')
-	savefig(houseID + '_roomsLayout.png')
+	savefig(house_temp_dir + houseID + '_roomsLayout.png')
 	# show()
 	return
 
@@ -220,11 +223,10 @@ def visualiseOcMap():
 if __name__ == "__main__":
     print 'Acquiring occupancy map...'
 
-    houseFilePath = sys.argv[1]
-    # houseFilePath = '/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts/suncg_houses/house1'
-    houseID = os.path.basename(houseFilePath)
-    # print houseID
-    layoutFilePath = houseFilePath + '/houseOneFloor.obj'
+    houseID = sys.argv[1]
+    layoutFilePath = '/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/' + \
+                      houseID + '/houseOneFloor.obj'
+    house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 
     cellSide = float(sys.argv[2])
     # cellSide = .10 # in m
@@ -278,7 +280,7 @@ if __name__ == "__main__":
 
     toSave = [ocMap, numRooms, cellSide, origin, floorHeight,
     		  roomsBBmin, roomsBBmax, roomsSize]
-    f = open(houseID+'_fromOcMap.pckl','wb')
+    f = open(house_temp_dir + houseID + '_fromOcMap.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
 

@@ -100,49 +100,69 @@ def world2CellCoord(world_zx):
     j = int( np.floor((x - origin_ocMap[1]) / cellSide) )
     return np.array([i,j])
 
-def visualiseMap():
-    fig, ax = plt.subplots()
+def visualiseMaps():
+    for room in rooms_with_light:
+        if room not in nullRooms:
+            r = room - 1
 
-    # define the colormap
-    cmap = plt.cm.jet
-    cmaplist = [cmap(i) for i in range(cmap.N)]
-    cmaplist[0] = (.5,.5,.5,1.0)
-    cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+            fig, ax = plt.subplots()
 
-    bounds = np.linspace(0,numRooms+1,numRooms+2)
-    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+            # define the colormap
+            cmap = plt.cm.jet
+            cmaplist = [cmap(i) for i in range(cmap.N)]
+            cmaplist[0] = (.5,.5,.5,1.0)
+            cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
 
-    img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
-    x = objs_cell[:,1]
-    y = objs_cell[:,0]
-    plt.scatter(x=x, y=y, c='r', s=10)
+            bounds = np.linspace(0,numRooms+1,numRooms+2)
+            norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-    plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
-                    ticks=bounds, boundaries=bounds, format='%1i')
-    ax.set_title('Rooms Layout with objects')
-    savefig(houseID+'_LayoutAndObjects.png')
-    # show()
+            img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
+
+            x = objs_cell[:,1]
+            y = objs_cell[:,0]
+            plt.scatter(x=x, y=y, c='r', s=10)
+
+            for index,value in ndenumerate(ocMap):
+                if value == room: 
+                    plt.plot(index[1]+2,index[0]+2, 'y*' )
+                    break
+
+            plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
+                            ticks=bounds, boundaries=bounds, format='%1i')
+            ax.set_title('Rooms Layout with objects')
+            savefig(house_temp_dir + houseID+'_'+str(room)+'_LayoutAndObjects.png')
+            # show()
+
     return
 
 def writeLogFile():
-    f = open(houseID+'_randomObjectsLocations.txt','w')
+    f = open(house_temp_dir + houseID+'_randomObjectsLocations.txt','w')
     print >> f, 'Total: ', totalNumObjects, 'objects'
     i = 0
-    for r in range(numRooms):
-        print >> f
-        print >> f, 'Room',(r+1),':',numObjInRooms[r],'objects (', \
-                               round(roomsMessiness[r]),'% mess )'
-        for _ in range(numObjInRooms[r]):
-            print >> f, '\t', nicknames[i], objs_cell[i], scales[i]
-            i += 1;
+    for room in rooms_with_light:
+        if room not in nullRooms:
+            r = room - 1
+            print >> f
+            print >> f, 'Room',room,':',numObjInRooms[r][0],'objects (', \
+                                   round(roomsMessiness[r][0]),'% mess )'
+            for _ in range(numObjInRooms[r][0]):
+                print >> f, '\t', nicknames[i], objs_cell[i], scales[i]
+                i += 1;
     return
 
 if __name__ == '__main__':
     houseID = sys.argv[3]
-    f = open (houseID+'_fromOcMap.pckl','rb')
+    house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
+
+    f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
     [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
      roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
     f.close()
+    
+    f2 = open (house_temp_dir + houseID+'_lighting.pckl','rb')
+    [_, rooms_with_light, _] = pickle.load(f2)
+    f2.close()
+
     ## Parameters
     roomsMessMean = float(sys.argv[1])
     roomsMessSD = float(sys.argv[2])
@@ -155,17 +175,21 @@ if __name__ == '__main__':
     scales = []
     objs_cell = np.empty((0,2),int)
     nicknames = []
-    numObjInRooms = []
-    roomsMessiness = []
+    numObjInRooms = [[] for i in range(numRooms)]
+    roomsMessiness = [[] for i in range(numRooms)]
     totalNumObjects = 0
+    nullRooms = []
 
     print 'Generating random objects for each room...'
 
-    for r in range(numRooms):
+    # for r in range(numRooms):
+    for room in rooms_with_light:
+        r = room - 1
 
         if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize[r]).any():
             numObjects = roomMessiness = 0
-            print 'Note: Room', (r+1),'is a null room.'
+            print 'Note: Room', room,'is a null room.'
+            nullRooms.append(room)
         else:
             room_origin = cell2WorldCoord_TopLeft(roomsBBmin[r])
             room_zwidth, room_xwidth = roomsSize[r] * cellSide
@@ -214,13 +238,13 @@ if __name__ == '__main__':
             objs_cell = np.vstack( (objs_cell,world2CellCoord(d_zx)) )
             nicknames.append(nickname)
 
-        roomsMessiness.append(roomMessiness)
-        numObjInRooms.append(numObjects)
+        roomsMessiness[r].append(roomMessiness)
+        numObjInRooms[r].append(numObjects)
         totalNumObjects += numObjects
-        print numObjects, 'random objects generated for Room', (r+1)
+        print numObjects, 'random objects generated for Room', room
 
-    toSave = [totalNumObjects, objIDs, objWnids, scales, Ts]
-    f = open(houseID+'_fromRandomObjects.pckl','wb')
+    toSave = [totalNumObjects, numObjInRooms, objIDs, objWnids, scales, Ts, nullRooms]
+    f = open(house_temp_dir + houseID+'_fromRandomObjects.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
 
@@ -228,7 +252,7 @@ if __name__ == '__main__':
 
     writeLogFile()
 
-    visualiseMap()
+    visualiseMaps()
 
 
 
