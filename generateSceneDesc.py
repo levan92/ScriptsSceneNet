@@ -4,18 +4,20 @@ import sys
 
 houseID = sys.argv[1]
 houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 
-f = open(houseID+'_fromRandomObjects.pckl','rb')
-totalNumObjects, objIDs, objWnids, scales, Ts = pickle.load(f)
+
+f = open(house_temp_dir + houseID+'_fromRandomObjects.pckl','rb')
+[totalNumObjects, numObjInRooms, objIDs, objWnids, scales, Ts, nullRooms] = pickle.load(f)
 f.close()
 
-f2 = open(houseID+'_fromOcMap.pckl','rb')
+f2 = open(house_temp_dir + houseID+'_fromOcMap.pckl','rb')
 [_, numRooms, cellSide, origin_ocMap, _,
               roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f2)
 f2.close()
 
-f3 = open(houseID+'_lighting.pckl','rb')
-[lights_info, rooms_with_light] = pickle.load(f3)
+f3 = open(house_temp_dir + houseID+'_lighting.pckl','rb')
+[lights_info, rooms_with_light, lights_in_rooms_byIndex] = pickle.load(f3)
 f3.close()
 
 #returns world coordinate of the top-left of a given cell
@@ -32,32 +34,41 @@ def cell2WorldCoord_BotRight(cell):
     x = origin_ocMap[1] + cellSide * (j+1)
     return np.array([z,x])
 
-# Header
-w = open(houseID+"_scene_description.txt","w")
-w.write('layout_file: ./')
-w.write(houseObj_filepath + '\n')
+for room in rooms_with_light:
+    if room not in nullRooms:
+        r = room - 1
+        # Header
+        w = open(house_temp_dir + houseID + "_" + str(room) + "_scene_description.txt","w")
+        w.write('layout_file: ./')
+        w.write(houseObj_filepath + '\n')
 
-# Objects
-for obj in range(totalNumObjects):
-    w.write('object\n')
-    w.write(objWnids[obj] + '/' + objIDs[obj] + '\n')
-     
-    w.write('wnid\n') #think it does nothing significant
-    w.write(objWnids[obj] + '\n')
+        # Objects 
+        TODO
+        sum(i) for i in numObjInRooms
+        obj_ids = range(, numObjInRooms
 
-    w.write('scale\n')
-    w.write(str(scales[obj]))
-    w.write('\n')
+        for obj in range(totalNumObjects):
+            w.write('object\n')
+            w.write(objWnids[obj] + '/' + objIDs[obj] + '\n')
+             
+            w.write('wnid\n') #think it does nothing significant
+            w.write(objWnids[obj] + '\n')
 
-    w.write('transformation\n')
-    np.savetxt(w,Ts[obj], fmt='%1.3f')
+            w.write('scale\n')
+            w.write(str(scales[obj]))
+            w.write('\n')
 
-w.write('end\n')
+            w.write('transformation\n')
+            np.savetxt(w,Ts[obj], fmt='%1.3f')
 
-## Lighting info
-print >> w, 'lighting'
-for line in lights_info:
-    print >> w, line
+        w.write('end\n')
+
+        ## Lighting info
+        print >> w, 'lighting'
+        for line in lights_info:
+            print >> w, line
+
+        w.close()
 
 
 # # Room Information for lighting
