@@ -72,6 +72,9 @@ for node in nodes_list:
                     # print line_info
 
                 elif light['type'] == 'SpotLight':
+                    if light['direction'][1] >= 0:
+                        continue
+                    
                     pos_centre = light_pos_from_trans(node['transform'],light['position'])
                     pos_corner = pos_centre - np.array([-spotLight_side, 0., spotLight_side])
                     v_x = np.array([spotLight_side,0.,0.])
