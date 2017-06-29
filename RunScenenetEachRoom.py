@@ -3,6 +3,8 @@ import sys
 import shutil
 import os
 import subprocess
+import pickle
+import time
 
 houseID = sys.argv[1]
 
@@ -45,12 +47,20 @@ for room in rooms_with_light:
         shutil.copy2(randObjsTxt_filepath,room_output_dir)
         shutil.copy2(lightingTxt_filepath,room_output_dir)
 
-        print "Starting scenenet render of Room",room,"of House",houseID,"...\n"
+        print "Starting scenenet render of Room",room,"of House",houseID,\
+              "on GPU",os.environ['CUDA_VISIBLE_DEVICES'],"...\n"
+        time.sleep(3)
 
-        print subprocess.check_output([DynamicPoseSceneNet_path, room_output_dir, 
-                                       scene_desc_filepath, poses_filepath])
 
-        print "Completed scenenet render of Room",room,"of House",houseID,"...\n"
+        scenenet_process = subprocess.Popen([DynamicPoseSceneNet_path, room_output_dir, 
+                                              scene_desc_filepath, poses_filepath])
+        scenenet_process.wait()
+        scenenet_process.terminate()
+
+        # print subprocess.run([DynamicPoseSceneNet_path, room_output_dir, 
+                                       # scene_desc_filepath, poses_filepath])
+
+        print "\nCompleted scenenet render of Room",room,"of House",houseID,"."
 
 
 # #find /homes/el216/Workspace/OutputSceneNet -type f -delete
