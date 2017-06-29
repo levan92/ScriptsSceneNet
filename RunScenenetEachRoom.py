@@ -55,8 +55,8 @@ for room in rooms_with_light:
         scenenet_process = subprocess.Popen([DynamicPoseSceneNet_path, room_output_dir, 
                                               scene_desc_filepath, poses_filepath])
         scenenet_process.wait()
-        scenenet_process.terminate()
-
+        # os.killpg(os.getpgid(scenenet_process.pid), signal.SIGTERM)
+        
         # print subprocess.run([DynamicPoseSceneNet_path, room_output_dir, 
                                        # scene_desc_filepath, poses_filepath])
 
