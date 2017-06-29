@@ -117,7 +117,7 @@ def visualiseScanning(poses_cell):
     plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
                     ticks=bounds, boundaries=bounds, format='%1i')
     ax.set_title('Scanning pattern')
-    savefig('scanningPatternDemo.png')
+    savefig(house_temp_dir + houseID + "_" + str(room) +'_ScanningRoute.png')
     show()
     return
 
@@ -283,7 +283,7 @@ for room in rooms_with_light:
         # print 'poses.txt generated, num of rooms:', numRooms, \
                 # ', total num frames:', framesCountTotal
 
-        # visualiseScanning(poses_cell)
+        visualiseScanning(poses_cell)
 
 
 

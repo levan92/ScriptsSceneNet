@@ -44,7 +44,7 @@ rooms_node_indices = []
 for node in nodes_list:
     # print node['id'], node['type'], node['modelId']
     if node['type'] == "Room":
-        print room_count+1, node['id']
+        # print room_count+1, node['id']
         room_count += 1
         if 'nodeIndices' in node:
             rooms_node_indices.append(node['nodeIndices'])
