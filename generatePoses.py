@@ -1,6 +1,8 @@
 import numpy as np
 import pickle
 import math
+import matplotlib
+matplotlib.use('Agg')
 from pylab import *
 np.set_printoptions(threshold=np.nan)
 
