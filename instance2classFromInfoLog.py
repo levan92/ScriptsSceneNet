@@ -6,6 +6,7 @@ import os
 import ntpath
 from datetime import datetime
 import sys
+import pickle
 
 houseID = sys.argv[1]
 
@@ -15,6 +16,7 @@ houseID = sys.argv[1]
 #         outputDirectory='/Users/lingevan/Workspace/SceneNet'
 
 # house_output_dir = outputDirectory + "/" + houseID
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
 
 WNID_TO_NYU_CLASS = {

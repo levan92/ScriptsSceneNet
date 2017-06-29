@@ -2,6 +2,7 @@ import numpy as np
 import csv
 import sys
 from sys import platform
+import pickle
 
 houseID = sys.argv[1]
 
@@ -19,7 +20,7 @@ mappingCSV = '/homes/el216/Workspace/SUNCGtoolbox/metadata/ModelCategoryMapping.
 #     outputDirectory='/homes/el216/Workspace/OutputSceneNet'
 # elif platform == "darwin":
 #     outputDirectory='/Users/lingevan/Workspace/SceneNet'
-
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
 
 def getCsvDict():
