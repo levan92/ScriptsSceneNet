@@ -4,7 +4,7 @@ import math
 from pylab import *
 np.set_printoptions(threshold=np.nan)
 
-houseID = sys.argv[2]
+houseID = sys.argv[1]
 house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 
 ### Functions
@@ -134,7 +134,7 @@ robotV_turn = 45 # turning speed in deg/s
 timeStep = 0.1 # simulation time step in sec
 # capture a frame every [frameStep] timeSteps
 # frameStep = 20 
-frameStep = int(sys.argv[1])
+frameStep = int(sys.argv[2])
 
 ### Main
 f = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
@@ -149,6 +149,8 @@ f2.close()
 f3 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
 [_, _, _, _, _, _, nullRooms] = pickle.load(f3)
 f3.close()
+
+overview_file = open(house_temp_dir + houseID + "_Poses_Overview.txt","w")
 
 # print 'Generating separate pose files for rooms', \
 #       ','.join(str(room) for room in list(rooms_with_light)),'..'
@@ -166,6 +168,7 @@ for room in rooms_with_light:
 
         if ( (roomsSize[r]*cellSide) < robotD ).any():
             print 'Room ', room,'too small, skipping..'
+            print >> overview_file, 'Room ', room,'too small, skipping..'
             continue
 
         # print 'Cleaning Room: ', r, '/', numRooms 
@@ -182,6 +185,7 @@ for room in rooms_with_light:
 
         if robotOutOfRoom(pose,r): 
             print 'Room',room,'is oddly shaped, skipping..'
+            print >> overview_file, 'Room',room,'is oddly shaped, skipping..'
             continue
 
         i = 0
@@ -271,6 +275,7 @@ for room in rooms_with_light:
 
         # print "num uturns done for Room", r+1,":",uturnCount
         print "Frames generated for Room",room,":",framesCountRoom
+        print >> overview_file, "Frames generated for Room",room,":",framesCountRoom
         wf.close()
         # framesCountTotal += framesCountRoom
 
