@@ -60,6 +60,20 @@ python -u generateSceneDesc.py $houseID | tee -a logs/${houseID}_run.log
 # Outputs: poses.txt
 python -u generatePoses.py $frameStep $houseID | tee -a logs/${houseID}_run.log
 
+#these generateSceneDesc and generatePoses scripts will generate 
+# houseID_roomNum_*.txt files
+# generateSceneDesc will additionally do for each room (w light) a 
+# scanning of neighbouring rooms and their lights and randomly switch
+# them on (i.e. including them in the scene desc)
+
+# another python script will be iterate through each room with light:
+# do directory organisation and run renderer. 
+# output directory: house/house_roomNum/output_files.
+
+# after done rendering, remove unmeaningful frames by checking average 
+# depth in frame and moving all correspoding outputs of that frame to 
+# an archive folder. 
+
 # Copy generated files to respective directories
 cp ${houseID}_poses.txt /homes/el216/Workspace/DataSceneNet
 cp ${houseID}_scene_description.txt /homes/el216/Workspace/DataSceneNet
@@ -92,9 +106,9 @@ then
     mkdir /scratch/el216/output_scenenet/$houseID
     cp -r ${output_temp_dir}/* /scratch/el216/output_scenenet/$houseID
     echo 'Output files of house '$houseID' copied to /scratch/el216/output_scenenet/'$houseID | tee -a logs/${houseID}_run.log
-    rm -r ${output_temp_dir}
-    echo "Removed temp output directory: "${output_temp_dir} \
-        tee -a logs/${houseID}_run.log
+    # rm -r ${output_temp_dir}
+    # echo "Removed temp output directory: "${output_temp_dir} \
+    #     tee -a logs/${houseID}_run.log
         
 else
     read -p "House "$houseID" output folder exists already. Overwrite contents?" -n 1 -r
