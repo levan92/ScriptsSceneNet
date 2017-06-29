@@ -141,14 +141,14 @@ for node in nodes_list:
                     [lights_in_rooms_byIndex[r].append(i) for i in light_index_list]
                     light_index_list = []
 
-print 'Total num of lights:',light_index
+# print 'Total num of lights:',light_index
 rooms_with_light = sorted(set(rooms_with_light)) #room index starts 1
 print 'Rooms with lights:', list(rooms_with_light)
 # print >> log, "Rooms with lights (starts from 1):",list(rooms_with_light)
-print "Lights location by NodeID"
-print lights_in_rooms_byNodeID
-print "Lights location by Index (starts from 0)"
-print lights_in_rooms_byIndex
+# print "Lights location by NodeID"
+# print lights_in_rooms_byNodeID
+# print "Lights location by Index (starts from 0)"
+# print lights_in_rooms_byIndex
 ## Format for lights_info:
 # PointLight power rgb pos(xyz) radius
 # SpotLight/LineLight  power rgb pos(xyz) v1 v2
