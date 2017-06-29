@@ -10,6 +10,7 @@ lighting_info_file='/homes/el216/Workspace/SUNCGtoolbox/metadata/suncgModelLight
 pointLight_rad = 0.02
 spotLight_side = 0.04
 lineLight_width = 0.01
+pow_scaling_factor = float(sys.argv[2])
 
 def light_pos_from_trans(transform, local_pos):
     T_mat = np.zeros([4,4])
@@ -68,11 +69,14 @@ for node in nodes_list:
                 color_norm = tuple([x/255 for x in color_dec])
                 color_str = ' '.join(str(i) for i in color_norm)
 
+                power = pow_scaling_factor * light['power']
+                power_str = str(power)
+
                 if light['type'] == 'PointLight':                  
                     pos = light_pos_from_trans(node['transform'],light['position'])
                     pos_string = ' '.join(str(i) for i in pos)
                     
-                    line_info = str(light['type']) + ' ' + str(light['power']) + \
+                    line_info = str(light['type']) + ' ' + power_str + \
                                 ' ' + color_str  + ' ' + pos_string + \
                                 ' ' + str(pointLight_rad) 
 
@@ -101,7 +105,7 @@ for node in nodes_list:
                     v1_str = ' '.join(str(i) for i in v1)
                     v2_str = ' '.join(str(i) for i in v2)
 
-                    line_info = str(light['type']) + ' ' + str(light['power']) + \
+                    line_info = str(light['type']) + ' ' + power_str + \
                                 ' ' + color_str  + ' ' + pos_corner_str + \
                                 ' ' + v1_str + ' ' +  v2_str
                     # print line_info
@@ -123,7 +127,7 @@ for node in nodes_list:
 
                     print 'LINELIGHT', pos1, pos2, v1, v2, pos_corner
 
-                    line_info = str(light['type']) + ' ' + str(light['power']) + \
+                    line_info = str(light['type']) + ' ' + power_str + \
                                 ' ' + color_str  + ' ' + pos_corner_str + \
                                 ' ' + v1_str + ' ' +  v2_str  
                     # print line_info
