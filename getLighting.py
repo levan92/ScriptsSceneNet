@@ -137,8 +137,8 @@ for node in nodes_list:
                 # light_index += 1;
                 lights_info.append(line_info)
                 print >> log, node['id'].split('_')[1], line_info
-                
-		lights_pos.append(pos)
+                pos_zx = np.array([pos[2],pos[0]])
+                lights_pos.append(pos_zx)
 
             # for r in range(room_count):
             #     node_indices = rooms_node_indices[r]
