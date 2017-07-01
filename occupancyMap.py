@@ -165,7 +165,7 @@ def getRoomsInfo(ocMap, numRooms, cellSide):
 
     return bbs_min, bbs_max, roomsSize
 
-def getLightingsInfo()
+def getLightingsInfo():
     rooms_with_light = []
     lights_in_rooms_byIndex = [[] for i in range(numRooms)]
     
@@ -173,11 +173,15 @@ def getLightingsInfo()
     for pos in lights_pos:
         pos_cell = world2CellCoord(pos)
         room = ocMap[pos_cell[0],pos_cell[1]]
+	room = int(room)
         if not room == 0:
             if room not in rooms_with_light:
                 rooms_with_light.append(room)
+		r = room - 1
                 lights_in_rooms_byIndex[room].append(i)
         i += 1 
+	
+	rooms_with_light = list(set(rooms_with_light))
 
     return rooms_with_light, lights_in_rooms_byIndex
 
