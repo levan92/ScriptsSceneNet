@@ -37,25 +37,26 @@ json_str = json_file.read()
 house_data = json.loads(json_str)
 nodes_list = house_data['levels'][0]['nodes']
 
-rooms_with_light = []
-room_count = 0
-rooms_node_indices = []
+# rooms_with_light = []
+# room_count = 0
+# rooms_node_indices = []
 
-for node in nodes_list:
-    # print node['id'], node['type'], node['modelId']
-    if node['type'] == "Room":
-        # print room_count+1, node['id']
-        room_count += 1
-        if 'nodeIndices' in node:
-            rooms_node_indices.append(node['nodeIndices'])
-        else:
-            rooms_node_indices.append([])
+# for node in nodes_list:
+#     # print node['id'], node['type'], node['modelId']
+#     if node['type'] == "Room":
+#         # print room_count+1, node['id']
+#         room_count += 1
+#         if 'nodeIndices' in node:
+#             rooms_node_indices.append(node['nodeIndices'])
+#         else:
+#             rooms_node_indices.append([])
 
 lights_info = []
-light_index = 0
-lights_in_rooms_byNodeID = [[] for i in range(room_count)]
-lights_in_rooms_byIndex = [[] for i in range(room_count)]
-light_index_list = []
+# light_index = 0
+# lights_in_rooms_byNodeID = [[] for i in range(room_count)]
+# lights_in_rooms_byIndex = [[] for i in range(room_count)]
+# light_index_list = []
+lights_pos = []
 
 # the nodes for loops separated to make sure rooms are processed first then lighting.
 for node in nodes_list:
@@ -96,17 +97,17 @@ for node in nodes_list:
                     v2 = (spotLight_side/np.linalg.norm(v2_unscaled)) * v2_unscaled
 
                     pos_centre = light_pos_from_trans(node['transform'],light['position'])
-                    pos_corner = pos_centre - 0.5 * v1 - 0.5 * v2
+                    pos = pos_centre - 0.5 * v1 - 0.5 * v2
 
                     # v_1 = np.array([0.,0.,-spotLight_side])
                     # v_2 = np.array([spotLight_side,0.,0.])
                     
-                    pos_corner_str = ' '.join(str(i) for i in pos_corner)
+                    pos_str = ' '.join(str(i) for i in pos)
                     v1_str = ' '.join(str(i) for i in v1)
                     v2_str = ' '.join(str(i) for i in v2)
 
                     line_info = str(light['type']) + ' ' + power_str + \
-                                ' ' + color_str  + ' ' + pos_corner_str + \
+                                ' ' + color_str  + ' ' + pos_str + \
                                 ' ' + v1_str + ' ' +  v2_str
                     # print line_info
 
@@ -119,45 +120,48 @@ for node in nodes_list:
                     if (np.cross(v1,v2)[1] > 0): #if light dir facing up
                         v2 = -v2 #flip v2 to make light dir face down
 
-                    pos_corner = pos1 - 0.5*v2
+                    pos = pos1 - 0.5*v2
 
-                    pos_corner_str = ' '.join(str(i) for i in pos_corner)
+                    pos_str = ' '.join(str(i) for i in pos)
                     v1_str = ' '.join(str(i) for i in v1)
                     v2_str = ' '.join(str(i) for i in v2)
 
-                    print 'LINELIGHT', pos1, pos2, v1, v2, pos_corner
+                    print 'LINELIGHT', pos1, pos2, v1, v2, pos
 
                     line_info = str(light['type']) + ' ' + power_str + \
-                                ' ' + color_str  + ' ' + pos_corner_str + \
+                                ' ' + color_str  + ' ' + pos_str + \
                                 ' ' + v1_str + ' ' +  v2_str  
                     # print line_info
 
+                # light_index_list.append(light_index)
+                # light_index += 1;
                 lights_info.append(line_info)
                 print >> log, node['id'].split('_')[1], line_info
-                light_index_list.append(light_index)
-                light_index += 1;
+                lights_pos.append(pos)
 
-            for r in range(room_count):
-                node_indices = rooms_node_indices[r]
-                node_id = int(node['id'].split('_')[1])
-                if node_id in node_indices:
-                    rooms_with_light.append((r+1)) 
-                    lights_in_rooms_byNodeID[r].append(node_id)
-                    [lights_in_rooms_byIndex[r].append(i) for i in light_index_list]
-                    light_index_list = []
+            # for r in range(room_count):
+            #     node_indices = rooms_node_indices[r]
+            #     node_id = int(node['id'].split('_')[1])
+            #     if node_id in node_indices:
+            #         rooms_with_light.append((r+1)) 
+            #         lights_in_rooms_byNodeID[r].append(node_id)
+            #         [lights_in_rooms_byIndex[r].append(i) for i in light_index_list]
+            #         light_index_list = []
 
 print 'Total num of lights:',len(lights_info)
-rooms_with_light = sorted(set(rooms_with_light)) #room index starts 1
-print 'Rooms with lights:', list(rooms_with_light)
-print >> log, "Rooms with lights (starts from 1):",list(rooms_with_light)
-print >> log, "Lights location by NodeID"
-print >> log, lights_in_rooms_byNodeID
-print >> log, "Lights location by Index (starts from 0)"
-print >> log, lights_in_rooms_byIndex
+print lights_pos
+# rooms_with_light = sorted(set(rooms_with_light)) #room index starts 1
+# print 'Rooms with lights:', list(rooms_with_light)
+# print >> log, "Rooms with lights (starts from 1):",list(rooms_with_light)
+# print >> log, "Lights location by NodeID"
+# print >> log, lights_in_rooms_byNodeID
+# print >> log, "Lights location by Index (starts from 0)"
+# print >> log, lights_in_rooms_byIndex
 ## Format for lights_info:
 # PointLight power rgb pos(xyz) radius
 # SpotLight/LineLight  power rgb pos(xyz) v1 v2
-toSave = [lights_info, rooms_with_light, lights_in_rooms_byIndex]
+toSave = [lights_info, lights_pos]
+# toSave = [lights_info, rooms_with_light, lights_in_rooms_byIndex]
 f = open(house_temp_dir + houseID + '_lighting.pckl','wb')
 pickle.dump(toSave, f)
 f.close()
