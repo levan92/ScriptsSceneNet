@@ -18,6 +18,7 @@ f.close()
 
 for room in rooms_with_light:
     # if room not in nullRooms:
+
     prefix = houseID + "_" + str(room)
     room_output_dir = house_output_temp_dir + prefix + "/"
 
@@ -30,7 +31,7 @@ for room in rooms_with_light:
     if not os.path.exists(room_output_dir + "badFrames/instance/"):
         os.makedirs(room_output_dir + "badFrames/instance/")
 
-    print 'Finding frames that are too near and moving them away to badFrames/'
+    print 'In Room',room,'finding frames that are too near and moving them away to badFrames'
 
     for pngfile in glob.glob(room_output_dir + "depth/*.png"):
         frameNum = ntpath.basename(pngfile).split('.')[0]
