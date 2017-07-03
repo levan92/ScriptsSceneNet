@@ -252,7 +252,7 @@ if __name__ == "__main__":
     # 				if face.contains_point(cellCentre): ocMap[i,j] = r+1
     # 				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
     
-    print 'Occupancy map built. Getting Rooms info...'
+    # print 'Occupancy map built. Getting Rooms info...'
 
     roomsBBmin, roomsBBmax, roomsSize = getRoomsInfo(ocMap, numRooms, cellSide)
 
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     pickle.dump(toSave, f)
     f.close()
 
-    print 'Occupancy map & Rooms info saved.'
+    print 'Occupancy map, rooms & lighting info saved.'
 
     # visualiseOcMap()			
 

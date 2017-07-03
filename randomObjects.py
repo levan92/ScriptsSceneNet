@@ -243,7 +243,7 @@ if __name__ == '__main__':
         totalNumObjects += numObjects
         print numObjects, 'random objects generated for Room', room
 
-    toSave = [totalNumObjects, numObjInRooms, objIDs, objWnids, scales, Ts, nullRooms]
+    toSave = [totalNumObjects, numObjInRooms, objIDs, objWnids, scales, Ts, objs_cell]
     f = open(house_temp_dir + houseID+'_fromRandomObjects.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
     writeLogFile()
 
-    visualiseMaps()
+    # visualiseMaps()
 
 
 

@@ -50,12 +50,12 @@ nodes_list = house_data['levels'][0]['nodes']
 #             rooms_node_indices.append(node['nodeIndices'])
 #         else:
 #             rooms_node_indices.append([])
-
-lights_info = []
 # light_index = 0
 # lights_in_rooms_byNodeID = [[] for i in range(room_count)]
 # lights_in_rooms_byIndex = [[] for i in range(room_count)]
 # light_index_list = []
+
+lights_info = []
 lights_pos = []
 
 # the nodes for loops separated to make sure rooms are processed first then lighting.
