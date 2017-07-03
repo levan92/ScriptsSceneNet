@@ -49,12 +49,15 @@ for room in rooms_with_light:
 
         if (avg_d < threshold_d):
             print 'removed frame',frameNum,'avrg dist',format(round(avg_d,2)),'mm.'
-            shutil.move(room_output_dir + "photo/" + frameNum + ".jpg",\
+            shutil.copy(room_output_dir + "photo/" + frameNum + ".jpg",\
                         room_output_dir + "badFrames/photo/")
-            shutil.move(room_output_dir + "depth/" + frameNum + ".png",\
+            shutil.rmtree(room_output_dir + "photo/" + frameNum + ".jpg")
+            shutil.copy(room_output_dir + "depth/" + frameNum + ".png",\
                         room_output_dir + "badFrames/depth/")
-            shutil.move(room_output_dir + "instance/" + frameNum + ".png",\
+            shutil.rmtree(room_output_dir + "depth/" + frameNum + ".png")
+            shutil.copy(room_output_dir + "instance/" + frameNum + ".png",\
                         room_output_dir + "badFrames/instance/")
+            shutil.rmtree(room_output_dir + "instance/" + frameNum + ".png")
 
 print 'Bad frames moved away.'
             
