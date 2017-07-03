@@ -22,18 +22,6 @@ def getCellCentre(i, j):
     x = origin[1] + cellSide * (j + 0.5)
     return np.array([z,x])
 
-# def initialiseOcMap():
-#     x_min, x_max, _, _, z_min, z_max = readLayout.getLayoutBounds(layoutFilePath)
-#     zwidth = z_max - z_min
-#     iwidth = int(math.ceil(zwidth / cellSide))
-#     xwidth = x_max - x_min
-#     jwidth = int(math.ceil(xwidth / cellSide))
-
-#     origin_ocMap = [z_min, x_min]
-#     ocMap = np.zeros((iwidth,jwidth))
-
-#     return ocMap, iwidth, jwidth, origin_ocMap
-
 def parseObj(layoutFilePath):
     r = open(layoutFilePath,'rb')
     rooms = []
@@ -274,7 +262,7 @@ if __name__ == "__main__":
 
     toSave = [ocMap, numRooms, cellSide, origin, floorHeight,
     		  roomsBBmin, roomsBBmax, roomsSize,
-		  rooms_with_light, lights_in_rooms_byIndex]
+		      rooms_with_light, lights_in_rooms_byIndex]
     f = open(house_temp_dir + houseID + '_fromOcMap.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
@@ -282,6 +270,19 @@ if __name__ == "__main__":
     print 'Occupancy map & Rooms info saved.'
 
     # visualiseOcMap()			
+
+
+# def initialiseOcMap():
+#     x_min, x_max, _, _, z_min, z_max = readLayout.getLayoutBounds(layoutFilePath)
+#     zwidth = z_max - z_min
+#     iwidth = int(math.ceil(zwidth / cellSide))
+#     xwidth = x_max - x_min
+#     jwidth = int(math.ceil(xwidth / cellSide))
+
+#     origin_ocMap = [z_min, x_min]
+#     ocMap = np.zeros((iwidth,jwidth))
+
+#     return ocMap, iwidth, jwidth, origin_ocMap
 
 # def getRoomsInfo_old(ocMap, numRooms, cellSide):
 #     # initialise bounding box min and max

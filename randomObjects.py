@@ -156,12 +156,12 @@ if __name__ == '__main__':
 
     f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
     [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
-     roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f)
+     roomsBBmin, roomsBBmax, roomsSize, rooms_with_light, _] = pickle.load(f)
     f.close()
     
-    f2 = open (house_temp_dir + houseID+'_lighting.pckl','rb')
-    [_, rooms_with_light, _] = pickle.load(f2)
-    f2.close()
+    # f2 = open (house_temp_dir + houseID+'_lighting.pckl','rb')
+    # [_, rooms_with_light, _] = pickle.load(f2)
+    # f2.close()
 
     ## Parameters
     roomsMessMean = float(sys.argv[1])

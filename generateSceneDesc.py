@@ -13,11 +13,12 @@ f.close()
 
 f2 = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
 [_, numRooms, cellSide, origin_ocMap, _,
-              roomsBBmin, roomsBBmax, roomsSize] = pickle.load(f2)
+ roomsBBmin, roomsBBmax, roomsSize,
+ rooms_with_light, lights_in_rooms_byIndex] = pickle.load(f2)
 f2.close()
 
 f3 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
-[lights_info, rooms_with_light, lights_in_rooms_byIndex] = pickle.load(f3)
+[lights_info, _] = pickle.load(f3)
 f3.close()
 
 #returns world coordinate of the top-left of a given cell
