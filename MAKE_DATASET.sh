@@ -15,8 +15,8 @@
 #houseID=7bee7018f8b103d2cb1e4c63202a8a52
 # doesnt work houseID=6ff9ea29b5bb4b3826585783b4f9c916
 # houseID=56fe7c2316c15cf891a93a2ededbcc00
-#houseID=fff3ca3254c364df22f15646ad160400
-houseID=7c1c4ca425074956b2ff4587633233e4
+houseID=fff3ca3254c364df22f15646ad160400
+# houseID=7c1c4ca425074956b2ff4587633233e4
 
 #export CUDA_VISIBLE_DEVICES="4"
 echo "Using GPU device "${CUDA_VISIBLE_DEVICES}".." \
@@ -26,7 +26,7 @@ ocMapCellSide=0.1 # in m, must be small enough
 roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
 frameStep=20 # for poses, Frame period = frameStep * 0.1s
-pow_scaling_factor=0.5 # affects brightness of scene
+pow_scaling_factor=0.1 # affects brightness of scene
 
 echo 'houseID: '$houseID | tee -a logs/${houseID}_run.log
 
@@ -46,9 +46,6 @@ python -u getLighting.py ${houseID} $pow_scaling_factor | tee -a logs/${houseID}
 # Create occupancy map from house obj
 # Outputs: fromOcMap.pckl, roomsLayout.png
 python -u occupancyMap.py ${houseID} $ocMapCellSide | tee -a logs/${houseID}_run.log
-
-## for each room:
-
 # Generate random objects for house
 # Arguments: Room Messiness Mean, SD in num objs per 100m^2, houseID
 # Outputs: fromRandomObjects.pckl, 
@@ -69,8 +66,16 @@ python -u generatePoses.py $houseID $frameStep | tee -a logs/${houseID}_run.log
 # another python script will be iterate through each room with light:
 # do directory organisation and run renderer. 
 # output directory: house/house_roomNum/output_files.
-
 python -u RunScenenetEachRoom.py $houseID | tee -a logs/${houseID}_run.log
+
+# Filter away bad frames that have too near viewpoints
+python -u removeNearFrames.py $houseID | tee -a logs/${houseID}_run.log
+# Generate new Log file
+python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
+# Generate Label pngs from Instance pngs
+python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
+
+echo 'All post-processing done'
 
 # after done rendering, remove unmeaningful frames by checking average 
 # depth in frame and moving all correspoding outputs of that frame to 
@@ -97,14 +102,6 @@ python -u RunScenenetEachRoom.py $houseID | tee -a logs/${houseID}_run.log
 # cd /homes/el216/Workspace/ScriptsSceneNet
 # echo 'Frames rendering completed.' | tee -a logs/${houseID}_run.log
 
-# Filter away bad frames that have too near viewpoints
-python -u removeNearFrames.py $houseID | tee -a logs/${houseID}_run.log
-# Generate new Log file
-python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
-# Generate Label pngs from Instance pngs
-python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
-
-echo 'All post-processing done'
 
 # Copy output to folder named after houseID saved in /scratch drive's output directory
 # if [ ! -e /scratch/el216/output_scenenet/${houseID}/ ];
