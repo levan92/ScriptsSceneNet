@@ -177,8 +177,8 @@ def getLightingsInfo():
         if not room == 0:
             if room not in rooms_with_light:
                 rooms_with_light.append(room)
-		r = room - 1
-                lights_in_rooms_byIndex[room].append(i)
+	    r = room - 1
+            lights_in_rooms_byIndex[r].append(i)
         i += 1 
 	
 	rooms_with_light = list(set(rooms_with_light))
@@ -269,12 +269,12 @@ if __name__ == "__main__":
     roomsBBmin, roomsBBmax, roomsSize = getRoomsInfo(ocMap, numRooms, cellSide)
 
     rooms_with_light, lights_in_rooms_byIndex = getLightingsInfo()
-
-    print rooms_with_light
-    print lights_in_rooms_byIndex
+    #print rooms_with_light
+    #print lights_in_rooms_byIndex
 
     toSave = [ocMap, numRooms, cellSide, origin, floorHeight,
-    		  roomsBBmin, roomsBBmax, roomsSize]
+    		  roomsBBmin, roomsBBmax, roomsSize,
+		  rooms_with_light, lights_in_rooms_byIndex]
     f = open(house_temp_dir + houseID + '_fromOcMap.pckl','wb')
     pickle.dump(toSave, f)
     f.close()
