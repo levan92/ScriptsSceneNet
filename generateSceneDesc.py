@@ -56,7 +56,7 @@ def visualiseMaps():
 
         for light_index in lights_in_rooms_byIndex[r]:
             [i,j] = world2CellCoord(lights_pos[light_index])
-            plt.plot(j,i,'yd')
+            plt.plot(j,i,'y^')
 
         for index,value in ndenumerate(ocMap):
             if value == room: 
