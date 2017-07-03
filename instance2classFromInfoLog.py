@@ -140,7 +140,7 @@ if __name__ == '__main__':
             im.save(room_output_dir + 'labels/' + imageName)
             i += 1
 
-        print 'Labels generated for Room',room,'.'
+        print 'Labels generated for Room',room
             
         # print datetime.now() - startTime
 
