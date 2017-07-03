@@ -11,8 +11,11 @@ print >> f, "House;Size"
 
 for house in houses:
     house_path = os.path.join(output_dir,house)
-    path = os.path.join(house_path,"photo")
-    size = len([i for i in os.listdir(path)])
+    size = 0
+    for root, dirs, files in os.walk(house_path): 
+        if os.path.basename(root) == "photo":
+            size += len([i for i in os.listdir(root)])
     print >> f, house, size
+    print house, size
     
 
