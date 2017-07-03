@@ -59,7 +59,7 @@ for room in rooms_with_light:
     # print subprocess.run([DynamicPoseSceneNet_path, room_output_dir, 
                                    # scene_desc_filepath, poses_filepath])
 
-    print "\nCompleted scenenet render of Room",room,"of House",houseID,"."
+    print "\nCompleted scenenet render of Room",room,"of House",houseID
 
 
 # #find /homes/el216/Workspace/OutputSceneNet -type f -delete

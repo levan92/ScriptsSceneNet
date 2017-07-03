@@ -100,36 +100,32 @@ def matchWnidFromTexture(texture):
             return wnidList[i]
     return ''
 
-f = open(house_temp_dir + houseID + '_lighting.pckl','rb')
-[_, rooms_with_light, _] = pickle.load(f)
+f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
+[_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
 f.close()
-
-f2 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
-[_, _, _, _, _, _, nullRooms] = pickle.load(f2)
-f2.close()
 
 dictList = getCsvDict()
 wnidList, textureLists = getWnidMapping()
 
 for room in rooms_with_light:
-    if room not in nullRooms:
-        prefix = houseID + "_" + str(room)
-        room_output_dir = house_output_temp_dir + prefix + "/"
+    # if room not in nullRooms:
+    prefix = houseID + "_" + str(room)
+    room_output_dir = house_output_temp_dir + prefix + "/"
 
-        oldLog = open(room_output_dir + 'info.log','rb')
-        newLog = open(room_output_dir + 'infoNew.log','wb')
+    oldLog = open(room_output_dir + 'info.log','rb')
+    newLog = open(room_output_dir + 'infoNew.log','wb')
 
-        # first line 
-        newLog.write(oldLog.readline())
+    # first line 
+    newLog.write(oldLog.readline())
 
-        # subsequent lines
-        for line in oldLog:
-            instance, wnid, desc, rest = line.split(';',3)
-            if wnid == '':
-                wnid = matchWnidFromTexture(desc)
-            newLog.write('%s;%s;%s;%s\n' % (instance, wnid, desc, rest[:-1]))
+    # subsequent lines
+    for line in oldLog:
+        instance, wnid, desc, rest = line.split(';',3)
+        if wnid == '':
+            wnid = matchWnidFromTexture(desc)
+        newLog.write('%s;%s;%s;%s\n' % (instance, wnid, desc, rest[:-1]))
 
-        print 'infoNew.log generated for Room ',room
-        oldLog.close()
-        newLog.close()
+    print 'infoNew.log generated for Room ',room
+    oldLog.close()
+    newLog.close()
 
