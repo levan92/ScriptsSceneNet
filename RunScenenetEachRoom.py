@@ -19,8 +19,8 @@ def mkdir_ifabsent(path):
     else:
         return False
 
-f = open(house_temp_dir + houseID + '_lighting.pckl','rb')
-[_, rooms_with_light, _] = pickle.load(f)
+f = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
+[_, _, _, _, _, _, _, _, rooms_with_light, _] = pickle.load(f)
 f.close()
 
 f2 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
