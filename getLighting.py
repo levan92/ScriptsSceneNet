@@ -150,7 +150,7 @@ for node in nodes_list:
             #         light_index_list = []
 
 print 'Total num of lights:',len(lights_info)
-print lights_pos
+# print lights_pos
 # rooms_with_light = sorted(set(rooms_with_light)) #room index starts 1
 # print 'Rooms with lights:', list(rooms_with_light)
 # print >> log, "Rooms with lights (starts from 1):",list(rooms_with_light)
