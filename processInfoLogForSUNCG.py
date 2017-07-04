@@ -3,25 +3,7 @@ import csv
 import sys
 from sys import platform
 import pickle
-
-houseID = sys.argv[1]
-
-# if platform == "linux" or platform == "linux2":
-#     layoutDirectory='/homes/el216/Workspace/DataSceneNet/Layouts'
-# elif platform == "darwin":
-#     layoutDirectory='/Users/lingevan/Workspace/SceneNet/SceneNetDataOriginal/Layouts'
-# layoutFile='/suncg/house/' + houseID + '/houseOneFloor.obj'
-layoutFilePath = '/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/' + \
-                 houseID + '/houseOneFloor.obj'
-
-mappingCSV = '/homes/el216/Workspace/SUNCGtoolbox/metadata/ModelCategoryMapping.csv'
-
-# if platform == "linux" or platform == "linux2":
-#     outputDirectory='/homes/el216/Workspace/OutputSceneNet'
-# elif platform == "darwin":
-#     outputDirectory='/Users/lingevan/Workspace/SceneNet'
-house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
-house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
+import os
 
 def getCsvDict():
     reader = csv.DictReader(open(mappingCSV,'rb'))
@@ -100,17 +82,32 @@ def matchWnidFromTexture(texture):
             return wnidList[i]
     return ''
 
-f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
-[_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
-f.close()
+houseID = sys.argv[1]
+
+layoutFilePath = '/homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/' + \
+                 houseID + '/houseOneFloor.obj'
+
+mappingCSV = '/homes/el216/Workspace/SUNCGtoolbox/metadata/ModelCategoryMapping.csv'
+
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
+house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
+
+# f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
+# [_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
+# f.close()
 
 dictList = getCsvDict()
 wnidList, textureLists = getWnidMapping()
 
-for room in rooms_with_light:
-    # if room not in nullRooms:
-    prefix = houseID + "_" + str(room)
-    room_output_dir = house_output_temp_dir + prefix + "/"
+# for room in rooms_with_light:
+#     # if room not in nullRooms:
+#     prefix = houseID + "_" + str(room)
+
+root, rooms_dir_names, _ =  next(os.walk(house_output_temp_dir))
+
+for room_dir in rooms_dir_names:
+    room_output_dir = os.path.join(root, room_dir) + '/'
+    # room_output_dir = house_output_temp_dir + prefix + "/"
 
     oldLog = open(room_output_dir + 'info.log','rb')
     newLog = open(room_output_dir + 'infoNew.log','wb')
@@ -125,7 +122,7 @@ for room in rooms_with_light:
             wnid = matchWnidFromTexture(desc)
         newLog.write('%s;%s;%s;%s\n' % (instance, wnid, desc, rest[:-1]))
 
-    print 'infoNew.log generated for Room ',room
+    print 'infoNew.log generated for',room_dir
     oldLog.close()
     newLog.close()
 
