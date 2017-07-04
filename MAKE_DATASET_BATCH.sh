@@ -23,7 +23,7 @@ ocMapCellSide=0.1 # in m, must be small enough
 roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
 frameStep=20 # for poses, Frame period = frameStep * 0.1s
-pow_scaling_factor=0.1 # affects brightness of scene
+pow_scaling_factor=0.075 # affects brightness of scene
 
 echo 'houseID: '$houseID | tee -a logs/${houseID}_run.log
 
@@ -68,7 +68,7 @@ python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
 # Generate Label pngs from Instance pngs
 python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 
-echo 'All post-processing done'
+echo 'All post-processing done' | tee -a logs/${houseID}_run.log
 
 done
 
