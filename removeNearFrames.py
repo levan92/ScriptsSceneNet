@@ -7,20 +7,23 @@ import shutil
 import pickle
 
 houseID = sys.argv[1]
-house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
+# house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
 
 threshold_d = 150 # in mm
 
-f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
-[_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
-f.close()
+# f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
+# [_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
+# f.close()
 
-for room in rooms_with_light:
+
+# for room in rooms_with_light:
     # if room not in nullRooms:
 
-    prefix = houseID + "_" + str(room)
-    room_output_dir = house_output_temp_dir + prefix + "/"
+root, rooms_dir_names, _ =  next(os.walk(house_output_temp_dir))
+
+for room_dir in rooms_dir_names:
+    room_output_dir = os.path.join(root, room_dir) + '/'
 
     if not os.path.exists(room_output_dir + "badFrames/"):
         os.makedirs(room_output_dir + "badFrames/")
@@ -31,7 +34,7 @@ for room in rooms_with_light:
     if not os.path.exists(room_output_dir + "badFrames/instance/"):
         os.makedirs(room_output_dir + "badFrames/instance/")
 
-    print 'In Room',room,'finding frames that are too near and moving them away to badFrames'
+    print 'In',room_dir,'finding frames that are too near and moving them away to badFrames'
 
     for pngfile in glob.glob(room_output_dir + "depth/*.png"):
         frameNum = ntpath.basename(pngfile).split('.')[0]
