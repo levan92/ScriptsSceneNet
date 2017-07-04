@@ -160,8 +160,10 @@ def getLightingsInfo():
     i = 0
     for pos in lights_pos:
         pos_cell = world2CellCoord(pos)
+        if (pos_cell[0] >= iwidth) or (pos_cell[1] >= jwidth):
+            continue
         room = ocMap[pos_cell[0],pos_cell[1]]
-	room = int(room)
+        room = int(room)
         if not room == 0:
             if room not in rooms_with_light:
                 rooms_with_light.append(room)
