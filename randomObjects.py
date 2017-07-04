@@ -102,36 +102,36 @@ def world2CellCoord(world_zx):
 
 def visualiseMaps():
     for room in rooms_with_light:
-        if room not in nullRooms:
-            r = room - 1
+        # if room not in nullRooms:
+        r = room - 1
 
-            fig, ax = plt.subplots()
+        fig, ax = plt.subplots()
 
-            # define the colormap
-            cmap = plt.cm.jet
-            cmaplist = [cmap(i) for i in range(cmap.N)]
-            cmaplist[0] = (.5,.5,.5,1.0)
-            cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+        # define the colormap
+        cmap = plt.cm.jet
+        cmaplist = [cmap(i) for i in range(cmap.N)]
+        cmaplist[0] = (.5,.5,.5,1.0)
+        cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
 
-            bounds = np.linspace(0,numRooms+1,numRooms+2)
-            norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+        bounds = np.linspace(0,numRooms+1,numRooms+2)
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-            img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
+        img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
 
-            x = objs_cell[:,1]
-            y = objs_cell[:,0]
-            plt.scatter(x=x, y=y, c='r', s=10)
+        x = objs_cell[:,1]
+        y = objs_cell[:,0]
+        plt.scatter(x=x, y=y, c='r', s=10)
 
-            for index,value in ndenumerate(ocMap):
-                if value == room: 
-                    plt.plot(index[1]+2,index[0]+2, 'y*' )
-                    break
+        for index,value in ndenumerate(ocMap):
+            if value == room: 
+                plt.plot(index[1]+2,index[0]+2, 'y*' )
+                break
 
-            plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
-                            ticks=bounds, boundaries=bounds, format='%1i')
-            ax.set_title('Rooms Layout with objects')
-            savefig(house_temp_dir + houseID+'_'+str(room)+'_LayoutAndObjects.png')
-            # show()
+        plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
+                        ticks=bounds, boundaries=bounds, format='%1i')
+        ax.set_title('Rooms Layout with objects')
+        savefig(house_temp_dir + houseID+'_'+str(room)+'_LayoutAndObjects.png')
+        # show()
 
     return
 
@@ -140,14 +140,14 @@ def writeLogFile():
     print >> f, 'Total: ', totalNumObjects, 'objects'
     i = 0
     for room in rooms_with_light:
-        if room not in nullRooms:
-            r = room - 1
-            print >> f
-            print >> f, 'Room',room,':',numObjInRooms[r][0],'objects (', \
-                                   round(roomsMessiness[r][0]),'% mess )'
-            for _ in range(numObjInRooms[r][0]):
-                print >> f, '\t', nicknames[i], objs_cell[i], scales[i]
-                i += 1;
+        # if room not in nullRooms:
+        r = room - 1
+        print >> f
+        print >> f, 'Room',room,':',numObjInRooms[r][0],'objects (', \
+                               round(roomsMessiness[r][0]),'% mess )'
+        for _ in range(numObjInRooms[r][0]):
+            print >> f, '\t', nicknames[i], objs_cell[i], scales[i]
+            i += 1;
     return
 
 if __name__ == '__main__':

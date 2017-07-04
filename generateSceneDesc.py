@@ -6,25 +6,6 @@ import matplotlib
 matplotlib.use('Agg')
 from pylab import *
 
-houseID = sys.argv[1]
-houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
-house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
-
-
-f = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
-[totalNumObjects, numObjInRooms, objIDs, objWnids, scales, Ts, objs_cell] = pickle.load(f)
-f.close()
-
-f2 = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
-[ocMap, numRooms, cellSide, origin_ocMap, _,
- roomsBBmin, roomsBBmax, roomsSize,
- rooms_with_light, lights_in_rooms_byIndex] = pickle.load(f2)
-f2.close()
-
-f3 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
-[lights_info, lights_pos] = pickle.load(f3)
-f3.close()
-
 def world2CellCoord(world):
     [z,x] = world
     i = int( np.floor((z - origin_ocMap[0]) / cellSide) )
@@ -50,9 +31,12 @@ def visualiseMaps():
 
         img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
 
-        x = objs_cell[:,1]
-        y = objs_cell[:,0]
-        plt.scatter(x=x, y=y, c='r', s=10)
+        for obj_id in obj_ids:
+            obj_pos = objs_cell[obj_id]
+            plt.plot(x=obj_pos[1],y=obj_pos[0],c='r',s=10)
+        # x = objs_cell[:,1]
+        # y = objs_cell[:,0]
+        # plt.scatter(x=x, y=y, c='r', s=10)
 
         for light_index in lights_in_rooms_byIndex[r]:
             [i,j] = world2CellCoord(lights_pos[light_index])
@@ -70,6 +54,24 @@ def visualiseMaps():
         # show()
 
     return
+
+houseID = sys.argv[1]
+houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
+
+f = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
+[totalNumObjects, numObjInRooms, objIDs, objWnids, scales, Ts, objs_cell] = pickle.load(f)
+f.close()
+
+f2 = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
+[ocMap, numRooms, cellSide, origin_ocMap, _,
+ roomsBBmin, roomsBBmax, roomsSize,
+ rooms_with_light, lights_in_rooms_byIndex] = pickle.load(f2)
+f2.close()
+
+f3 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
+[lights_info, lights_pos] = pickle.load(f3)
+f3.close()
 
 for room in rooms_with_light:
     # if room not in nullRooms:

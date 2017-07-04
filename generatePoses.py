@@ -148,144 +148,144 @@ f.close()
 # [_, _] = pickle.load(f2)
 # f2.close()
 
-f3 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
-[_, _, _, _, _, _, nullRooms] = pickle.load(f3)
-f3.close()
+# f3 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
+# [_, _, _, _, _, _, nullRooms] = pickle.load(f3)
+# f3.close()
 
 overview_file = open(house_temp_dir + houseID + "_Poses_Overview.txt","w")
 
 # print 'Generating separate pose files for rooms', \
 #       ','.join(str(room) for room in list(rooms_with_light)),'..'
 for room in rooms_with_light:
-    if room not in nullRooms:
-        r = room - 1
+    # if room not in nullRooms:
+    r = room - 1
 
-        wf = initPoseFile(room)
-        poses_cell = []
-        framesCountTotal = 0
+    wf = initPoseFile(room)
+    poses_cell = []
+    framesCountTotal = 0
 
-        # if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize[r]).any():
-        #     print 'Room ', (r+1),'is a null room, skipping..'
-        #     continue
+    # if np.isnan(roomsBBmin[r]).any() or np.isnan(roomsSize[r]).any():
+    #     print 'Room ', (r+1),'is a null room, skipping..'
+    #     continue
 
-        if ( (roomsSize[r]*cellSide) < robotD ).any():
-            print 'Room ', room,'too small, skipping..'
-            print >> overview_file, 'Room ', room,'too small, skipping..'
-            continue
+    if ( (roomsSize[r]*cellSide) < robotD ).any():
+        print 'Room ', room,'too small, skipping..'
+        print >> overview_file, 'Room ', room,'too small, skipping..'
+        continue
 
-        # print 'Cleaning Room: ', r, '/', numRooms 
-        #start with top left of each room, facing right
-        topLeftCoord = cell2WorldCoord(roomsBBmin[r])
-        pose = np.array([topLeftCoord[0] + robotR,    #z
-                         topLeftCoord[1] + robotR,    #x
-                         np.deg2rad(90)])  #theta
-        
-        for i in range(int(roomsSize[r][0])):
-            if not robotOutOfRoom(pose,r): break
+    # print 'Cleaning Room: ', r, '/', numRooms 
+    #start with top left of each room, facing right
+    topLeftCoord = cell2WorldCoord(roomsBBmin[r])
+    pose = np.array([topLeftCoord[0] + robotR,    #z
+                     topLeftCoord[1] + robotR,    #x
+                     np.deg2rad(90)])  #theta
+    
+    for i in range(int(roomsSize[r][0])):
+        if not robotOutOfRoom(pose,r): break
+        else: 
+            pose = pose + np.array([cellSide, 0, 0])
+
+    if robotOutOfRoom(pose,r): 
+        print 'Room',room,'is oddly shaped, skipping..'
+        print >> overview_file, 'Room',room,'is oddly shaped, skipping..'
+        continue
+
+    i = 0
+    turnToggle = -1 # first uturn is right, second is left, ...
+    uturn = firstTurn = straight = secondTurn = finalStraightCheck = False
+    uturnHitWallCount = 0
+    uturnCount = 0
+    framesCountRoom = 0
+    while True:
+        if not uturn:
+            D = timeStep * robotV_straight
+            newPose = getPose_straight(pose, D)
+            if robotOutOfRoom(newPose, r):
+                uturn = True 
+                # print 'going to uturn'
+                firstTurn = True
+                totalTurn = 90 * turnToggle #turn right or left
             else: 
-                pose = pose + np.array([cellSide, 0, 0])
+                pose = newPose
+                # if i%50 == 0: print 'going straight'
 
-        if robotOutOfRoom(pose,r): 
-            print 'Room',room,'is oddly shaped, skipping..'
-            print >> overview_file, 'Room',room,'is oddly shaped, skipping..'
-            continue
+        if uturn:
+            if secondTurn:
+                turnAngle = timeStep * robotV_turn * turnToggle
+                if abs(turnAngle) < abs(totalTurn):
+                    newPose = getPose_turn(pose, 0, turnAngle)
+                    totalTurn = totalTurn - turnAngle 
+                else: 
+                    newPose = getPose_turn(pose, 0, totalTurn) 
+                    secondTurn = False
+                    uturn = False
+                    # print 'uturn completed'
+                    uturnCount += 1
+                    turnToggle = -turnToggle
 
-        i = 0
-        turnToggle = -1 # first uturn is right, second is left, ...
-        uturn = firstTurn = straight = secondTurn = finalStraightCheck = False
-        uturnHitWallCount = 0
-        uturnCount = 0
-        framesCountRoom = 0
-        while True:
-            if not uturn:
+            elif straight:
                 D = timeStep * robotV_straight
-                newPose = getPose_straight(pose, D)
-                if robotOutOfRoom(newPose, r):
-                    uturn = True 
-                    # print 'going to uturn'
-                    firstTurn = True
-                    totalTurn = 90 * turnToggle #turn right or left
-                else: 
-                    pose = newPose
-                    # if i%50 == 0: print 'going straight'
-
-            if uturn:
-                if secondTurn:
-                    turnAngle = timeStep * robotV_turn * turnToggle
-                    if abs(turnAngle) < abs(totalTurn):
-                        newPose = getPose_turn(pose, 0, turnAngle)
-                        totalTurn = totalTurn - turnAngle 
-                    else: 
-                        newPose = getPose_turn(pose, 0, totalTurn) 
-                        secondTurn = False
-                        uturn = False
-                        # print 'uturn completed'
-                        uturnCount += 1
-                        turnToggle = -turnToggle
-
-                elif straight:
-                    D = timeStep * robotV_straight
-                    if D < totalD:
-                        newPose = getPose_straight(pose, D)
-                        totalD = totalD - D
-                    else:
-                        newPose = getPose_straight(pose, totalD)
-                        straight = False
-                        finalStraightCheck = True
-                        secondTurn = True
-                        totalTurn = 90 * turnToggle #turn right or left
-
-                elif firstTurn:
-                    turnAngle = timeStep * robotV_turn * turnToggle
-                    if abs(turnAngle) < abs(totalTurn):
-                        newPose = getPose_turn(pose, 0, turnAngle)
-                        totalTurn = totalTurn - turnAngle 
-                    else: 
-                        newPose = getPose_turn(pose, 0, totalTurn) 
-                        firstTurn = False
-                        # print 'firstTurn done'
-                        straight = True
-                        totalD = robotD
-
-                # if robot going to exit room during uturn, 
-                # throw away current new pose and 
-                # immediately turn on the spot towards horizontal straight motion
-                if robotOutOfRoom(newPose, r):
-                    firstTurn = straight = False
+                if D < totalD:
+                    newPose = getPose_straight(pose, D)
+                    totalD = totalD - D
+                else:
+                    newPose = getPose_straight(pose, totalD)
+                    straight = False
+                    finalStraightCheck = True
                     secondTurn = True
-                    totalTurn = 90 * turnToggle
-                    uturnHitWallCount += 1
-                    # print "uturnHitWallCount:", uturnHitWallCount
-                    if uturnHitWallCount >= 2: break
+                    totalTurn = 90 * turnToggle #turn right or left
+
+            elif firstTurn:
+                turnAngle = timeStep * robotV_turn * turnToggle
+                if abs(turnAngle) < abs(totalTurn):
+                    newPose = getPose_turn(pose, 0, turnAngle)
+                    totalTurn = totalTurn - turnAngle 
                 else: 
-                    pose = newPose
-                    # if successfully completes the full straight motion during uturn, uturnHitWallCount is resetted
+                    newPose = getPose_turn(pose, 0, totalTurn) 
+                    firstTurn = False
+                    # print 'firstTurn done'
+                    straight = True
+                    totalD = robotD
 
-                    if finalStraightCheck: 
-                        uturnHitWallCount = 0
-                        # print 'uturn straight done'
+            # if robot going to exit room during uturn, 
+            # throw away current new pose and 
+            # immediately turn on the spot towards horizontal straight motion
+            if robotOutOfRoom(newPose, r):
+                firstTurn = straight = False
+                secondTurn = True
+                totalTurn = 90 * turnToggle
+                uturnHitWallCount += 1
+                # print "uturnHitWallCount:", uturnHitWallCount
+                if uturnHitWallCount >= 2: break
+            else: 
+                pose = newPose
+                # if successfully completes the full straight motion during uturn, uturnHitWallCount is resetted
 
-                finalStraightCheck = False
+                if finalStraightCheck: 
+                    uturnHitWallCount = 0
+                    # print 'uturn straight done'
 
-            if i%frameStep == 0:
-                printPoseToFile(r, pose, wf)
-                framesCountRoom += 1
+            finalStraightCheck = False
 
-            i += 1;
-            poses_cell.append(world2CellCoord(pose[:2]))
-        #end while true loop
+        if i%frameStep == 0:
+            printPoseToFile(r, pose, wf)
+            framesCountRoom += 1
 
-        # print "num uturns done for Room", r+1,":",uturnCount
-        print "Frames generated for Room",room,":",framesCountRoom
-        print >> overview_file, "Frames generated for Room",room,":",framesCountRoom
-        wf.close()
-        # framesCountTotal += framesCountRoom
+        i += 1;
+        poses_cell.append(world2CellCoord(pose[:2]))
+    #end while true loop
+
+    # print "num uturns done for Room", r+1,":",uturnCount
+    print "Frames generated for Room",room,":",framesCountRoom
+    print >> overview_file, "Frames generated for Room",room,":",framesCountRoom
+    wf.close()
+    # framesCountTotal += framesCountRoom
 
 
-        # print 'poses.txt generated, num of rooms:', numRooms, \
-                # ', total num frames:', framesCountTotal
+    # print 'poses.txt generated, num of rooms:', numRooms, \
+            # ', total num frames:', framesCountTotal
 
-        visualiseScanning(poses_cell)
+    # visualiseScanning(poses_cell)
 
 
 
