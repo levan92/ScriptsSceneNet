@@ -30,9 +30,11 @@ def visualiseMaps():
         norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
         img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
-
+	
+	obj_ids = rooms_obj_ids[r][0]
         for obj_id in obj_ids:
             obj_pos = objs_cell[obj_id]
+	    #print obj_pos
             plt.plot(x=obj_pos[1],y=obj_pos[0],c='r',s=10)
         # x = objs_cell[:,1]
         # y = objs_cell[:,0]
@@ -73,6 +75,8 @@ f3 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
 [lights_info, lights_pos] = pickle.load(f3)
 f3.close()
 
+rooms_obj_ids=[[] for i in range(numRooms)]
+
 for room in rooms_with_light:
     # if room not in nullRooms:
     r = room - 1
@@ -92,6 +96,7 @@ for room in rooms_with_light:
         i += 1
 
     obj_ids = range(numBefore, numBefore + numObjInRooms[r][0])
+    rooms_obj_ids[r].append(obj_ids)
     for obj_id in obj_ids:
         w.write('object\n')
         w.write(objWnids[obj_id] + '/' + objIDs[obj_id] + '\n')
@@ -113,6 +118,8 @@ for room in rooms_with_light:
     print 'Generated scene desc txt for room',room,':', \
           houseID+"_"+str(room)+"_scene_description.txt"
 
+#print rooms_obj_ids
+#print objs_cell
 visualiseMaps()
 
 # #returns world coordinate of the top-left of a given cell
