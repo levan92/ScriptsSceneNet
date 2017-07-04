@@ -70,7 +70,7 @@ python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
 # Generate Label pngs from Instance pngs
 python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 
-echo 'All post-processing done' | tee -a logs/${houseID}_run.log
+echo 'All post-processing done for House '$houseID | tee -a logs/${houseID}_run.log
 
 done
 
