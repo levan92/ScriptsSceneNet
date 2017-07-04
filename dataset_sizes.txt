@@ -1,3 +1,0 @@
-CNN Dataset Size Overview
-Train Set: 866
-Test Set:
