@@ -63,6 +63,8 @@ python -u RunScenenetEachRoom.py $houseID | tee -a logs/${houseID}_run.log
 
 # Filter away bad frames that have too near viewpoints
 python -u removeNearFrames.py $houseID | tee -a logs/${houseID}_run.log
+# Filter away dark frames
+python -u removeBlackFrames.py $houseID | tee -a logs/${houseID}_run.log
 # Generate new Log file
 python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
 # Generate Label pngs from Instance pngs
