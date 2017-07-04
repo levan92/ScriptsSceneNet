@@ -30,15 +30,11 @@ def visualiseMaps():
         norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
         img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
-	
-	obj_ids = rooms_obj_ids[r][0]
+
+        obj_ids = rooms_obj_ids[r][0]
         for obj_id in obj_ids:
             obj_pos = objs_cell[obj_id]
-	    #print obj_pos
-            plt.plot(x=obj_pos[1],y=obj_pos[0],c='r',s=10)
-        # x = objs_cell[:,1]
-        # y = objs_cell[:,0]
-        # plt.scatter(x=x, y=y, c='r', s=10)
+            plt.scatter(x=obj_pos[1],y=obj_pos[0],c='r',s=10)
 
         for light_index in lights_in_rooms_byIndex[r]:
             [i,j] = world2CellCoord(lights_pos[light_index])
@@ -51,7 +47,7 @@ def visualiseMaps():
 
         plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
                         ticks=bounds, boundaries=bounds, format='%1i')
-        ax.set_title('Rooms Layout with objects')
+        ax.set_title('House Map with Lights & Objects')
         savefig(house_temp_dir + houseID+'_'+str(room)+'_RoomMap.png')
         # show()
 
