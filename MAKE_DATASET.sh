@@ -15,8 +15,10 @@
 #houseID=7bee7018f8b103d2cb1e4c63202a8a52
 # doesnt work houseID=6ff9ea29b5bb4b3826585783b4f9c916
 # houseID=56fe7c2316c15cf891a93a2ededbcc00
-houseID=fff3ca3254c364df22f15646ad160400
+#houseID=fff3ca3254c364df22f15646ad160400
 # houseID=7c1c4ca425074956b2ff4587633233e4
+#segmentation fault houseID=000514ade3bcc292a613a4c2755a5050
+houseID=0005b92a9ed6349df155a462947bfdfe
 
 #export CUDA_VISIBLE_DEVICES="4"
 echo "Using GPU device "${CUDA_VISIBLE_DEVICES}".." \
