@@ -5,6 +5,7 @@ import matplotlib
 # Force matplotlib to not use any Xwindows backend.
 matplotlib.use('Agg')
 from pylab import *
+import random
 
 def world2CellCoord(world):
     [z,x] = world
@@ -40,6 +41,10 @@ def visualiseMaps():
             [i,j] = world2CellCoord(lights_pos[light_index])
             plt.plot(j,i,'y^')
 
+        for light_index in selectedRandLights_rooms[r]:
+            [i,j] = world2CellCoord(lights_pos[light_index])
+            plt.plot(j,i,'y^')
+
         for index,value in ndenumerate(ocMap):
             if value == room: 
                 plt.plot(index[1]+2,index[0]+2, 'c*' ) #cyan star
@@ -52,6 +57,58 @@ def visualiseMaps():
         # show()
 
     return
+
+def getNeighbourLights(room):
+    r = room - 1
+    roomBBmin = roomsBBmin[r]
+    roomBBmin = [int(x) for x in roomBBmin]
+    [i_width,j_width] = roomsSize[r]
+    i_scan = int(i_width + 2)
+    j_scan = int(j_width + 2)
+    neighbours = []
+
+    pos = roomBBmin - np.array([1, 1])
+    for i in range(i_scan):
+        if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
+            neighbour = int(ocMap[pos[0],pos[1]])
+            if neighbour != 0.0 and neighbour not in neighbours:
+                neighbours.append(neighbour)
+        pos = pos + [1, 0]
+
+    for j in range(j_scan):
+        if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
+            neighbour = int(ocMap[pos[0],pos[1]])
+            if neighbour != 0.0 and neighbour not in neighbours:
+                neighbours.append(neighbour)
+        pos = pos + [0, 1]
+
+    for i in range(i_scan):
+        if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
+            neighbour = int(ocMap[pos[0],pos[1]])
+            if neighbour != 0.0 and neighbour not in neighbours:
+                neighbours.append(neighbour)
+        pos = pos + [-1, 0]
+ 
+    for j in range(j_scan):
+        if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
+            neighbour = int(ocMap[pos[0],pos[1]])
+            if neighbour != 0.0 and neighbour not in neighbours:
+                neighbours.append(neighbour)
+        pos = pos + [0, -1]
+    
+    lights_indices = []
+    for room in neighbours:
+        r = room - 1
+        lights_indices.extend(lights_in_rooms_byIndex[r])
+
+    return lights_indices
+
+def selectRandomLight(lights_indices):
+    randNum = random.randint(0,maxNumNeighbourLightsOn)
+    randomLights = random.sample(lights_indices,randNum)
+    return randomLights
+
+maxNumNeighbourLightsOn = 4
 
 houseID = sys.argv[1]
 houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
@@ -72,6 +129,7 @@ f3 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
 f3.close()
 
 rooms_obj_ids=[[] for i in range(numRooms)]
+selectedRandLights_rooms = [[] for i in range(numRooms)]
 
 for room in rooms_with_light:
     # if room not in nullRooms:
@@ -109,6 +167,13 @@ for room in rooms_with_light:
     print >> w, 'lighting'
     for index in lights_in_rooms_byIndex[r]:
         print >> w, lights_info[index]
+
+    ## Turns on random neighbouring room lights 
+    lights_indices = getNeighbourLights(room)
+    selectedRandLights = selectRandomLight(lights_indices)
+    for index in selectedRandLights:
+        print >> w, lights_info[index]
+    selectedRandLights_rooms[r].extend(selectedRandLights)
 
     w.close()
     print 'Generated scene desc txt for room',room,':', \
