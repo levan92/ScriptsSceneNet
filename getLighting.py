@@ -7,9 +7,9 @@ houseID = str(sys.argv[1])
 house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 lighting_info_file='/homes/el216/Workspace/SUNCGtoolbox/metadata/suncgModelLights.json'
 
-pointLight_rad = 0.02
+pointLight_rad = 0.03
 spotLight_side = 0.04
-lineLight_width = 0.01
+lineLight_width = 0.02
 pow_scaling_factor = float(sys.argv[2])
 
 def light_pos_from_trans(transform, local_pos):
@@ -75,6 +75,7 @@ for node in nodes_list:
 
                 if light['type'] == 'PointLight':                  
                     pos = light_pos_from_trans(node['transform'],light['position'])
+                    pos[1] = pos[1] - 0.15
                     pos_string = ' '.join(str(i) for i in pos)
                     
                     line_info = str(light['type']) + ' ' + power_str + \
