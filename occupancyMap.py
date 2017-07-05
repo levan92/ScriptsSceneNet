@@ -157,8 +157,10 @@ def getLightingsInfo():
     rooms_with_light = []
     lights_in_rooms_byIndex = [[] for i in range(numRooms)]
     
-    i = 0
-    for pos in lights_pos:
+    # i = 0
+    for i in range(len(lights_pos)):
+    # for pos in lights_pos:
+        pos = lights_pos[i]
         pos_cell = world2CellCoord(pos)
         if (pos_cell[0] >= iwidth) or (pos_cell[1] >= jwidth):
             continue
@@ -168,8 +170,7 @@ def getLightingsInfo():
             if room not in rooms_with_light:
                 rooms_with_light.append(room)
 	    r = room - 1
-            lights_in_rooms_byIndex[r].append(i)
-        i += 1 
+        lights_in_rooms_byIndex[r].append(i)
 	
 	rooms_with_light = list(set(rooms_with_light))
 
