@@ -29,48 +29,48 @@ pow_scaling_factor=0.075 # affects brightness of scene
 
 echo 'houseID: '$houseID | tee -a logs/${houseID}_run.log
 
-# Generate .obj and .mtl files from .json
-cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
-/homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
+# # Generate .obj and .mtl files from .json
+# cd /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID
+# /homes/el216/Workspace/SUNCGtoolbox/gaps/bin/x86_64/scn2scn house.json house.obj
 
-cd /homes/el216/Workspace/ScriptsSceneNet
-mkdir -p /homes/el216/Workspace/ScriptsSceneNet/$houseID
-# Convert .obj file to only one floor
-python -u convertToOneFloorObj.py \
-  /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
-  | tee -a logs/${houseID}_run.log
-# Get lighting information from house json file
-# Outputs: $houseID_lighting.pckl
-python -u getLighting.py ${houseID} $pow_scaling_factor | tee -a logs/${houseID}_run.log
-# Create occupancy map from house obj
-# Outputs: fromOcMap.pckl, roomsLayout.png
-python -u occupancyMap.py ${houseID} $ocMapCellSide | tee -a logs/${houseID}_run.log
-# Generate random objects for house
-# Arguments: Room Messiness Mean, SD in num objs per 100m^2, houseID
-# Outputs: fromRandomObjects.pckl, 
-#          for each room: roomsLayout+Objects.png, randomObjectsLocations.txt
-python -u randomObjects.py $roomMessMean $roomMessSD $houseID \
-    | tee -a logs/${houseID}_run.log
-# Generate SceneDescription txt from random objects and lighting, for each room
-# Outputs: houseID_roomNum_scene_description.txt
-python -u generateSceneDesc.py $houseID | tee -a logs/${houseID}_run.log
-# Generate Poses.txt from room info from occupancymap.py for each room
-# Outputs: houseID_roomNum_poses.txt
-python -u generatePoses.py $houseID $frameStep | tee -a logs/${houseID}_run.log
+# cd /homes/el216/Workspace/ScriptsSceneNet
+# mkdir -p /homes/el216/Workspace/ScriptsSceneNet/$houseID
+# # Convert .obj file to only one floor
+# python -u convertToOneFloorObj.py \
+#   /homes/el216/Workspace/DataSceneNet/Layouts/suncg/house/$houseID \
+#   | tee -a logs/${houseID}_run.log
+# # Get lighting information from house json file
+# # Outputs: $houseID_lighting.pckl
+# python -u getLighting.py ${houseID} $pow_scaling_factor | tee -a logs/${houseID}_run.log
+# # Create occupancy map from house obj
+# # Outputs: fromOcMap.pckl, roomsLayout.png
+# python -u occupancyMap.py ${houseID} $ocMapCellSide | tee -a logs/${houseID}_run.log
+# # Generate random objects for house
+# # Arguments: Room Messiness Mean, SD in num objs per 100m^2, houseID
+# # Outputs: fromRandomObjects.pckl, 
+# #          for each room: roomsLayout+Objects.png, randomObjectsLocations.txt
+# python -u randomObjects.py $roomMessMean $roomMessSD $houseID \
+#     | tee -a logs/${houseID}_run.log
+# # Generate SceneDescription txt from random objects and lighting, for each room
+# # Outputs: houseID_roomNum_scene_description.txt
+# python -u generateSceneDesc.py $houseID | tee -a logs/${houseID}_run.log
+# # Generate Poses.txt from room info from occupancymap.py for each room
+# # Outputs: houseID_roomNum_poses.txt
+# python -u generatePoses.py $houseID $frameStep | tee -a logs/${houseID}_run.log
 
-# another python script will be iterate through each room with light:
-# do directory organisation and run renderer. 
-# output directory: house/house_roomNum/output_files.
-python -u RunScenenetEachRoom.py $houseID | tee -a logs/${houseID}_run.log
+# # another python script will be iterate through each room with light:
+# # do directory organisation and run renderer. 
+# # output directory: house/house_roomNum/output_files.
+# python -u RunScenenetEachRoom.py $houseID | tee -a logs/${houseID}_run.log
 
-# Filter away bad frames that have too near viewpoints
-python -u removeNearFrames.py $houseID | tee -a logs/${houseID}_run.log
-# Filter away dark frames
-python -u removeBlackFrames.py $houseID | tee -a logs/${houseID}_run.log
-# Generate new Log file
-python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
-# Generate Label pngs from Instance pngs
-python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
+# # Filter away bad frames that have too near viewpoints
+# python -u removeNearFrames.py $houseID | tee -a logs/${houseID}_run.log
+# # Filter away dark frames
+# python -u removeBlackFrames.py $houseID | tee -a logs/${houseID}_run.log
+# # Generate new Log file
+# python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
+# # Generate Label pngs from Instance pngs
+# python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 
 echo 'All post-processing done for House '$houseID | tee -a logs/${houseID}_run.log
 
