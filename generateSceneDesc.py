@@ -71,28 +71,28 @@ def getNeighbourLights(room):
     for i in range(i_scan):
         if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
             neighbour = int(ocMap[pos[0],pos[1]])
-            if neighbour != 0.0 and neighbour not in neighbours:
+            if neighbour != 0 and neighbour not in neighbours:
                 neighbours.append(neighbour)
         pos = pos + [1, 0]
 
     for j in range(j_scan):
         if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
             neighbour = int(ocMap[pos[0],pos[1]])
-            if neighbour != 0.0 and neighbour not in neighbours:
+            if neighbour != 0 and neighbour not in neighbours:
                 neighbours.append(neighbour)
         pos = pos + [0, 1]
 
     for i in range(i_scan):
         if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
             neighbour = int(ocMap[pos[0],pos[1]])
-            if neighbour != 0.0 and neighbour not in neighbours:
+            if neighbour != 0 and neighbour not in neighbours:
                 neighbours.append(neighbour)
         pos = pos + [-1, 0]
  
     for j in range(j_scan):
         if pos[0]>=0 and pos[1]>=0 and pos[0]<ocMap.shape[0] and pos[1]<ocMap.shape[1]:
             neighbour = int(ocMap[pos[0],pos[1]])
-            if neighbour != 0.0 and neighbour not in neighbours:
+            if neighbour != 0 and neighbour not in neighbours:
                 neighbours.append(neighbour)
         pos = pos + [0, -1]
     

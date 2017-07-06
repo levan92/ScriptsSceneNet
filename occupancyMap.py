@@ -170,8 +170,8 @@ def getLightingsInfo():
         if not room == 0:
             if room not in rooms_with_light:
                 rooms_with_light.append(room)
-	    r = room - 1
-        lights_in_rooms_byIndex[r].append(i)
+	        r = room - 1
+            lights_in_rooms_byIndex[r].append(i)
 	
 	rooms_with_light = list(set(rooms_with_light))
 
