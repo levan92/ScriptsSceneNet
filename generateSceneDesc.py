@@ -108,7 +108,7 @@ def selectRandomLight(lights_indices):
     randomLights = random.sample(lights_indices,randNum)
     return randomLights
 
-maxNumNeighbourLightsOn = 4
+maxNumNeighbourLightsOn = 3
 
 houseID = sys.argv[1]
 houseObj_filepath = 'suncg/house/' + houseID + '/houseOneFloor.obj'
