@@ -1,7 +1,0 @@
-Frames generated for Room 1 : 177
-Frames generated for Room 2 : 147
-Frames generated for Room 4 : 16
-Frames generated for Room 5 : 34
-Frames generated for Room 6 : 108
-Frames generated for Room 7 : 87
-Frames generated for Room 8 : 60
