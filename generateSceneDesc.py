@@ -104,7 +104,11 @@ def getNeighbourLights(room):
     return lights_indices
 
 def selectRandomLight(lights_indices):
-    randNum = random.randint(0,maxNumNeighbourLightsOn)
+    if maxNumNeighbourLightsOn > len(lights_indices):
+        max_num = len(lights_indices)
+    else:
+        max_num = maxNumNeighbourLightsOn
+    randNum = random.randint(0,max_num)
     randomLights = random.sample(lights_indices,randNum)
     return randomLights
 
