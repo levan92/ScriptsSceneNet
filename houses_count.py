@@ -11,10 +11,25 @@ print >> f, "House;Size"
 
 for house in houses:
     house_path = os.path.join(output_dir,house)
+    rooms = next(os.walk(house_path))[1]
     size = 0
-    for root, dirs, files in os.walk(house_path): 
-        if os.path.basename(root) == "photo":
-            size += len([i for i in os.listdir(root)])
+    for room in rooms:
+        room_path = os.path.join(house_path, room)
+        files = next(os.walk(room_path))[2]
+        for file in files:
+            if file.endswith(".jpg"): size+=1
+
+    # photo_dir_path = os.path.join(house_path, "photo")
+    # images = next(os.walk(photo_dir_path))[2]
+
+    # for image in images:
+    #     if image.endswith(".jpg"):
+    #         size 
+
+    # size = 0
+    # for root, dirs, files in os.walk(house_path): 
+    #     if os.path.basename(root) == "photo":
+    #         size += len([i for i in os.listdir(root)])
     print >> f, house, size
     print house, size
     
