@@ -5,7 +5,7 @@ import ntpath
 import os
 
 # make sure folder ends with a slash /
-folder = "/Users/lingevan/Workspace/SceneNet/26May/OutputSceneNet01/"
+folder = "/homes/el216/Workspace/ScriptsSceneNet/output/"
 
 
 if not os.path.exists(folder+"depth/original"):
