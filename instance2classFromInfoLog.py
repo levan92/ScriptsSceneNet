@@ -76,69 +76,75 @@ THREE_CLASSES = [(0,'Unknown'),
 NYU_CLASS_TO_THREE_CLASSES = {0:0, 1:3, 2:3, 3:2,  4:3,  5:1,  6:3, 
                                 7:3, 8:3, 9:3, 10:3, 11:3, 12:2, 13:2}
 
-def readInfoLog():
-    INSTANCE_TO_WNID = {}
-    f = open(infoLogFile, 'rb')
-    f.readline() #ignore first line
-    for line in f:
-        instance, WNID = re.split(';|:', line)[1:3]
-        WNID = WNID.split(',')[0]
-        INSTANCE_TO_WNID [instance] = WNID
-    return INSTANCE_TO_WNID
-
-houseID = sys.argv[1]
-house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
-house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
-
-# startTime = datetime.now()
-# f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
-# [_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
-# f.close()
-
-# for room in rooms_with_light:
-#     prefix = houseID + "_" + str(room)
-#     room_output_dir = house_output_temp_dir + prefix + "/"
-root, rooms_dir_names, _ =  next(os.walk(house_output_temp_dir))
-
-for room_dir in rooms_dir_names:
-    room_output_dir = os.path.join(root, room_dir) + '/'
 
 
+def main(arg1):
 
-    infoLogFile = room_output_dir + 'infoNew.log' 
+    def readInfoLog():
+        INSTANCE_TO_WNID = {}
+        f = open(infoLogFile, 'rb')
+        f.readline() #ignore first line
+        for line in f:
+            instance, WNID = re.split(';|:', line)[1:3]
+            WNID = WNID.split(',')[0]
+            INSTANCE_TO_WNID [instance] = WNID
+        return INSTANCE_TO_WNID
 
-    INSTANCE_TO_WNID = readInfoLog()
+    houseID = arg1
+    # house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
+    house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
 
-    if not os.path.exists(room_output_dir + "labels"):
-        os.makedirs(room_output_dir + "labels")
+    # startTime = datetime.now()
+    # f = open (house_temp_dir + houseID+'_fromOcMap.pckl','rb')
+    # [_,_,_,_,_,_,_,_,rooms_with_light,_] = pickle.load(f)
+    # f.close()
 
-    totalNumPng = len(os.listdir(room_output_dir + 'instance'))
-    i = 0
+    # for room in rooms_with_light:
+    #     prefix = houseID + "_" + str(room)
+    #     room_output_dir = house_output_temp_dir + prefix + "/"
+    root, rooms_dir_names, _ =  next(os.walk(house_output_temp_dir))
 
-    print 'Generating label pngs from instance pngs and infoNew.log for',room_dir,'..'
-
-    for pngfile in glob.glob(room_output_dir + "instance/*.png"):
-        imageName=ntpath.basename(pngfile)
-        # if i%50 == 0:
-        # print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
-        im = Image.open(pngfile)
-        pix = im.load()
-
-        for x in range(im.size[0]):
-            for y in range(im.size[1]):
-                instance = pix[x,y]
-                WNID = INSTANCE_TO_WNID.get(str(instance), 0)
-                NYU = WNID_TO_NYU_CLASS.get(WNID, 0)
-                # if NYU == None: print 'no mapping for :', WNID
-                CLASS = NYU_CLASS_TO_THREE_CLASSES.get(NYU)
-                pix[x,y] = CLASS
-                # if NYU == 0: print instance, WNID, NYU, CLASS
+    for room_dir in rooms_dir_names:
+        room_output_dir = os.path.join(root, room_dir) + '/'
 
 
-        im.save(room_output_dir + 'labels/' + imageName)
-        i += 1
 
-    print 'Labels generated for',room_dir
-        
-    # print datetime.now() - startTime
+        infoLogFile = room_output_dir + 'infoNew.log' 
 
+        INSTANCE_TO_WNID = readInfoLog()
+
+        if not os.path.exists(room_output_dir + "labels"):
+            os.makedirs(room_output_dir + "labels")
+
+        totalNumPng = len(os.listdir(room_output_dir + 'instance'))
+        i = 0
+
+        print 'Generating label pngs from instance pngs and infoNew.log for',room_dir,'..'
+
+        for pngfile in glob.glob(room_output_dir + "instance/*.png"):
+            imageName=ntpath.basename(pngfile)
+            # if i%50 == 0:
+            # print 'Generating label from instance png: ', round(float(i)/totalNumPng*100,2), '%'
+            im = Image.open(pngfile)
+            pix = im.load()
+
+            for x in range(im.size[0]):
+                for y in range(im.size[1]):
+                    instance = pix[x,y]
+                    WNID = INSTANCE_TO_WNID.get(str(instance), 0)
+                    NYU = WNID_TO_NYU_CLASS.get(WNID, 0)
+                    # if NYU == None: print 'no mapping for :', WNID
+                    CLASS = NYU_CLASS_TO_THREE_CLASSES.get(NYU)
+                    pix[x,y] = CLASS
+                    # if NYU == 0: print instance, WNID, NYU, CLASS
+
+
+            im.save(room_output_dir + 'labels/' + imageName)
+            i += 1
+
+        print 'Labels generated for',room_dir
+            
+        # print datetime.now() - startTime
+
+if __name__=='__main__':
+    sys.exit(main(sys.argv[1]))
