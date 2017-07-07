@@ -170,11 +170,9 @@ def getLightingsInfo():
         if not room == 0:
             if room not in rooms_with_light:
                 rooms_with_light.append(room)
-	        r = room - 1
-            lights_in_rooms_byIndex[r].append(i)
+            lights_in_rooms_byIndex[room - 1].append(i)
 	
 	rooms_with_light = list(set(rooms_with_light))
-
     return rooms_with_light, lights_in_rooms_byIndex
 
 def visualiseOcMap():
@@ -212,7 +210,7 @@ if __name__ == "__main__":
     f = open(house_temp_dir + houseID + '_lighting.pckl','rb')
     [lights_info, lights_pos] = pickle.load(f)
     f.close()
-
+    
     [ocMap, iwidth, jwidth, origin, floorHeight, 
     floorsOfRooms, numRooms, roomsBB_zx] = parseObj(layoutFilePath)
 
@@ -229,11 +227,6 @@ if __name__ == "__main__":
         num_cols = botright_cell[1] - topleft_cell[1]
         faces = floorsOfRooms[r]
 
-        # roomsBB_min_cell = np.vstack((roomsBB_min_cell,topleft_cell))
-        # roomsBB_max_cell = np.vstack((roomsBB_max_cell,botright_cell))
-        # roomsBB_size_cell = np.vstack((roomsBB_size_cell, 
-        #                                np.array([num_rows, num_cols])))
-
         for i in range(num_rows):
             for j in range(num_cols):
                 cell = topleft_cell + np.array([i,j])
@@ -244,19 +237,6 @@ if __name__ == "__main__":
                         if f.contains_point(cellCentre_zx) or \
                            f.intersects_bbox(cell_bbox, filled=True):
                             ocMap[cell[0],cell[1]] = r+1
-
-    # for i in range(iwidth):
-    # 	print 'Occupancy mapping progress: ',round(float(i)/iwidth * 100,2),'%'
-    # 	for j in range(jwidth):
-    # 		cell = getCellBbox(i,j)
-    # 		cellCentre = getCellCentre(i,j)
-    # 		for r in range(numRooms):
-    # 			faces = floorsOfRooms[r]
-    # 			for face in faces:
-    # 				if face.contains_point(cellCentre): ocMap[i,j] = r+1
-    # 				elif face.intersects_bbox(cell, filled=True): ocMap[i,j] = r+1
-    
-    # print 'Occupancy map built. Getting Rooms info...'
 
     roomsBBmin, roomsBBmax, roomsSize = getRoomsInfo(ocMap, numRooms, cellSide)
 

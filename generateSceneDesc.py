@@ -13,51 +13,6 @@ def world2CellCoord(world):
     j = int( np.floor((x - origin_ocMap[1]) / cellSide) )
     return np.array([i,j])
 
-#visualisation of random object location, current room, light positions and scanning pattern
-def visualiseMaps():
-    for room in rooms_with_light:
-        # if room not in nullRooms:
-        r = room - 1
-
-        fig, ax = plt.subplots()
-
-        # define the colormap
-        cmap = plt.cm.jet
-        cmaplist = [cmap(i) for i in range(cmap.N)]
-        cmaplist[0] = (.5,.5,.5,1.0)
-        cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
-
-        bounds = np.linspace(0,numRooms+1,numRooms+2)
-        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-        img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
-
-        obj_ids = rooms_obj_ids[r][0]
-        for obj_id in obj_ids:
-            obj_pos = objs_cell[obj_id]
-            plt.scatter(x=obj_pos[1],y=obj_pos[0],c='r',s=10)
-
-        for light_index in lights_in_rooms_byIndex[r]:
-            [i,j] = world2CellCoord(lights_pos[light_index])
-            plt.plot(j,i,'y^')
-
-        for light_index in selectedRandLights_rooms[r]:
-            [i,j] = world2CellCoord(lights_pos[light_index])
-            plt.plot(j,i,'y^')
-
-        for index,value in ndenumerate(ocMap):
-            if value == room: 
-                plt.plot(index[1]+2,index[0]+2, 'c*' ) #cyan star
-                break
-
-        plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
-                        ticks=bounds, boundaries=bounds, format='%1i')
-        ax.set_title('House Map with Lights & Objects')
-        savefig(house_temp_dir + houseID+'_'+str(room)+'_RoomMap.png')
-        # show()
-
-    return
-
 def getNeighbourLights(room):
     r = room - 1
     roomBBmin = roomsBBmin[r]
@@ -111,6 +66,51 @@ def selectRandomLight(lights_indices):
     randNum = random.randint(0,max_num)
     randomLights = random.sample(lights_indices,randNum)
     return randomLights
+
+#visualisation of random object location, current room, light positions and scanning pattern
+def visualiseMaps():
+    for room in rooms_with_light:
+        # if room not in nullRooms:
+        r = room - 1
+
+        fig, ax = plt.subplots()
+
+        # define the colormap
+        cmap = plt.cm.jet
+        cmaplist = [cmap(i) for i in range(cmap.N)]
+        cmaplist[0] = (.5,.5,.5,1.0)
+        cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+
+        bounds = np.linspace(0,numRooms+1,numRooms+2)
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+        img = ax.imshow(ocMap,interpolation='nearest',cmap=cmap, norm=norm)
+
+        obj_ids = rooms_obj_ids[r][0]
+        for obj_id in obj_ids:
+            obj_pos = objs_cell[obj_id]
+            plt.scatter(x=obj_pos[1],y=obj_pos[0],c='r',s=10)
+
+        for light_index in lights_in_rooms_byIndex[r]:
+            [i,j] = world2CellCoord(lights_pos[light_index])
+            plt.plot(j,i,'y^')
+
+        for light_index in selectedRandLights_rooms[r]:
+            [i,j] = world2CellCoord(lights_pos[light_index])
+            plt.plot(j,i,'y^')
+
+        for index,value in ndenumerate(ocMap):
+            if value == room: 
+                plt.plot(index[1]+2,index[0]+2, 'c*' ) #cyan star
+                break
+
+        plt.colorbar(img, cmap=cmap, norm=norm, spacing='proportional', 
+                        ticks=bounds, boundaries=bounds, format='%1i')
+        ax.set_title('House Map with Lights & Objects')
+        savefig(house_temp_dir + houseID+'_'+str(room)+'_RoomMap.png')
+        # show()
+
+    return
 
 maxNumNeighbourLightsOn = 3
 
