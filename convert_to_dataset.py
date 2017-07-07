@@ -3,10 +3,14 @@ import sys
 import os
 import shutil
 
-def copy_overwrite_tree(src, dst):
-    if os.path.exists(dst):
-        shutil.rmtree(dst)
-    shutil.copytree(src,dst)
+def copy_tree(src, dst):
+    try:
+        shutil.copytree(src,dst)
+    except OSError:
+        print "House output folder already exist in scratch"
+    # if os.path.exists(dst):
+    #     shutil.rmtree(dst)
+    # shutil.copytree(src,dst)
 
 def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
@@ -18,7 +22,7 @@ house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
 output_dir = "/scratch/el216/output_scenenet/"
 dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
 
-copy_overwrite_tree(house_output_temp_dir, output_dir + houseID)
+copy_tree(house_output_temp_dir, output_dir + houseID)
 
 for root, dirs, files in os.walk(house_output_temp_dir):
     if os.path.basename(root) == "photo":
