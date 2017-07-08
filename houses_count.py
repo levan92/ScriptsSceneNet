@@ -7,6 +7,8 @@ def sorted_ls(path):
 output_dir = "/scratch/el216/output_scenenet/"
 
 houses = next(os.walk(output_dir))[1]
+houses = sorted_ls(output_dir)
+print houses
 frames = []
 
 f = open('houses_overview.txt','wb')
@@ -15,10 +17,7 @@ print >> f, "House;Size"
 
 for house in houses:
     house_path = os.path.join(output_dir,house)
-    rooms = sorted_ls(house_path)
-    print rooms
-    # rooms = next(os.walk(house_path))[1]
-
+    rooms = next(os.walk(house_path))[1]
     size = 0
     for room in rooms:
         room_path = os.path.join(house_path, room)
