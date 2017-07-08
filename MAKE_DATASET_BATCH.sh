@@ -1,16 +1,7 @@
 #!/bin/bash
 
 # User Parameters
-houses=( 000d939dc2257995adcb27483b04ad04\
- 000e051cb512c617d32441a8a382b317\
- 20042060c0aff3aaeffc661b4d440662\
- 2004559e9986d4f3dad7e6aa51d5e512\
- 2004eeb33ded5c6169e8dbb2bb2be361\
- 2008ac5a272fc8c0e77d31e0bf4aea7d\
- 200998d4e42336d9e83aae2596ed2682\
- 200ca97259735931bc5bc00a10ac3cd2\
- 200d126253adf3784804a4c322a308aa\
- 2010685fdf44a764406862d9e9318e22\
+houses=( 2010685fdf44a764406862d9e9318e22\
  20122e6e8a7fa03efd4065be646a3d11\
  2013ae05e7feeeff505ff5fa7cdd913b )
 
@@ -73,6 +64,10 @@ python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
 python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 
 echo 'All post-processing done for House '$houseID | tee -a logs/${houseID}_run.log
+
+cp -r /homes/el216/Workspace/OutputSceneNet/${houseID} /homes/el216/Workspace/OutputSceneNet/Moved
+mv /homes/el216/Workspace/OutputSceneNet/${houseID} /scratch/el216/output_scenenet
+echo 'House '${houseID}' moved to scratch'
 
 done
 

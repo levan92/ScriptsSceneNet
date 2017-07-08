@@ -80,7 +80,12 @@ python -u processInfoLogForSUNCG.py $houseID | tee -a logs/${houseID}_run.log
 # Generate Label pngs from Instance pngs
 python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 
-echo 'All post-processing done' | tee -a logs/${houseID}_run.log
+echo 'All post-processing done for House '$houseID | tee -a logs/${houseID}_run.log
+
+cp -r /homes/el216/Workspace/OutputSceneNet/${houseID} /homes/el216/Workspace/OutputSceneNet/Moved
+mv /homes/el216/Workspace/OutputSceneNet/${houseID} /scratch/el216/output_scenenet
+echo 'House '${houseID}' moved to scratch'
+
 
 # after done rendering, remove unmeaningful frames by checking average 
 # depth in frame and moving all correspoding outputs of that frame to 
