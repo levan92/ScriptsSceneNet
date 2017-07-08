@@ -7,16 +7,15 @@ def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
 SET = sys.argv[1]
+output_dir = "/scratch/el216/output_scenenet/"
+dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
 
 houses = []
 for arg in sys.argv[2:]:
     houses.append(arg)
 
 for houseID in houses:
-    print houseID
-    output_dir = "/scratch/el216/output_scenenet/"
     house_output_dir = os.path.join(output_dir, houseID)
-    dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
 
     for root, dirs, files in os.walk(house_output_dir):
         if os.path.basename(root) == "photo":

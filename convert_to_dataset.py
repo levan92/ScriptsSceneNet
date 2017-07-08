@@ -16,15 +16,15 @@ def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
 SET = sys.argv[1]
-# houseID = sys.argv[2]
+output_dir = "/scratch/el216/output_scenenet/"
+dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
+
 houses = []
 for arg in sys.argv[2:]:
     houses.append(arg)
 
 for houseID in houses:
     house_output_temp_dir = "/homes/el216/Workspace/OutputSceneNet/" + houseID + '/'
-    output_dir = "/scratch/el216/output_scenenet/"
-    dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
 
     copy_tree(house_output_temp_dir, output_dir + houseID)
 
