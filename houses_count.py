@@ -8,7 +8,7 @@ output_dir = "/scratch/el216/output_scenenet/"
 
 houses = next(os.walk(output_dir))[1]
 houses = sorted_ls(output_dir)
-print houses
+# print houses
 frames = []
 
 f = open('houses_overview.txt','wb')
