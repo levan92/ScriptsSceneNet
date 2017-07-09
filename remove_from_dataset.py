@@ -11,8 +11,8 @@ def copy_overwrite_tree(src, dst):
 def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
-houseID = sys.argv[1]
-SET = sys.argv[2]
+SET = sys.argv[1]
+houseID = sys.argv[2]
 
 dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
 
