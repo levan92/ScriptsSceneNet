@@ -6,6 +6,13 @@ def sorted_ls(path):
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
     return list(sorted(os.listdir(path), key=mtime))
 
+def removeListsFromList(main, lists):
+    for l in lists:
+        for element in l:
+            if element in main:
+                main.remove(element)
+    return main
+
 output_dir = "/scratch/el216/output_scenenet/"
 
 dataset_file = "dataset_overview.txt"
@@ -41,6 +48,8 @@ for house in houses:
         print >> f, house, size
         print house, size
 
+unallocated = removeListsFromList(houses, [allocated_houses, empty_houses])
+print unallocated
 unallocated = list(set(houses) - set(allocated_houses) - set(empty_houses))
 print >> f, "Unallocated:",unallocated
 print "Unallocated:",unallocated
