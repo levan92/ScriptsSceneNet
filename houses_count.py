@@ -16,6 +16,7 @@ houses = next(os.walk(output_dir))[1]
 houses = sorted_ls(output_dir)
 # print houses
 frames = []
+empty_houses = []
 
 f = open('houses_overview.txt','wb')
 print >> f, "SceneNet Dataset -  Houses Overview"
@@ -31,10 +32,15 @@ for house in houses:
         files = next(os.walk(photo_dir_path))[2]
         for file in files:
             if file.endswith(".jpg"): size+=1
+    if size == 0: 
+        print "Removed",house,"as size is ",size
+        # os.unlink(os.path.join(output_dir,house))
+        empty_houses.append(house)
+    else:
+        print >> f, house, size
+        print house, size
 
-    print >> f, house, size
-    print house, size
-
-unallocated = list(set(houses) - set(allocated_houses))
+unallocated = list(set(houses) - set(allocated_houses) - set(empty_houses))
 print >> f, "Unallocated:",unallocated
 print "Unallocated:",unallocated
+
