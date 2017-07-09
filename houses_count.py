@@ -1,5 +1,6 @@
 import os, os.path
 import linecache
+import shutil
 
 def sorted_ls(path):
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
@@ -34,7 +35,7 @@ for house in houses:
             if file.endswith(".jpg"): size+=1
     if size == 0: 
         print "Removed",house,"as size is ",size
-        # os.unlink(os.path.join(output_dir,house))
+        shutil.rmtree(os.path.join(output_dir,house))
         empty_houses.append(house)
     else:
         print >> f, house, size
