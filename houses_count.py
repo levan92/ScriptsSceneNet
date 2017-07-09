@@ -49,8 +49,6 @@ for house in houses:
         print house, size
 
 unallocated = removeListsFromList(houses, [allocated_houses, empty_houses])
-print unallocated
-unallocated = list(set(houses) - set(allocated_houses) - set(empty_houses))
 print >> f, "Unallocated:",unallocated
 print "Unallocated:",unallocated
 
