@@ -1,0 +1,7 @@
+12JulyUpdate
+
+Dataset rendering:
+- 
+
+CNN Training:
+- bug in scenenet causing wrong labels to corresponding images.
