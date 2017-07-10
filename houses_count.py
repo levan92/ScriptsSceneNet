@@ -36,6 +36,11 @@ for house in houses:
     size = 0
     for room in rooms:
         room_path = os.path.join(house_path, room)
+
+        folders = next(os.walk(room_path))[1]
+        if "badFrames" not in folders:
+            print "WARNING:",house,"has not been post-processed!"
+
         photo_dir_path = os.path.join(room_path,"photo")
         files = next(os.walk(photo_dir_path))[2]
         for file in files:
