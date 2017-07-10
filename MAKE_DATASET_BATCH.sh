@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # User Parameters
-houses=( c69717aa04d9f41395cbcef228476281\
- c69a2965110de6d3d99628bc4f359f3f\
- c69b35d92cef20077cf97c938b2ad633\
- c69b4917fa4ab12caba1f50f902feff6\
+houses=( c69b4917fa4ab12caba1f50f902feff6\
  c69ce234776f0f57029c56f43dc737fa\
  c6a0b1784b9c49d7bcf6633f8dd1cd67\
  c6a1195cb927a1d3edbebf04a3150bf7\
