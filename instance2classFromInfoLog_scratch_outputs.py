@@ -91,7 +91,7 @@ THREE_CLASSES = [(0,'Unknown'),
 NYU_CLASS_TO_THREE_CLASSES = {0:0, 1:3, 2:3, 3:2,  4:3,  5:1,  6:3, 
                                 7:3, 8:3, 9:3, 10:3, 11:3, 12:2, 13:2}
 
-
+# arg1: houseID
 def main(arg1):
 
     def readInfoLog():
@@ -112,8 +112,6 @@ def main(arg1):
 
     for room_dir in rooms_dir_names:
         room_output_dir = os.path.join(root, room_dir) + '/'
-
-
 
         infoLogFile = room_output_dir + 'infoNew.log' 
 
