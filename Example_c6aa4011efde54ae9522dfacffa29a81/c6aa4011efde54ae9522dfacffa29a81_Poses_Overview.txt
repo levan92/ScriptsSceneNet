@@ -1,0 +1,11 @@
+Frames generated for Room 1 : 337
+Frames generated for Room 2 : 229
+Frames generated for Room 3 : 98
+Frames generated for Room 4 : 151
+Frames generated for Room 5 : 320
+Frames generated for Room 6 : 53
+Frames generated for Room 7 : 171
+Frames generated for Room 8 : 293
+Frames generated for Room 10 : 83
+Frames generated for Room 11 : 37
+Frames generated for Room 12 : 117
