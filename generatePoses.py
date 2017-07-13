@@ -128,12 +128,8 @@ def nearLights(r, pose):
         robot_pos = pose[:2]
         dist = min(dist, np.linalg.norm(light_pos - robot_pos))
 
-    if dist < nearLightsRadius:
-        # print dist, 'True'
-        return True
-    else:
-        print dist, 'False'
-        return False
+    if dist < nearLightsRadius: return True
+    else: return False
 
 ### User variables
 # robot parameters
