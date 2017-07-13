@@ -6,9 +6,6 @@ matplotlib.use('Agg')
 from pylab import *
 np.set_printoptions(threshold=np.nan)
 
-houseID = sys.argv[1]
-house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
-
 ### Functions
 #initialise poses.txt with default heading lines
 def initPoseFile(room):
@@ -123,6 +120,21 @@ def visualiseScanning(poses_cell):
     show()
     return
 
+def nearLights(r, pose):
+    lights_index = lights_in_rooms_byIndex[r]
+    dist = nearLightsRadius
+    for index in lights_index:
+        light_pos = lights_pos[index]
+        robot_pos = pose[:2]
+        dist = min(dist, np.linalg.norm(light_pos - robot_pos))
+
+    if dist < nearLightsRadius:
+        # print dist, 'True'
+        return True
+    else:
+        print dist, 'False'
+        return False
+
 ### User variables
 # robot parameters
 robotD = 0.30 # diameter in m
@@ -137,20 +149,21 @@ timeStep = 0.1 # simulation time step in sec
 # capture a frame every [frameStep] timeSteps
 # frameStep = 20 
 frameStep = int(sys.argv[2])
+nearLightsRadius = 5.0 #max dist in m to nearest light for pose to be printed 
 
 ### Main
+houseID = sys.argv[1]
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '_test/'
+
 f = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
 [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
- roomsBBmin, roomsBBmax, roomsSize, rooms_with_light, _] = pickle.load(f)
+ roomsBBmin, roomsBBmax, roomsSize, 
+ rooms_with_light, lights_in_rooms_byIndex] = pickle.load(f)
 f.close()
 
-# f2 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
-# [_, _] = pickle.load(f2)
-# f2.close()
-
-# f3 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
-# [_, _, _, _, _, _, nullRooms] = pickle.load(f3)
-# f3.close()
+f2 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
+[_, lights_pos] = pickle.load(f2)
+f2.close()
 
 overview_file = open(house_temp_dir + houseID + "_Poses_Overview.txt","w")
 
@@ -268,8 +281,9 @@ for room in rooms_with_light:
             finalStraightCheck = False
 
         if i%frameStep == 0:
-            printPoseToFile(r, pose, wf)
-            framesCountRoom += 1
+            if nearLights(r, pose):
+                printPoseToFile(r, pose, wf)
+                framesCountRoom += 1
 
         i += 1;
         poses_cell.append(world2CellCoord(pose[:2]))
