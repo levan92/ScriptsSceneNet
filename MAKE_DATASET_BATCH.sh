@@ -1,23 +1,26 @@
 #!/bin/bash
 
 # User Parameters
-houses=( c69b4917fa4ab12caba1f50f902feff6\
- c69ce234776f0f57029c56f43dc737fa\
- c6a0b1784b9c49d7bcf6633f8dd1cd67\
- c6a1195cb927a1d3edbebf04a3150bf7\
- c6a14b82e4fc36e32203705f01b476f3\
- c6a404200a047e7ad3fd3912b3d78e25\
- c6a497a54e700a354109e78209c14436\
- c6a62298147910519292e2f67220665f\
- c6a62999e7d203d0f15f650abfcc4db6\
- c6aa3fa9772492e811248374e6cc54ab\
- c6aa4011efde54ae9522dfacffa29a81\
+houses=( c6aa4011efde54ae9522dfacffa29a81\
  c6ab8396a6dcae84981e0311589272ee\
  c6ad956b0f7abc69c452414f6015e9a5\
  c6afba70260fb5876728d968b10a642a\
  c6b8ac173309d4ddebee7e6666680e57\
  c6ba5ff1317906e77b1ff6baf2f31130\
- c6bbe0175b98aae61d352a7858b40b97 )
+ c6bbe0175b98aae61d352a7858b40b97\
+ e765eda5970ac5231b2b374ea106a60e\
+ e767f1cbffab230d746b25a1ef9f1a15\
+ e76b3dd6314acedd630b49cd2114ae0c\
+ e76c73638f1fac7fed56de3b6282aade\
+ e76f94ce00b7cc334aaca9778f687355\
+ e7715dcce15419abd41ae1ccac464a81\
+ e771d95b5406efd99d70bc48fe333d7a\
+ e778c9d8c08ab430fa5240f09b10d753\
+ e779057fe049efeb04b9227651834c95\
+ e77a027d808e4a5bbff199547b14831c\
+ e77d1ea48db5f7f2e9c8c736dba72f5c\
+ e77d5546b596f1c0847ed7a20efd6f70\
+ e7824e894768034bff41d4ddd302bf09 )
 
 for houseID in "${houses[@]}"
 do
@@ -30,7 +33,8 @@ ocMapCellSide=0.1 # in m, must be small enough
 roomMessMean=40 # in num objs per 100m^2
 roomMessSD=10
 frameStep=20 # for poses, Frame period = frameStep * 0.1s
-pow_scaling_factor=0.075 # affects brightness of scene
+# pow_scaling_factor=0.075 # affects brightness of scene
+pow_scaling_factor=0.1 # affects brightness of scene
 
 echo 'houseID: '$houseID | tee -a logs/${houseID}_run.log
 
