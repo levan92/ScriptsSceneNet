@@ -172,7 +172,8 @@ def getLightingsInfo():
                 rooms_with_light.append(room)
             lights_in_rooms_byIndex[room - 1].append(i)
 	
-	rooms_with_light = list(set(rooms_with_light))
+	# rooms_with_light = list(set(rooms_with_light))
+    rooms_with_light = sorted(rooms_with_light)
     return rooms_with_light, lights_in_rooms_byIndex
 
 def visualiseOcMap():
@@ -253,7 +254,7 @@ if __name__ == "__main__":
 
     print 'Occupancy map, rooms & lighting info saved.'
 
-    # visualiseOcMap()			
+    visualiseOcMap()			
 
 
 # def initialiseOcMap():
