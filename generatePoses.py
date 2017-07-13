@@ -149,7 +149,7 @@ nearLightsRadius = 5.0 #max dist in m to nearest light for pose to be printed
 
 ### Main
 houseID = sys.argv[1]
-house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '_test/'
+house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 
 f = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
 [ocMap, numRooms, cellSide, origin_ocMap, floorHeight,
