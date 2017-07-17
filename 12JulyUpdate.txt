@@ -1,6 +1,8 @@
-12JulyUpdate
+12 July Update
 
 Dataset rendering:
+- only renders each room with lights one at a time because of photon problem
+- additionally randomly turns on lights of neighbouring room, max number of surrounding lights parameter can be set
 - 
 
 CNN Training:

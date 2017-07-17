@@ -83,7 +83,7 @@ python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 
 echo 'All post-processing done for House '$houseID | tee -a logs/${houseID}_run.log
 
-cp -r /homes/el216/Workspace/OutputSceneNet/${houseID} /homes/el216/Workspace/OutputSceneNet/Moved
+# cp -r /homes/el216/Workspace/OutputSceneNet/${houseID} /homes/el216/Workspace/OutputSceneNet/Moved
 mv /homes/el216/Workspace/OutputSceneNet/${houseID} /scratch/el216/output_scenenet
 echo 'House '${houseID}' moved to scratch'
 
