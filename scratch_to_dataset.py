@@ -66,7 +66,7 @@ for houseID in houses:
         data.append("CNN Dataset Overview\n")
         data.append("Train Set:\n")
         data.append("\n")
-        data.append("Test Set:\n")
+        data.append("Val Set:\n")
         data.append("\n")
 
     size = int(len([f for f in os.listdir(dataset_dir)]) / 3.0)
@@ -78,9 +78,9 @@ for houseID in houses:
             set_houses.append(houseID)
         data[2] = ' '.join(set_houses) + "\n"
        
-    elif SET == "test":
-        data[3] = "Test Set: size "+str(size)+"\n"
-        print 'Test set current size:',str(size)
+    elif SET == "val":
+        data[3] = "Val Set: size "+str(size)+"\n"
+        print 'Val set current size:',str(size)
         set_houses = data[4].split()
         if houseID not in set_houses:
             set_houses.append(houseID)
