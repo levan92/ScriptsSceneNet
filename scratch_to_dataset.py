@@ -9,6 +9,7 @@ def getParentName(path):
 SET = sys.argv[1]
 output_dir = "/scratch/el216/output_scenenet/"
 dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
+dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 
 houses = []
 for arg in sys.argv[2:]:
@@ -54,8 +55,8 @@ for houseID in houses:
                         # print 'to dst:', dataset_dir + parent + "_" + basename + "_label.png"
                 print "Label pngs of",parent,'has been copied to',SET,'datset'
 
-    if os.path.exists('dataset_overview.txt'):
-        with open('dataset_overview.txt','r') as file:
+    if os.path.exists(dataset_txt):
+        with open(dataset_txt,'r') as file:
             data = file.readlines()
     else:
         data = []
@@ -85,7 +86,7 @@ for houseID in houses:
             set_houses.append(houseID)
         data[4] = ' '.join(set_houses) + "\n"
 
-    with open('dataset_overview.txt','w') as file:
+    with open(dataset_txt,'w') as file:
         file.writelines(data)
 
 

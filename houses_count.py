@@ -14,8 +14,8 @@ def removeListsFromList(main, lists):
     return main
 
 output_dir = "/scratch/el216/output_scenenet/"
-
-dataset_file = "dataset_overview.txt"
+houses_overview_txt = "/homes/el216/Workspace/ScriptsSceneNet/houses_overview.txt"
+dataset_file = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 train_houses = linecache.getline(dataset_file, 3).split()
 test_houses = linecache.getline(dataset_file, 5).split()
 allocated_houses = train_houses + test_houses
@@ -26,7 +26,7 @@ houses = sorted_ls(output_dir)
 frames = []
 empty_houses = []
 
-f = open('houses_overview.txt','wb')
+f = open(houses_overview_txt,'wb')
 print >> f, "SceneNet Dataset -  Houses Overview"
 print >> f, "House;Size"
 
