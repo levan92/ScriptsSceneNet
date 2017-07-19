@@ -12,9 +12,11 @@ def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
 SET = sys.argv[1]
-houseID = sys.argv[2]
+SET_base = SET + "_base"
 
-dataset_dir = "/scratch/el216/scenenet_dataset/" + SET + '/' 
+houseID = sys.argv[2]
+dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
+dataset_dir = "/scratch/el216/scenenet_dataset/" + SET_base + '/' 
 
 root, dirs, files = next(os.walk(dataset_dir))
 
@@ -24,40 +26,41 @@ for image in files:
         os.remove(im_path)
         # print im_path
 
-print houseID,'removed from',SET,'dataset.'
+print houseID,'removed from',SET_base,'dataset.'
 
-if os.path.exists('dataset_overview.txt'):
-    with open('dataset_overview.txt','r') as file:
+if os.path.exists(dataset_txt):
+    with open(dataset_txt,'r') as file:
         data = file.readlines()
 else:
     data = []
 
-if len(data) < 5:
-    data = []
-    data.append("CNN Dataset Overview\n")
-    data.append("Train Set:\n")
-    data.append("\n")
-    data.append("Test Set:\n")
-    data.append("\n")
-
 size = int(len([f for f in os.listdir(dataset_dir)]) / 3.0)
 if SET == "train":
-    data[1] = "Train Set: size "+str(size)+"\n"
-    print 'Train set current size:',str(size)
+    data[1] = "Train base set: size "+str(size)+"\n"
+    print 'Train base set current size:',str(size)
     set_houses = data[2].split()
-    if houseID in set_houses:
-        set_houses.remove(houseID)
+    if houseID not in set_houses:
+        set_houses.append(houseID)
     data[2] = ' '.join(set_houses) + "\n"
    
-elif SET == "test":
-    data[3] = "Test Set: size "+str(size)+"\n"
-    print 'Test set current size:',str(size)
+elif SET == "val":
+    data[3] = "Val base set: size "+str(size)+"\n"
+    print 'Val base set current size:',str(size)
     set_houses = data[4].split()
-    if houseID in set_houses:
-        set_houses.remove(houseID)
+    if houseID not in set_houses:
+        set_houses.append(houseID)
     data[4] = ' '.join(set_houses) + "\n"
 
-with open('dataset_overview.txt','w') as file:
+elif SET == "test":
+    data[5] = "Test base set: size "+str(size)+"\n"
+    print 'Test base set current size:',str(size)
+    set_houses = data[6].split()
+    if houseID not in set_houses:
+        set_houses.append(houseID)
+    data[6] = ' '.join(set_houses) + "\n"
+
+with open(dataset_txt,'w') as file:
     file.writelines(data)
+
 
 

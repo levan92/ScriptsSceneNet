@@ -18,7 +18,8 @@ houses_overview_txt = "/homes/el216/Workspace/ScriptsSceneNet/houses_overview.tx
 dataset_file = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 train_houses = linecache.getline(dataset_file, 3).split()
 val_houses = linecache.getline(dataset_file, 5).split()
-allocated_houses = train_houses + val_houses
+test_houses = linecache.getline(dataset_file, 7).split()
+allocated_houses = train_houses + val_houses + test_houses
 
 houses = next(os.walk(output_dir))[1]
 houses = sorted_ls(output_dir)
