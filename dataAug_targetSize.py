@@ -155,9 +155,9 @@ def main(dataset_dir, target_size):
             print "Augmenting batch",i+1,"/",num_major_loops,".." 
             aug_and_save(items, seq, hooks_labels, save_dir)
 
-        print "Augmenting remaining",remainder,"images.."
         rem_idx = rem_idx_in_chunks[i_chunk]
         rem_items = [items[i] for i in rem_idx]
+        print "Augmenting remaining",len(rem_items),"images in this chunk.."
         aug_and_save(rem_items, seq, hooks_labels, save_dir)
 
         i_chunk += 1
