@@ -143,7 +143,7 @@ def main(dataset_dir, target_size):
     # processing in smaller chunks due to memory constraints
     i_chunk = 0
     for chunk in chunks:
-        print "Processing chunk",i_chunk,"/",num_chunks
+        print "Processing chunk",i_chunk+1,"/",num_chunks
         print "Reading images.."
         items=[]  
         for path in chunk:
