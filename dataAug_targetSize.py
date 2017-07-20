@@ -147,19 +147,15 @@ def main(dataset_dir, target_size):
         print "Reading images.."
         items=[]  
         for path in chunk:
-            items.append(read_item(path))
-        print np.shape(items)
-        
+            items.append(read_item(path))        
         print "Augmenting images.."
         for i in range(num_major_loops):
             print "Augmenting batch",i+1,"/",num_major_loops,".." 
             aug_and_save(items, seq, hooks_labels, save_dir)
-
         rem_idx = rem_idx_in_chunks[i_chunk]
         rem_items = [items[i] for i in rem_idx]
         print "Augmenting remaining",len(rem_items),"images in this chunk.."
         aug_and_save(rem_items, seq, hooks_labels, save_dir)
-
         i_chunk += 1
 
     print "Size in augmented",set_name,"dataset:", \
