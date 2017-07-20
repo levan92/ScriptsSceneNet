@@ -129,35 +129,38 @@ def main(dataset_dir, target_size):
     print "Getting image paths..."
     item_paths, num_items = get_base_item_paths(dataset_dir)  
     print num_items, "images in base dataset."
-    items=[]  
-    print "Reading images..."
     num_chunks = int(math.ceil(num_items / float(chunk_size)))
-    chunks = [[] for i in range(num_chunks)]
-    for chunk in chunks:
-        while len(chunk) < chunk_size and item_paths:
-            chunk.append(read_item(item_paths.pop(0)))
+    chunks = [item_paths[x:x+chunk_size] \
+              for x in xrange(0, num_items, chunk_size)]
     
-    print "Images read, augmenting images now..."
-    (num_major_loops,remainder) = divmod(target_size, num_items) 
-    for i in range(num_major_loops):
-        print "Augmenting batch",i+1,"/",num_major_loops,".." 
-        for chunk in chunks:
-            aug_and_save(chunk, seq, hooks_labels, save_dir)
+    num_major_loops,remainder = divmod(target_size, num_items)
+    rem_idx = random.sample(range(num_items),remainder)
+    rem_idx_in_chunks = [[] for i in range(num_chunks)]
+    for idx in rem_idx:
+        n, r =  divmod(idx,chunk_size)
+        rem_idx_in_chunks[n].append(r)
 
-    chosen_idx = random.sample(range(num_items),remainder)
-    print chosen_idx
-    chosen_items = []
-    for i in chosen_idx:
-        n,m = divmod(i, chunk_size)
-        chosen_items.append(chunks[n][m])
-    chunks = None #deallocating memory
-    chosen_chunks = [chosen_items[x:x+chunk_size] \
-                     for x in xrange(0, remainder, chunk_size)]
-    chosen_items = None #dealloc mem
-    # chosen_items = np.random.choice(items, remainder)
-    print "Augmenting remaining",remainder,"images.."
-    for chunk in chosen_chunks:
-        aug_and_save(chunk, seq, hooks_labels, save_dir)
+    # processing in smaller chunks due to memory constraints
+    i_chunk = 0
+    for chunk in chunks:
+        print "Processing chunk",i_chunk,"/",num_chunks
+        print "Reading images.."
+        items=[]  
+        for path in chunk:
+            items.append(read_item(path))
+        print np.shape(items)
+        
+        print "Augmenting images.."
+        for i in range(num_major_loops):
+            print "Augmenting batch",i+1,"/",num_major_loops,".." 
+            aug_and_save(items, seq, hooks_labels, save_dir)
+
+        print "Augmenting remaining",remainder,"images.."
+        rem_idx = rem_idx_in_chunks[i_chunk]
+        rem_items = [items[i] for i in rem_idx]
+        aug_and_save(rem_items, seq, hooks_labels, save_dir)
+
+        i_chunk += 1
 
     print "Size in augmented",set_name,"dataset:", \
            len(next(os.walk(save_dir))[2])/3 
