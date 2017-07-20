@@ -80,7 +80,25 @@ def save_images(images, type, items, root_dir):
         cv2.imwrite(save_path,image)
         # print save_path,'saved.'
 
+def aug_and_save(items, seq, hooks_labels, save_dir):
+    images = [i['image'] for i in items if 'image' in i]
+    labels = [i['label'] for i in items if 'label' in i]
+    depths = [i['depth'] for i in items if 'depth' in i]
+    seq_det = seq.to_deterministic()
+    images_aug = seq_det.augment_images(images)
+    images_aug = resize_linear(images_aug)
+    labels_aug = seq_det.augment_images(labels, hooks=hooks_labels)
+    labels_aug = resize_nearest(labels_aug)
+    depths_aug = seq_det.augment_images(depths, hooks=hooks_labels)
+    depths_aug = resize_linear(depths_aug)
+    # print "Saving augmented images..."
+    save_images(images_aug, "rgb", items, save_dir)
+    save_images(labels_aug, "label", items, save_dir)
+    save_images(depths_aug, "depth", items, save_dir)
+    return None
+
 def main(dataset_dir, target_size):
+    chunk_size = 3000
     set_name = os.path.basename(dataset_dir).split('_')[0]
     save_dir = os.path.join(os.path.join(dataset_dir,".."),set_name)
     if os.path.exists(save_dir):
@@ -113,45 +131,36 @@ def main(dataset_dir, target_size):
     print num_items, "images in base dataset."
     items=[]  
     print "Reading images..."
-    for path in item_paths:
-        items.append(read_item(path))
-    images = [item['image'] for item in items if 'image' in item]
-    labels = [item['label'] for item in items if 'label' in item]
-    depths = [item['depth'] for item in items if 'depth' in item]
+    num_chunks = int(math.ceil(num_items / float(chunk_size)))
+    chunks = [[] for i in range(num_chunks)]
+    for chunk in chunks:
+        while len(chunk) < chunk_size and item_paths:
+            chunk.append(read_item(item_paths.pop(0)))
+    
     print "Images read, augmenting images now..."
     (num_major_loops,remainder) = divmod(target_size, num_items) 
     for i in range(num_major_loops):
-        print "Augmenting batch",i+1,"/",num_major_loops,".."
-        seq_det = seq.to_deterministic()
-        images_aug = seq_det.augment_images(images)
-        images_aug = resize_linear(images_aug)
-        labels_aug = seq_det.augment_images(labels, hooks=hooks_labels)
-        labels_aug = resize_nearest(labels_aug)
-        depths_aug = seq_det.augment_images(depths, hooks=hooks_labels)
-        depths_aug = resize_linear(depths_aug)
-        # print "Saving augmented images..."
-        save_images(images_aug, "rgb", items, save_dir)
-        save_images(labels_aug, "label", items, save_dir)
-        save_images(depths_aug, "depth", items, save_dir)
+        print "Augmenting batch",i+1,"/",num_major_loops,".." 
+        for chunk in chunks:
+            aug_and_save(chunk, seq, hooks_labels, save_dir)
 
-    chosen_items = np.random.choice(items, remainder)
-    images = [item['image'] for item in chosen_items if 'image' in item]
-    labels = [item['label'] for item in chosen_items if 'label' in item]
-    depths = [item['depth'] for item in chosen_items if 'depth' in item]
+    chosen_idx = random.sample(range(num_items),remainder)
+    print chosen_idx
+    chosen_items = []
+    for i in chosen_idx:
+        n,m = divmod(i, chunk_size)
+        chosen_items.append(chunks[n][m])
+    chunks = None #deallocating memory
+    chosen_chunks = [chosen_items[x:x+chunk_size] \
+                     for x in xrange(0, remainder, chunk_size)]
+    chosen_items = None #dealloc mem
+    # chosen_items = np.random.choice(items, remainder)
     print "Augmenting remaining",remainder,"images.."
-    seq_det = seq.to_deterministic()
-    images_aug = seq_det.augment_images(images)
-    images_aug = resize_linear(images_aug)
-    labels_aug = seq_det.augment_images(labels, hooks=hooks_labels)
-    labels_aug = resize_nearest(labels_aug)
-    depths_aug = seq_det.augment_images(depths, hooks=hooks_labels)
-    depths_aug = resize_linear(depths_aug)
-    # print "Saving augmented images..."
-    save_images(images_aug, "rgb", chosen_items, save_dir)
-    save_images(labels_aug, "label", chosen_items, save_dir)
-    save_images(depths_aug, "depth", chosen_items, save_dir)
+    for chunk in chosen_chunks:
+        aug_and_save(chunk, seq, hooks_labels, save_dir)
 
-    print "Size in augmented",set_name,"dataset:",len(next(os.walk(save_dir))[2])/3
+    print "Size in augmented",set_name,"dataset:", \
+           len(next(os.walk(save_dir))[2])/3 
 
 if __name__ == '__main__':
     main(os.path.normpath(sys.argv[1]), int(sys.argv[2]))
