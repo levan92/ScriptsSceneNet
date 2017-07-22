@@ -8,8 +8,8 @@ def getParentName(path):
 
 SET = sys.argv[1]
 SET_base = SET + "_base"
-output_dir = "/scratch/el216/output_scenenet/"
-dataset_dir = "/scratch/el216/scenenet_dataset/" + SET_base + '/' 
+output_dir = "/vol/bitbucket/el216/output_scenenet/"
+dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + SET_base + '/' 
 dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 
 houses = []

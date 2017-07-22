@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # User Parameters
-houses=( 4ddb6d16c1da85fa83e4a0017690e4cb\
- 4ddc7eaaff0bb21b58dad10531f55b68\
+houses=( 4ddc7eaaff0bb21b58dad10531f55b68\
  4dddeb70f6cf678c261c952451171594\
  4de18a87b301894860d812daa4af131a\
  4de34aa0a3154ef19e4cb2e7445d30e9\
@@ -79,7 +78,7 @@ python -u instance2classFromInfoLog.py $houseID | tee -a logs/${houseID}_run.log
 echo 'All post-processing done for House '$houseID | tee -a logs/${houseID}_run.log
 
 # cp -r /homes/el216/Workspace/OutputSceneNet/${houseID} /homes/el216/Workspace/OutputSceneNet/Moved
-mv /homes/el216/Workspace/OutputSceneNet/${houseID} /scratch/el216/output_scenenet
+mv /homes/el216/Workspace/OutputSceneNet/${houseID} /vol/bitbucket/el216/output_scenenet
 echo 'House '${houseID}' moved to scratch'
 
 done
