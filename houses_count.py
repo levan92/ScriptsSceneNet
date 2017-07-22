@@ -1,6 +1,7 @@
 import os, os.path
 import linecache
 import shutil
+from pathlib import Path
 
 def sorted_ls(path):
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
@@ -21,9 +22,7 @@ val_houses = linecache.getline(dataset_file, 5).split()
 test_houses = linecache.getline(dataset_file, 7).split()
 allocated_houses = train_houses + val_houses + test_houses
 
-houses = next(os.walk(output_dir))[1]
 houses = sorted_ls(output_dir)
-# print houses
 frames = []
 empty_houses = []
 
@@ -33,22 +32,17 @@ print >> f, "House;Size"
 
 for house in houses:
     house_path = os.path.join(output_dir,house)
-    rooms = next(os.walk(house_path))[1]
     size = 0
-    for room in rooms:
+    for room in os.listdir(house_path):
         room_path = os.path.join(house_path, room)
-
-        folders = next(os.walk(room_path))[1]
-        if "badFrames" not in folders:
+	if "badFrames" not in os.listdir(room_path):
             print "WARNING:",house,"has not been post-processed!"
-
         photo_dir_path = os.path.join(room_path,"photo")
-        files = next(os.walk(photo_dir_path))[2]
-        for file in files:
-            if file.endswith(".jpg"): size+=1
+	for image in os.listdir(photo_dir_path):
+            if image.endswith(".jpg"): 
+		size+=1
     if size == 0: 
         print "Removed",house,"as size is ",size
-        shutil.rmtree(os.path.join(output_dir,house))
         empty_houses.append(house)
     else:
         print >> f, house, size
