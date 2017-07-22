@@ -22,11 +22,12 @@ def main(dataset_dir = None):
     for i, set_ in enumerate(sets):
         set_path = os.path.join(dataset_dir,set_)
         n = 0
-        for file in Path(set_path):
-            if file.endswith(".jpg") or file.endswith(".png"):
-                house = file.split('_',1)[0]
-                if "aug" in file:
-                    aug_str = file.split('_')[3]
+        for file_ in Path(set_path).iterdir():
+            image = os.path.basename(str(file_))
+	    if image.endswith(".jpg") or image.endswith(".png"):
+                house = image.split('_',1)[0]
+		if "aug" in image:
+                    aug_str = image.split('_')[3]
                     house = house + "_" + aug_str
                 if house not in houses_sets[i]:
                     houses_sets[i].append(house)
@@ -40,7 +41,7 @@ def main(dataset_dir = None):
     for i, set_  in enumerate(sets):
         set_size = sizes_sets[i]
         set_houses = houses_sets[i]
-        data.append(set_,"set: size "+str(set_size)+"\n")
+        data.append(set_+"set: size "+str(set_size)+"\n")
         print set_, 'set current size:',str(set_size)
         data.append(' '.join(set_houses) + "\n")
         print set_,'set houses:',' '.join(set_houses)
@@ -49,7 +50,7 @@ def main(dataset_dir = None):
     with open(dataset_txt,'w') as file:
         file.writelines(data)
 
-    for [i, j] in itertools.combination(range(len(sets)), 2):
+    for [i, j] in itertools.combinations(range(len(sets)), 2):
         print "Overlapping houses btwn", sets[i], "&", sets[j],":", \
               list(set(houses_sets[i])&set(houses_sets[j]))
     # print "Overlapping houses btwn val & test:", list(set(test_houses)&set(val_houses))
