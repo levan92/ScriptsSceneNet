@@ -4,7 +4,7 @@ import linecache
 
 def main(dataset_dir = None):
     if dataset_dir is None:
-        dataset_dir = "/scratch/el216/scenenet_dataset/"
+        dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/"
     dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 
     # train_houses_old = linecache.getline(dataset_txt, 3).split()

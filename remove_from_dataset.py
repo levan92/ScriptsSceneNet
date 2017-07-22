@@ -16,7 +16,7 @@ SET_base = SET + "_base"
 
 houseID = sys.argv[2]
 dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
-dataset_dir = "/scratch/el216/scenenet_dataset/" + SET_base + '/' 
+dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + SET_base + '/' 
 
 root, dirs, files = next(os.walk(dataset_dir))
 

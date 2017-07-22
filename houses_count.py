@@ -13,7 +13,7 @@ def removeListsFromList(main, lists):
                 main.remove(element)
     return main
 
-output_dir = "/scratch/el216/output_scenenet/"
+output_dir = "/vol/bitbucket/el216/output_scenenet/"
 houses_overview_txt = "/homes/el216/Workspace/ScriptsSceneNet/houses_overview.txt"
 dataset_file = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 train_houses = linecache.getline(dataset_file, 3).split()
