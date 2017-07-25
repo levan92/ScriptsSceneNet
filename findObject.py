@@ -25,9 +25,12 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
                 # obj_bb[1][0] = max(obj_bb[1][0], neighbour[0])
                 # obj_bb[1][1] = max(obj_bb[1][1], neighbour[1])             
     obj_loc = obj_loc / float(len(object_group))
-    obj_bb = minimum_bounding_box(object_group).corner_points
-    obj_bb = [min(obj_bb,key=itemgetter(0)),min(obj_bb,key=itemgetter(1)),\
-              max(obj_bb,key=itemgetter(0)),max(obj_bb,key=itemgetter(1))]
+    if len(object_group)>=3:
+        obj_bb = minimum_bounding_box(object_group).corner_points
+        obj_bb = [min(obj_bb,key=itemgetter(0)),min(obj_bb,key=itemgetter(1)),\
+                  max(obj_bb,key=itemgetter(0)),max(obj_bb,key=itemgetter(1))]
+    else:
+        obj_bb = object_group
     return object_group, obj_loc, obj_bb, pixels_objects
 
 def main(pred_path):
