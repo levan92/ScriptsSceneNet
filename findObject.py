@@ -7,6 +7,7 @@ from matplotlib.patches import Rectangle
 import time
 from MinimumBoundingBox import minimum_bounding_box
 from operator import itemgetter
+import math
 
 def findNeighbours(pixel, pixels_objects, neighbour_dist):
     object_group = []
@@ -26,9 +27,12 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
                 # obj_bb[1][1] = max(obj_bb[1][1], neighbour[1])             
     obj_loc = obj_loc / float(len(object_group))
     if len(object_group)>=3:
-        obj_bb = minimum_bounding_box(object_group).corner_points
-        obj_bb = [min(obj_bb,key=itemgetter(0)),min(obj_bb,key=itemgetter(1)),\
-                  max(obj_bb,key=itemgetter(0)),max(obj_bb,key=itemgetter(1))]
+        min_bb_dict = minimum_bounding_box(object_group)
+        obj_bb = list(min_bb_dict.corner_points)
+        centroid = min_bb_dict.rectangle_center
+        obj_bb.sort(key=lambda p: math.atan2(p[1]-centroid[1],p[0]-centroid[0]))
+        # obj_bb = [min(obj_bb,key=itemgetter(0)),min(obj_bb,key=itemgetter(1)),\
+        #           max(obj_bb,key=itemgetter(0)),max(obj_bb,key=itemgetter(1))]
     else:
         obj_bb = object_group
     return object_group, obj_loc, obj_bb, pixels_objects
@@ -69,7 +73,6 @@ def main(pred_path):
         obj_bb = objs_bb[i]
         obj_bb = [[point[1],point[0]] for point in obj_bb]
         print np.shape(obj_bb)
-        # poly = plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r')
         axes.add_patch(plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r'))
         # min_bb = objs_bb[i][0]
         # max_bb = objs_bb[i][1]
