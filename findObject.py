@@ -1,17 +1,18 @@
 import numpy as np
 import sys
-import os
+import os.path
 from scipy import misc
-from itertools import chain 
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 import time
+from MinimumBoundingBox import minimum_bounding_box
+from operator import itemgetter
 
 def findNeighbours(pixel, pixels_objects, neighbour_dist):
     object_group = []
     object_group.append(pixel)
     obj_loc = np.array(pixel)
-    obj_bb = [np.array(pixel),np.array(pixel)]
+    # obj_bb = [np.array(pixel),np.array(pixel)]
     surrounding = range(-neighbour_dist, neighbour_dist+1)
     for p in object_group:
         for neighbour in [(p[0]+i,p[1]+j) for i in surrounding for j in surrounding if (i != 0 or j != 0)]:
@@ -19,11 +20,14 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
                 pixels_objects.remove(neighbour)
                 object_group.append(neighbour)
                 obj_loc += np.array(neighbour)
-                obj_bb[0][0] = min(obj_bb[0][0], neighbour[0])
-                obj_bb[0][1] = min(obj_bb[0][1], neighbour[1])
-                obj_bb[1][0] = max(obj_bb[1][0], neighbour[0])
-                obj_bb[1][1] = max(obj_bb[1][1], neighbour[1])             
+                # obj_bb[0][0] = min(obj_bb[0][0], neighbour[0])
+                # obj_bb[0][1] = min(obj_bb[0][1], neighbour[1])
+                # obj_bb[1][0] = max(obj_bb[1][0], neighbour[0])
+                # obj_bb[1][1] = max(obj_bb[1][1], neighbour[1])             
     obj_loc = obj_loc / float(len(object_group))
+    obj_bb = minimum_bounding_box(object_group).corner_points
+    obj_bb = [min(obj_bb,key=itemgetter(0)),min(obj_bb,key=itemgetter(1)),\
+              max(obj_bb,key=itemgetter(0)),max(obj_bb,key=itemgetter(1))]
     return object_group, obj_loc, obj_bb, pixels_objects
 
 def main(pred_path):
@@ -59,14 +63,18 @@ def main(pred_path):
         y,x = zip(*objects[i]) 
         plt.scatter(x=x, y=y,marker=".",s=3)
         plt.plot(objs_loc[i][1],objs_loc[i][0],'r.')
-        min_bb = objs_bb[i][0]
-        max_bb = objs_bb[i][1]
-        axes.add_patch(Rectangle((min_bb[1],min_bb[0]),
-                        max_bb[1] - min_bb[1],
-                        max_bb[0] - min_bb[0], fc="none", ec='r'))
-    plt.show()
+        obj_bb = objs_bb[i]
+        obj_bb = [[point[1],point[0]] for point in obj_bb]
+        poly = plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r')
+        axes.add_patch(poly)
+        # min_bb = objs_bb[i][0]
+        # max_bb = objs_bb[i][1]
+        # axes.add_patch(Rectangle((min_bb[1],min_bb[0]),
+        #                 max_bb[1] - min_bb[1],
+        #                 max_bb[0] - min_bb[0], fc="none", ec='r'))
     savename = pred_path.replace('.png','_grouped.png')
     plt.savefig(savename)
+    plt.show()
 
 if __name__ == "__main__":
     main(os.path.normpath(sys.argv[1]))
