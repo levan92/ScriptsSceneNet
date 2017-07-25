@@ -68,8 +68,9 @@ def main(pred_path):
         plt.plot(objs_loc[i][1],objs_loc[i][0],'r.')
         obj_bb = objs_bb[i]
         obj_bb = [[point[1],point[0]] for point in obj_bb]
-        poly = plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r')
-        axes.add_patch(poly)
+        print np.shape(obj_bb)
+        # poly = plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r')
+        axes.add_patch(plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r'))
         # min_bb = objs_bb[i][0]
         # max_bb = objs_bb[i][1]
         # axes.add_patch(Rectangle((min_bb[1],min_bb[0]),
