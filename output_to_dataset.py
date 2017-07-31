@@ -6,11 +6,20 @@ import shutil
 def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
-SET = sys.argv[1]
+## SYS ARGS:
+# Arg 1: set_name, Arg 2,3...: houses
+
+set_name = sys.argv[1]
 SET_base = SET + "_base"
 output_dir = "/vol/bitbucket/el216/output_scenenet/"
-dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + SET_base + '/' 
-dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
+dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
+# dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
+# label_dir_name = "labels"
+label_dir_name = "label_2"
+
+if not os.path.exists(dataset_dir):
+    os.mkdirs(dataset_dir)
+    print "Created new dir,",dataset_dir
 
 houses = []
 for arg in sys.argv[2:]:
@@ -44,7 +53,7 @@ for houseID in houses:
                         # print 'to dst:', dataset_dir + parent + "_" + basename + "_depth.png"
                 print "Depth pngs of",parent,'has been copied to',SET_base,'dataset'
 
-        if os.path.basename(root) == "labels":
+        if os.path.basename(root) == label_dir_name:
             parent = getParentName(root)
             if parent != "badFrames":
                 for image in files:
@@ -56,48 +65,48 @@ for houseID in houses:
                         # print 'to dst:', dataset_dir + parent + "_" + basename + "_label.png"
                 print "Label pngs of",parent,'has been copied to',SET_base,'dataset'
 
-    if os.path.exists(dataset_txt):
-        with open(dataset_txt,'r') as file:
-            data = file.readlines()
-    else:
-        data = []
+    # if os.path.exists(dataset_txt):
+    #     with open(dataset_txt,'r') as file:
+    #         data = file.readlines()
+    # else:
+    #     data = []
 
-    if len(data) < 5:
-        data = []
-        data.append("CNN Dataset Overview\n")
-        data.append("Train base set:\n")
-        data.append("\n")
-        data.append("Val base set:\n")
-        data.append("\n")
-        data.append("Test base set:\n")
-        data.append("\n")
+    # if len(data) < 5:
+    #     data = []
+    #     data.append("CNN Dataset Overview\n")
+    #     data.append("Train base set:\n")
+    #     data.append("\n")
+    #     data.append("Val base set:\n")
+    #     data.append("\n")
+    #     data.append("Test base set:\n")
+    #     data.append("\n")
 
-    size = int(len([f for f in os.listdir(dataset_dir)]) / 3.0)
-    if SET == "train":
-        data[1] = "Train base set: size "+str(size)+"\n"
-        print 'Train base set current size:',str(size)
-        set_houses = data[2].split()
-        if houseID not in set_houses:
-            set_houses.append(houseID)
-        data[2] = ' '.join(set_houses) + "\n"
+    # size = int(len([f for f in os.listdir(dataset_dir)]) / 3.0)
+    # if SET == "train":
+    #     data[1] = "Train base set: size "+str(size)+"\n"
+    #     print 'Train base set current size:',str(size)
+    #     set_houses = data[2].split()
+    #     if houseID not in set_houses:
+    #         set_houses.append(houseID)
+    #     data[2] = ' '.join(set_houses) + "\n"
        
-    elif SET == "val":
-        data[3] = "Val base set: size "+str(size)+"\n"
-        print 'Val base set current size:',str(size)
-        set_houses = data[4].split()
-        if houseID not in set_houses:
-            set_houses.append(houseID)
-        data[4] = ' '.join(set_houses) + "\n"
+    # elif SET == "val":
+    #     data[3] = "Val base set: size "+str(size)+"\n"
+    #     print 'Val base set current size:',str(size)
+    #     set_houses = data[4].split()
+    #     if houseID not in set_houses:
+    #         set_houses.append(houseID)
+    #     data[4] = ' '.join(set_houses) + "\n"
 
-    elif SET == "test":
-        data[5] = "Test base set: size "+str(size)+"\n"
-        print 'Test base set current size:',str(size)
-        set_houses = data[6].split()
-        if houseID not in set_houses:
-            set_houses.append(houseID)
-        data[6] = ' '.join(set_houses) + "\n"
+    # elif SET == "test":
+    #     data[5] = "Test base set: size "+str(size)+"\n"
+    #     print 'Test base set current size:',str(size)
+    #     set_houses = data[6].split()
+    #     if houseID not in set_houses:
+    #         set_houses.append(houseID)
+    #     data[6] = ' '.join(set_houses) + "\n"
 
-    with open(dataset_txt,'w') as file:
-        file.writelines(data)
+    # with open(dataset_txt,'w') as file:
+    #     file.writelines(data)
 
 
