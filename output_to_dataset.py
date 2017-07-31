@@ -10,7 +10,7 @@ def getParentName(path):
 # Arg 1: set_name, Arg 2,3...: houses
 
 set_name = sys.argv[1]
-SET_base = SET + "_base"
+#SET_base = SET + "_base"
 output_dir = "/vol/bitbucket/el216/output_scenenet/"
 dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
 # dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
@@ -18,16 +18,16 @@ dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/'
 label_dir_name = "label_2"
 
 if not os.path.exists(dataset_dir):
-    os.mkdirs(dataset_dir)
+    os.mkdir(dataset_dir)
     print "Created new dir,",dataset_dir
 
-houses = []
-for arg in sys.argv[2:]:
-    houses.append(arg)
+houses = sys.argv[2:]
+#for arg in sys.argv[2:]:
+    #houses.append(arg)
 
 for houseID in houses:
     house_output_dir = os.path.join(output_dir, houseID)
-
+    print "Copying images of",houseID,".."
     for root, dirs, files in os.walk(house_output_dir):
         if os.path.basename(root) == "photo":
             parent = getParentName(root)
@@ -39,7 +39,7 @@ for houseID in houses:
                         shutil.copy(im_path, dataset_dir + parent + "_" + basename + "_rgb.jpg")
                         # print 'moved im_path:', im_path
                         # print 'to dst:', dataset_dir + parent + "_" + basename + "_rgb.jpg"
-                print "RGB images of",parent,'has been copied to',SET_base,'dataset'
+                print "RGB images of",parent,'has been copied to',set_name,'dataset'
 
         if os.path.basename(root) == "depth":
             parent = getParentName(root)
@@ -51,7 +51,7 @@ for houseID in houses:
                         shutil.copy(im_path, dataset_dir + parent + "_" + basename + "_depth.png")
                         # print 'moved im_path:', im_path
                         # print 'to dst:', dataset_dir + parent + "_" + basename + "_depth.png"
-                print "Depth pngs of",parent,'has been copied to',SET_base,'dataset'
+                print "Depth pngs of",parent,'has been copied to',set_name,'dataset'
 
         if os.path.basename(root) == label_dir_name:
             parent = getParentName(root)
@@ -63,7 +63,8 @@ for houseID in houses:
                         shutil.copy(im_path, dataset_dir + parent + "_" + basename + "_label.png")
                         # print 'moved im_path:', im_path
                         # print 'to dst:', dataset_dir + parent + "_" + basename + "_label.png"
-                print "Label pngs of",parent,'has been copied to',SET_base,'dataset'
+                print "Label pngs of",parent,'has been copied to',set_name,'dataset'
+print "Size in",dataset_dir,":",(len([f for f in os.listdir(dataset_dir)])/3.0)
 
     # if os.path.exists(dataset_txt):
     #     with open(dataset_txt,'r') as file:
