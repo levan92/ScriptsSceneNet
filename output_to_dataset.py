@@ -11,11 +11,13 @@ def getParentName(path):
 
 set_name = sys.argv[1]
 houses = sys.argv[2:]
-output_dir = "/vol/bitbucket/el216/output_scenenet/"
-dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
+# output_dir = "/vol/bitbucket/el216/output_scenenet/"
+output_dir = "/scratch/el216/output_scenenet_bk_1stAug/"
+#dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
+dataset_dir = "/scratch/el216/scenenet_dataset/"+set_name+"/"
 # dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 # label_dir_name = "labels"
-label_dir_name = "label_2"
+label_dir_name = "labels_2"
 
 if not os.path.exists(dataset_dir):
     os.mkdir(dataset_dir)
@@ -23,7 +25,7 @@ if not os.path.exists(dataset_dir):
 
 for house in houses:
     house_path = os.path.join(output_dir, house)
-    print "Copying images of",house,".."
+    print ("Copying images of",house,"..")
     for room in os.scandir(house_path):
         photo_dir_path = os.path.join(room.path, 'photo')
         for image in os.scandir(photo_dir_path):
