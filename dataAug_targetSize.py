@@ -97,7 +97,7 @@ def aug_and_save(items, seq, hooks_labels, save_dir):
     save_images(depths_aug, "depth", items, save_dir)
     return None
 
-def main(dataset_dir, save_dir_name target_size):
+def main(dataset_dir, save_dir_name, target_size):
     chunk_size = 3000
     # set_name = os.path.basename(dataset_dir).split('_')[0]
     save_dir = os.path.join(os.path.join(dataset_dir,".."),save_dir_name)
@@ -162,4 +162,4 @@ def main(dataset_dir, save_dir_name target_size):
            len(next(os.walk(save_dir))[2])/3 
 
 if __name__ == '__main__':
-    main(os.path.normpath(sys.argv[1]),os.path.normpath(sys.argv[2]),int(sys.argv[3]))
+    main(os.path.normpath(sys.argv[1]),sys.argv[2],int(sys.argv[3]))
