@@ -6,6 +6,8 @@ import numpy as np
 from shutil import copy2
 
 def main(set_base_path, set_path, req_size):
+    if not os.path.exists(set_path):
+        os.mkdir(set_path)
     rooms = []
     images_in_rooms = []
     total_num = 0
