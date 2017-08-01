@@ -10,7 +10,7 @@ def getParentName(path):
 # Arg 1: set_name, Arg 2,3...: houses
 
 set_name = sys.argv[1]
-#SET_base = SET + "_base"
+houses = sys.argv[2:]
 output_dir = "/vol/bitbucket/el216/output_scenenet/"
 dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
 # dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
@@ -19,52 +19,44 @@ label_dir_name = "label_2"
 
 if not os.path.exists(dataset_dir):
     os.mkdir(dataset_dir)
-    print "Created new dir,",dataset_dir
+    print ("Created new dir,",dataset_dir)
 
-houses = sys.argv[2:]
-#for arg in sys.argv[2:]:
-    #houses.append(arg)
+for house in houses:
+    house_path = os.path.join(output_dir, house)
+    print "Copying images of",house,".."
+    for room in os.scandir(house_path):
+        photo_dir_path = os.path.join(room.path, 'photo')
+        for image in os.scandir(photo_dir_path):
+            if image.name.endswith(".jpg"):
+                frame_num = os.path.splitext(image.name)[0]
+                new_name = room.name + '_' + frame_num + '_rgb.jpg'
+                new_path = os.path.join(dataset_dir, new_name)
+                shutil.copy(image.path, new_path)
+        print ("RGB images of",room.name,'has been copied to',
+               set_name,'dataset')
 
-for houseID in houses:
-    house_output_dir = os.path.join(output_dir, houseID)
-    print "Copying images of",houseID,".."
-    for root, dirs, files in os.walk(house_output_dir):
-        if os.path.basename(root) == "photo":
-            parent = getParentName(root)
-            if parent != "badFrames":
-                for image in files:
-                    if image.endswith(".jpg"):
-                        im_path = os.path.join(root, image)
-                        basename = os.path.splitext(image)[0]
-                        shutil.copy(im_path, dataset_dir + parent + "_" + basename + "_rgb.jpg")
-                        # print 'moved im_path:', im_path
-                        # print 'to dst:', dataset_dir + parent + "_" + basename + "_rgb.jpg"
-                print "RGB images of",parent,'has been copied to',set_name,'dataset'
+        depth_dir_path = os.path.join(room.path, 'depth')
+        for image in os.scandir(depth_dir_path):
+            if image.name.endswith(".png"):
+                frame_num = os.path.splitext(image.name)[0]
+                new_name = room.name + '_' + frame_num + '_depth.png'
+                new_path = os.path.join(dataset_dir, new_name)
+                shutil.copy(image.path, new_path)
+        print ("Depth images of",room.name,'has been copied to',
+               set_name,'dataset')
 
-        if os.path.basename(root) == "depth":
-            parent = getParentName(root)
-            if parent != "badFrames":
-                for image in files:
-                    if image.endswith(".png"):
-                        im_path = os.path.join(root, image)
-                        basename = os.path.splitext(image)[0]
-                        shutil.copy(im_path, dataset_dir + parent + "_" + basename + "_depth.png")
-                        # print 'moved im_path:', im_path
-                        # print 'to dst:', dataset_dir + parent + "_" + basename + "_depth.png"
-                print "Depth pngs of",parent,'has been copied to',set_name,'dataset'
+        label_dir_path = os.path.join(room.path, label_dir_name)
+        for image in os.scandir(label_dir_path):
+            if image.name.endswith(".png"):
+                frame_num = os.path.splitext(image.name)[0]
+                new_name = room.name + '_' + frame_num + '_label.png'
+                new_path = os.path.join(dataset_dir, new_name)
+                shutil.copy(image.path, new_path)
+        print ("Label images of",room.name,'has been copied to',
+               set_name,'dataset')
 
-        if os.path.basename(root) == label_dir_name:
-            parent = getParentName(root)
-            if parent != "badFrames":
-                for image in files:
-                    if image.endswith(".png"):
-                        im_path = os.path.join(root, image)
-                        basename = os.path.splitext(image)[0]
-                        shutil.copy(im_path, dataset_dir + parent + "_" + basename + "_label.png")
-                        # print 'moved im_path:', im_path
-                        # print 'to dst:', dataset_dir + parent + "_" + basename + "_label.png"
-                print "Label pngs of",parent,'has been copied to',set_name,'dataset'
-print "Size in",dataset_dir,":",(len([f for f in os.listdir(dataset_dir)])/3.0)
+print ("Size in",dataset_dir,":",
+       (len([f for f in os.listdir(dataset_dir)])/3.0))
 
     # if os.path.exists(dataset_txt):
     #     with open(dataset_txt,'r') as file:
