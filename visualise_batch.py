@@ -2,6 +2,7 @@ from scipy import misc
 import matplotlib.pyplot as plt
 import sys
 import os
+import argparse
 
 def main(root_folder, suffix):
     vis_folder = os.path.join(root_folder,"Visualisations")
@@ -26,4 +27,10 @@ def main(root_folder, suffix):
             plt.clf()
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('root_folder',help='directory of labels', type=str)
+    parser.add_argument('suffix',help='which labels to visualise', type=str)
+    args = parser.parse_args()
+    root_folder = os.path.normpath(args.root_folder)
+    suffix = args.suffix
+    main(root_folder, suffix)
