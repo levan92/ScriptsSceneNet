@@ -3,30 +3,28 @@ import os
 import linecache
 from pathlib import Path
 import itertools
+import argparse
 
-def main(dataset_dir = None):
-    if dataset_dir is None:
-        dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/"
-    dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
-
+def main(sets, dataset_dir):
+    num = [i for i in sets[0].split('_') if i.isdigit()][0]
+    dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_" + num + "_overview.txt"
     # train_houses_old = linecache.getline(dataset_txt, 3).split()
     # val_houses_old = linecache.getline(dataset_txt, 5).split()
     # train_houses = []
     # val_houses = []
     # test_houses = []
-
-    sets = ['train_base','val_base','test_base']
     houses_sets = [[] for i in range(len(sets))]
     sizes_sets = []
-
     for i, set_ in enumerate(sets):
         set_path = os.path.join(dataset_dir,set_)
         n = 0
         for file_ in Path(set_path).iterdir():
+            if str(file_).startswith('.') or not file_.is_file():
+                continue
             image = os.path.basename(str(file_))
-	    if image.endswith(".jpg") or image.endswith(".png"):
+            if image.endswith(".jpg") or image.endswith(".png"):
                 house = image.split('_',1)[0]
-		if "aug" in image:
+                if "aug" in image:
                     aug_str = image.split('_')[3]
                     house = house + "_" + aug_str
                 if house not in houses_sets[i]:
@@ -35,7 +33,6 @@ def main(dataset_dir = None):
         if n%3:
             print "Warning: Something is missing from train"
         sizes_sets.append((n/3.0))
-       
     data = []
     data.append("CNN Dataset Overview\n")
     for i, set_  in enumerate(sets):
@@ -46,10 +43,8 @@ def main(dataset_dir = None):
         data.append(' '.join(set_houses) + "\n")
         print set_,'set houses:',' '.join(set_houses)
         print ''
-
     with open(dataset_txt,'w') as file:
         file.writelines(data)
-
     for [i, j] in itertools.combinations(range(len(sets)), 2):
         print "Overlapping houses btwn", sets[i], "&", sets[j],":", \
               list(set(houses_sets[i])&set(houses_sets[j]))
@@ -57,8 +52,14 @@ def main(dataset_dir = None):
     # print "Overlapping houses btwn train & test:", list(set(train_houses)&set(test_houses))
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2: main(sys.argv[1])
-    else: main()      
+    dataset_dir = "/scratch/el216/scenenet_dataset/"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('sets', type=str, nargs=3, 
+                         help='specify set names of train, val and test')
+    parser.add_argument('--dataset_dir', type=str, nargs='?', 
+                        const=dataset_dir, help='path where dataset is in')
+    args = parser.parse_args()
+    main(args.sets, os.path.normpath(args.dataset_dir))      
             
        
     # data.append("Val base set: size "+str(val_size)+"\n")
