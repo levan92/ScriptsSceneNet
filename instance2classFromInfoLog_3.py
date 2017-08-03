@@ -112,6 +112,8 @@ def main(output_dir):
             continue
         print ('Generating labels for house',house.name)
         for room in os.scandir(house.path):
+            if room.name.startswith('.') or not room.is_dir():
+                continue
             room_path = room.path
             infoLog_path = os.path.join(room_path, 'infoNew.log')
             INSTANCE_TO_WNID = readInfoLog(infoLog_path)
@@ -120,6 +122,8 @@ def main(output_dir):
                 os.makedirs(label_path)
             instance_dir = os.path.join(room_path, 'instance')
             for inst_png in os.scandir(instance_dir):
+                if not inst_png.name.endswith('.png'):
+                    continue
                 inst_png_path = inst_png.path
                 im = Image.open(inst_png_path)
                 pix = im.load()
