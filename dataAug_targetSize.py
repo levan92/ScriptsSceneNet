@@ -7,6 +7,7 @@ import numpy as np
 import os
 import math
 import random
+import argparse
 
 def get_base_item_paths(path):
     items = []
@@ -162,4 +163,10 @@ def main(dataset_dir, save_dir_name, target_size):
            len(next(os.walk(save_dir))[2])/3 
 
 if __name__ == '__main__':
-    main(os.path.normpath(sys.argv[1]),sys.argv[2],int(sys.argv[3]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('dataset_dir', type=str, help='Directory of images to be augmented')
+    parser.add_argument('save_dir_name', type=str, 
+                         help='Save directory name (will be saved in the same dir)')
+    parser.add_argument('target_size', type=int, help='Target number of total augmented images')
+    args = parser.parse_args()
+    main(os.path.normpath(args.dataset_dir), args.save_dir_name, int(args.target_size))
