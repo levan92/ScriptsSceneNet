@@ -14,7 +14,7 @@ def removeListsFromList(main, lists):
                 main.remove(element)
     return main
 
-output_dir = "/vol/bitbucket/el216/output_scenenet/"
+output_dir = "/scratch/el216/output_scenenet/"
 houses_overview_txt = "/homes/el216/Workspace/ScriptsSceneNet/houses_overview.txt"
 dataset_file = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
 train_houses = linecache.getline(dataset_file, 3).split()
@@ -35,14 +35,14 @@ for house in houses:
     size = 0
     for room in os.listdir(house_path):
         room_path = os.path.join(house_path, room)
-	if "badFrames" not in os.listdir(room_path):
+    	if "badFrames" not in os.listdir(room_path):
             print "WARNING:",house,"has not been post-processed!"
         photo_dir_path = os.path.join(room_path,"photo")
-	for image in os.listdir(photo_dir_path):
+    	for image in os.listdir(photo_dir_path):
             if image.endswith(".jpg"): 
-		size+=1
+        		size+=1
     if size == 0: 
-        print "Removed",house,"as size is ",size
+        print house,"is empty! Please remove."
         empty_houses.append(house)
     else:
         print >> f, house, size
