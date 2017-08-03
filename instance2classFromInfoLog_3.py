@@ -108,7 +108,7 @@ def readInfoLog(infoLogFile):
 
 def main(output_dir):
     for house in os.scandir(output_dir):
-        if house.name.startswith('.'):
+        if house.name.startswith('.') or not house.is_dir():
             continue
         print ('Generating labels for house',house.name)
         for room in os.scandir(house.path):
