@@ -2,63 +2,56 @@ import numpy as np
 import sys
 import os
 import shutil
+import argparse
 
 def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
-## SYS ARGS:
-# Arg 1: set_name, Arg 2,3...: houses
+def main(set_name, label_dir_name, houses):
+    # output_dir = "/vol/bitbucket/el216/output_scenenet/"
+    output_dir = "/scratch/el216/output_scenenet/"
+    #dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
+    dataset_dir = "/scratch/el216/scenenet_dataset/"+set_name+"/"
+    # dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
+    if not os.path.exists(dataset_dir):
+        os.mkdir(dataset_dir)
+        print ("Created new dir,",dataset_dir)
+    for house in houses:
+        house_path = os.path.join(output_dir, house)
+        print ("Copying images of",house,"..")
+        for room in os.scandir(house_path):
+            if room.name.startswith('.') or not room.is_dir():
+                continue
+            photo_dir_path = os.path.join(room.path, 'photo')
+            for image in os.scandir(photo_dir_path):
+                if not image.name.startswith('.') and image.name.endswith(".jpg"):
+                    frame_num = os.path.splitext(image.name)[0]
+                    new_name = room.name + '_' + frame_num + '_rgb.jpg'
+                    new_path = os.path.join(dataset_dir, new_name)
+                    shutil.copy(image.path, new_path)
+            print ("RGB images of",room.name,'has been copied to',
+                   set_name,'dataset')
+            depth_dir_path = os.path.join(room.path, 'depth')
+            for image in os.scandir(depth_dir_path):
+                if not image.name.startswith('.') and image.name.endswith(".png"):
+                    frame_num = os.path.splitext(image.name)[0]
+                    new_name = room.name + '_' + frame_num + '_depth.png'
+                    new_path = os.path.join(dataset_dir, new_name)
+                    shutil.copy(image.path, new_path)
+            print ("Depth images of",room.name,'has been copied to',
+                   set_name,'dataset')
+            label_dir_path = os.path.join(room.path, label_dir_name)
+            for image in os.scandir(label_dir_path):
+                if not image.name.startswith('.') and image.name.endswith(".png"):
+                    frame_num = os.path.splitext(image.name)[0]
+                    new_name = room.name + '_' + frame_num + '_label.png'
+                    new_path = os.path.join(dataset_dir, new_name)
+                    shutil.copy(image.path, new_path)
+            print ("Label images of",room.name,'has been copied to',
+                   set_name,'dataset')
+    print ("Size in",dataset_dir,":",
+           (len([f for f in os.listdir(dataset_dir)])/3.0))
 
-set_name = sys.argv[1]
-houses = sys.argv[2:]
-# output_dir = "/vol/bitbucket/el216/output_scenenet/"
-output_dir = "/scratch/el216/output_scenenet_bk_1stAug/"
-#dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
-dataset_dir = "/scratch/el216/scenenet_dataset/"+set_name+"/"
-# dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
-# label_dir_name = "labels"
-label_dir_name = "labels_2"
-
-if not os.path.exists(dataset_dir):
-    os.mkdir(dataset_dir)
-    print ("Created new dir,",dataset_dir)
-
-for house in houses:
-    house_path = os.path.join(output_dir, house)
-    print ("Copying images of",house,"..")
-    for room in os.scandir(house_path):
-        photo_dir_path = os.path.join(room.path, 'photo')
-        for image in os.scandir(photo_dir_path):
-            if image.name.endswith(".jpg"):
-                frame_num = os.path.splitext(image.name)[0]
-                new_name = room.name + '_' + frame_num + '_rgb.jpg'
-                new_path = os.path.join(dataset_dir, new_name)
-                shutil.copy(image.path, new_path)
-        print ("RGB images of",room.name,'has been copied to',
-               set_name,'dataset')
-
-        depth_dir_path = os.path.join(room.path, 'depth')
-        for image in os.scandir(depth_dir_path):
-            if image.name.endswith(".png"):
-                frame_num = os.path.splitext(image.name)[0]
-                new_name = room.name + '_' + frame_num + '_depth.png'
-                new_path = os.path.join(dataset_dir, new_name)
-                shutil.copy(image.path, new_path)
-        print ("Depth images of",room.name,'has been copied to',
-               set_name,'dataset')
-
-        label_dir_path = os.path.join(room.path, label_dir_name)
-        for image in os.scandir(label_dir_path):
-            if image.name.endswith(".png"):
-                frame_num = os.path.splitext(image.name)[0]
-                new_name = room.name + '_' + frame_num + '_label.png'
-                new_path = os.path.join(dataset_dir, new_name)
-                shutil.copy(image.path, new_path)
-        print ("Label images of",room.name,'has been copied to',
-               set_name,'dataset')
-
-print ("Size in",dataset_dir,":",
-       (len([f for f in os.listdir(dataset_dir)])/3.0))
 
     # if os.path.exists(dataset_txt):
     #     with open(dataset_txt,'r') as file:
@@ -104,4 +97,14 @@ print ("Size in",dataset_dir,":",
     # with open(dataset_txt,'w') as file:
     #     file.writelines(data)
 
-
+## SYS ARGS:
+# Arg 1: set_name, Arg 2,3...: houses
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('set_name', type=str, help='name of set to be created')
+    parser.add_argument('label_dir_name', type=str, 
+                        help='name of label dir to use, usually labels, labels_2, labels_3')
+    parser.add_argument('houses', type=str, nargs='+', 
+                        help='houses to move into the set, separated by space')
+    args = parser.parse_args()
+    main(args.set_name, args.label_dir_name, args.houses)
