@@ -94,6 +94,8 @@ TRAIN_CLASSES = [(0,'Unknown'),
                                  (3,'Objects'),
 ]
 
+label_folder_name = 'labels_3'
+
 def readInfoLog(infoLogFile):
     INSTANCE_TO_WNID = {}
     f = open(infoLogFile, 'r')
@@ -112,9 +114,9 @@ def main(output_dir):
             room_path = room.path
             infoLog_path = os.path.join(room_path, 'infoNew.log')
             INSTANCE_TO_WNID = readInfoLog(infoLog_path)
-            label_2_path = os.path.join(room_path, 'labels_2')
-            if not os.path.exists(label_2_path):
-                os.makedirs(label_2_path)
+            label_path = os.path.join(room_path, label_folder_name)
+            if not os.path.exists(label_path):
+                os.makedirs(label_path)
             instance_dir = os.path.join(room_path, 'instance')
             for inst_png in os.scandir(instance_dir):
                 inst_png_path = inst_png.path
@@ -128,7 +130,7 @@ def main(output_dir):
                         NYU = WNID_TO_NYU_CLASS.get(WNID, 0)
                         CLASS = NYU_14_CLASS_TO_TRAIN_CLASSES.get(NYU)
                         pix[x,y] = CLASS
-                new_label_path = os.path.join(label_2_path, inst_png.name)
+                new_label_path = os.path.join(label_path, inst_png.name)
                 # print('saving as',new_label_path)
                 im.save(new_label_path)
         print ('All Labels generated for',house.name)
