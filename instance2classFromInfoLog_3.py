@@ -108,9 +108,10 @@ def readInfoLog(infoLogFile):
 
 def main(output_dir):
     for house in os.scandir(output_dir):
-        house_path = house.path
+        if house.name.startswith('.'):
+            continue
         print ('Generating labels for house',house.name)
-        for room in os.scandir(house_path):
+        for room in os.scandir(house.path):
             room_path = room.path
             infoLog_path = os.path.join(room_path, 'infoNew.log')
             INSTANCE_TO_WNID = readInfoLog(infoLog_path)
