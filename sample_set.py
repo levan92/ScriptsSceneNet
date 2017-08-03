@@ -4,6 +4,7 @@ import pathlib
 import itertools
 import numpy as np
 from shutil import copy2
+import argparse
 
 def main(set_base_path, set_path, req_size):
     if not os.path.exists(set_path):
@@ -58,4 +59,9 @@ def main(set_base_path, set_path, req_size):
 
 
 if __name__ == "__main__":
-    main(os.path.normpath(sys.argv[1]), os.path.normpath(sys.argv[2]), int(sys.argv[3]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('set_base_path', type=str, help='Path to dataset_base')
+    parser.add_argument('set_path', type=str, help='Path to directory to save sampled data in')
+    parser.add_argument('req_size', type=int, help='Required sampling size')
+    args = parser.parse_args()
+    main(os.path.normpath(args.set_base_path), os.path.normpath(args.set_path), int(args.req_size))
