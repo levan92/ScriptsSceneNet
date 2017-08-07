@@ -16,11 +16,11 @@ def get_base_item_paths(path):
         # if str(p).endswith('_rgb.jpg'):
             depth_path = str(p).replace('_rgb.jpg','_depth.png')
             if not os.path.exists(depth_path): 
-                print depth_path,'does not exist.'
+                print 'INFO:',depth_path,'does not exist.'
                 depth_path = ''
             label_path = str(p).replace('_rgb.jpg','_label.png')
             if not os.path.exists(label_path): 
-                print label_path,'does not exist.'
+                print 'INFO:',label_path,'does not exist.'
                 label_path = ''
             items.append({'image':str(p), 
                           'depth':depth_path, 
@@ -82,20 +82,23 @@ def save_images(images, type, items, root_dir):
         # print save_path,'saved.'
 
 def aug_and_save(items, seq, hooks_labels, save_dir):
-    images = [i['image'] for i in items if 'image' in i]
-    labels = [i['label'] for i in items if 'label' in i]
-    depths = [i['depth'] for i in items if 'depth' in i]
+    images = [i['image'] for i in items if i['image']]
+    labels = [i['label'] for i in items if i['label']]
+    depths = [i['depth'] for i in items if i['depth']]
     seq_det = seq.to_deterministic()
-    images_aug = seq_det.augment_images(images)
-    images_aug = resize_linear(images_aug)
-    labels_aug = seq_det.augment_images(labels, hooks=hooks_labels)
-    labels_aug = resize_nearest(labels_aug)
-    depths_aug = seq_det.augment_images(depths, hooks=hooks_labels)
-    depths_aug = resize_linear(depths_aug)
+    if images:
+        images_aug = seq_det.augment_images(images)
+        images_aug = resize_linear(images_aug)
+        save_images(images_aug, "rgb", items, save_dir)
+    if labels:
+        labels_aug = seq_det.augment_images(labels, hooks=hooks_labels)
+        labels_aug = resize_nearest(labels_aug)
+        save_images(labels_aug, "label", items, save_dir)
+    if depths:
+        depths_aug = seq_det.augment_images(depths, hooks=hooks_labels)
+        depths_aug = resize_linear(depths_aug)
+        save_images(depths_aug, "depth", items, save_dir)
     # print "Saving augmented images..."
-    save_images(images_aug, "rgb", items, save_dir)
-    save_images(labels_aug, "label", items, save_dir)
-    save_images(depths_aug, "depth", items, save_dir)
     return None
 
 def main(dataset_dir, save_dir_name, target_size):
@@ -159,7 +162,7 @@ def main(dataset_dir, save_dir_name, target_size):
         aug_and_save(rem_items, seq, hooks_labels, save_dir)
         i_chunk += 1
 
-    print "Size in augmented dataset:", \
+    print "Num of files in augmented dataset:", \
            len(next(os.walk(save_dir))[2])/3 
 
 if __name__ == '__main__':
