@@ -82,9 +82,9 @@ def save_images(images, type, items, root_dir):
         # print save_path,'saved.'
 
 def aug_and_save(items, seq, hooks_labels, save_dir):
-    images = [i['image'] for i in items if i['image']]
-    labels = [i['label'] for i in items if i['label']]
-    depths = [i['depth'] for i in items if i['depth']]
+    images = [i['image'] for i in items if len(i['image'])]
+    labels = [i['label'] for i in items if len(i['label'])]
+    depths = [i['depth'] for i in items if len(i['depth'])]
     seq_det = seq.to_deterministic()
     if images:
         images_aug = seq_det.augment_images(images)
@@ -163,7 +163,7 @@ def main(dataset_dir, save_dir_name, target_size):
         i_chunk += 1
 
     print "Num of files in augmented dataset:", \
-           len(next(os.walk(save_dir))[2])/3 
+           len(next(os.walk(save_dir))[2]) 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
