@@ -7,6 +7,7 @@ from matplotlib.patches import Rectangle
 import time
 from MinimumBoundingBox import minimum_bounding_box
 import math
+import argparse
 
 def findNeighbours(pixel, pixels_objects, neighbour_dist):
     object_group = []
@@ -34,6 +35,31 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
         obj_bb = object_group
     return object_group, obj_loc, obj_bb, pixels_objects
 
+def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
+    # cam_pose: x, y, z, theta(about y), look-down angle
+    # cam_info: hFoV, vFoV, focal length
+    hFoV, vFoV, f_l = cam_info
+    height_pix, width_pix = image_size
+    scaling = np.tan(np.deg2rad(hFoV/2.0)) * f_l * 2 / width_pix 
+    scaling = np.tan(np.deg2rad(vFoV/2.0)) * f_l * 2 / height_pix 
+    y_c = (height_pix/2.0 - obj_loc_pix[0]) * scaling
+    x_c = (width_pix/2.0 - obj_loc_pix[1]) * scaling
+    p_c = np.array([x_c, y_c, f_l])
+    print p_c
+    cam_x, cam_y, cam_z, theta, alpha = cam_pose
+    R_wc = np.array([
+    [np.cos(theta), 0, np.sin(theta)],
+    [np.sin(alpha)*np.sin(theta), np.cos(alpha), -np.sin(alpha)*np.cos(theta)],
+    [-np.cos(alpha)*np.sin(theta), np.sin(alpha), np.cos(alpha)*np.cos(theta)]
+                     ])
+    p_w = np.dot(R_wc,p_c)
+    p_0_w = np.array([cam_x, cam_y, cam_z])
+    v = p_w - p_0_w
+    mu = (floorHeight - p_0_w[1]) / v[1]
+    obj_loc_w_zx = np.array([p_0_w[2] + mu * v[2],  #z
+                             p_0_w[0] + mu * v[0]]) #x
+    return obj_loc_w_zx
+
 def main(pred_path):
     start = time.time()
     
@@ -41,6 +67,18 @@ def main(pred_path):
     neighbour_dist = 1 # <= 2 tiles away is considered neighbour
     obj_min_size = 10 #needs to be more than this size to be considered obj
     
+    # Cam and Pose info
+    cam_info = [56.144973871705915, 43.60281897270362, 0.20]
+                #hFoV, vFoV, focal length (m?)
+    floorHeight = 0.05 
+    robotH = 0.2
+    lookdown_angle = np.deg2rad(22.5)
+    cam_pose = np.array([0.,                    #x
+                         floorHeight + robotH,  #y
+                         0.,                    #z
+                         np.deg2rad(125),   #facing direction
+                         lookdown_angle])  #look-down angle
+
     pred_image = misc.imread(pred_path)
     # cropped_image = pred_image[FG_threshold_i:]
     height, width = np.shape(pred_image)
@@ -64,20 +102,23 @@ def main(pred_path):
     axes.set_ylim([0,height])
     axes.invert_yaxis()
     for i in range(len(objects)):
+        # print objs_loc[i]
         y,x = zip(*objects[i]) 
         plt.scatter(x=x, y=y,marker=".",s=3)
         plt.plot(objs_loc[i][1],objs_loc[i][0],'r.')
         obj_bb = objs_bb[i]
         obj_bb = [[point[1],point[0]] for point in obj_bb]
         axes.add_patch(plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r'))
-        # min_bb = objs_bb[i][0]
-        # max_bb = objs_bb[i][1]
-        # axes.add_patch(Rectangle((min_bb[1],min_bb[0]),
-        #                 max_bb[1] - min_bb[1],
-        #                 max_bb[0] - min_bb[0], fc="none", ec='r'))
+        obj_loc_zx = getWorldLoc(objs_loc[i], cam_pose, cam_info, floorHeight, [height, width])
+        print 'Coord(zx) of object in room:',obj_loc_zx
+
     savename = pred_path.replace('.png','_grouped.png')
     plt.savefig(savename)
     plt.show()
 
 if __name__ == "__main__":
-    main(os.path.normpath(sys.argv[1]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('pred_path', help='path to image to find objects', 
+                        type=str)
+    args = parser.parse_args()
+    main(os.path.normpath(args.pred_path))
