@@ -63,8 +63,8 @@ def printPoseToFile(index, pose, file, camInfoDir, room, frame_num, cam_intrinsi
                 camLoc[2],                #z
                 pose[2],                  #clockwise-angle from z-axis
                 np.deg2rad(camDownAngle)] #look-down angle
-    print >> cam_info_txt, cam_intrinsic
-    print >> cam_info_txt, cam_pose
+    print >> cam_info_txt, cam_intrinsic[0], cam_intrinsic[1], cam_intrinsic[2]
+    print >> cam_info_txt, cam_pose[0], cam_pose[1], cam_pose[2], cam_pose[3] 
 
 # D in m
 def getPose_straight(pose, D):
