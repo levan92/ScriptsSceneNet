@@ -1,13 +1,14 @@
 import numpy as np
-import sys
 import os.path
-from scipy import misc
+from scipy.misc import imread
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
+import matplotlib.cm as cm
 import time
 from MinimumBoundingBox import minimum_bounding_box
-import math
+from math import atan2
 import argparse
+import linecache
 
 def findNeighbours(pixel, pixels_objects, neighbour_dist):
     object_group = []
@@ -30,7 +31,7 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
         min_bb_dict = minimum_bounding_box(object_group)
         obj_bb = list(min_bb_dict.corner_points)
         centroid = min_bb_dict.rectangle_center
-        obj_bb.sort(key=lambda p: math.atan2(p[1]-centroid[1],p[0]-centroid[0]))
+        obj_bb.sort(key=lambda p: atan2(p[1]-centroid[1],p[0]-centroid[0]))
     else:
         obj_bb = object_group
     return object_group, obj_loc, obj_bb, pixels_objects
@@ -38,6 +39,7 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
 def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
     # cam_pose: x, y, z, theta(about y), look-down angle
     # cam_info: hFoV, vFoV, focal length
+    print cam_info
     hFoV, vFoV, f_l = cam_info
     height_pix, width_pix = image_size
     scaling = np.tan(np.deg2rad(hFoV/2.0)) * f_l * 2 / width_pix 
@@ -45,7 +47,6 @@ def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
     y_c = (height_pix/2.0 - obj_loc_pix[0]) * scaling
     x_c = (width_pix/2.0 - obj_loc_pix[1]) * scaling
     p_c = np.array([x_c, y_c, f_l])
-    print p_c
     cam_x, cam_y, cam_z, theta, alpha = cam_pose
     R_wc = np.array([
     [np.cos(theta), 0, np.sin(theta)],
@@ -60,7 +61,7 @@ def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
                              p_0_w[0] + mu * v[0]]) #x
     return obj_loc_w_zx
 
-def main(pred_path):
+def main(pred_path, cam_info_txt):
     start = time.time()
     
     FG_threshold_i = 50 #anything higher than i = 50 will be ignored
@@ -68,18 +69,22 @@ def main(pred_path):
     obj_min_size = 10 #needs to be more than this size to be considered obj
     
     # Cam and Pose info
-    cam_info = [56.144973871705915, 43.60281897270362, 0.20]
-                #hFoV, vFoV, focal length (m?)
+    cam_info = linecache.getline(cam_info_txt,1)
+    print cam_info
+    cam_pose = np.array(linecache.getline(cam_info_txt,2))
+    print cam_pose
+    # cam_info = [56.144973871705915, 43.60281897270362, 0.20]
+    #             #hFoV, vFoV, focal length (m?)
     floorHeight = 0.05 
-    robotH = 0.2
-    lookdown_angle = np.deg2rad(22.5)
-    cam_pose = np.array([0.,                    #x
-                         floorHeight + robotH,  #y
-                         0.,                    #z
-                         np.deg2rad(125),   #facing direction
-                         lookdown_angle])  #look-down angle
+    # robotH = 0.2
+    # lookdown_angle = np.deg2rad(22.5)
+    # cam_pose = np.array([0.,                    #x
+    #                      floorHeight + robotH,  #y
+    #                      0.,                    #z
+    #                      np.deg2rad(125),   #facing direction
+    #                      lookdown_angle])  #look-down angle
 
-    pred_image = misc.imread(pred_path)
+    pred_image = imread(pred_path)
     # cropped_image = pred_image[FG_threshold_i:]
     height, width = np.shape(pred_image)
     pixels_objects = np.asarray(np.where(pred_image == 3)).T
@@ -101,10 +106,11 @@ def main(pred_path):
     axes.set_xlim([0,width])
     axes.set_ylim([0,height])
     axes.invert_yaxis()
+    colors = cm.jet(np.linspace(0,1,len(objects)))
     for i in range(len(objects)):
         # print objs_loc[i]
         y,x = zip(*objects[i]) 
-        plt.scatter(x=x, y=y,marker=".",s=3)
+        plt.scatter(x=x, y=y,marker=".",s=3, color=colors[i])
         plt.plot(objs_loc[i][1],objs_loc[i][0],'r.')
         obj_bb = objs_bb[i]
         obj_bb = [[point[1],point[0]] for point in obj_bb]
@@ -120,5 +126,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('pred_path', help='path to image to find objects', 
                         type=str)
+    parser.add_argument('cam_info_txt', help='corresponding camInfo.txt to frame',
+                        type=str)
     args = parser.parse_args()
-    main(os.path.normpath(args.pred_path))
+    main(os.path.normpath(args.pred_path), os.path.normpath(args.cam_info_txt))
