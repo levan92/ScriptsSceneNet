@@ -5,6 +5,8 @@ import matplotlib
 matplotlib.use('Agg')
 from pylab import *
 np.set_printoptions(threshold=np.nan)
+import argparse
+import os 
 
 ### Functions
 #initialise poses.txt with default heading lines
@@ -32,7 +34,8 @@ def robotOutOfRoom(pose, room):
     return False
 
 #prints camera and look at points to file
-def printPoseToFile(index, pose, file):
+def printPoseToFile(index, pose, file, camInfoDir, room, frame_num, cam_intrinsic, camDownAngle):
+    # generate pose to pose txt
     camLoc = np.zeros(3)
     lookAtLoc = np.zeros(3)
     # x
@@ -51,6 +54,17 @@ def printPoseToFile(index, pose, file):
     print >> file, index, \
              camLoc[0], camLoc[1], camLoc[2], \
              lookAtLoc[0], lookAtLoc[1], lookAtLoc[2]
+
+    # generate cam info txt
+    cam_info_txt_name = str(room) + '_' + str(frame_num) + '_camInfo.txt'
+    cam_info_txt = open(os.path.join(camInfoDir, cam_info_txt_name),'w')
+    cam_pose = [camLoc[0],                #x
+                camLoc[1],                #y
+                camLoc[2],                #z
+                pose[2],                  #clockwise-angle from z-axis
+                np.deg2rad(camDownAngle)] #look-down angle
+    print >> cam_info_txt, cam_intrinsic
+    print >> cam_info_txt, cam_pose
 
 # D in m
 def getPose_straight(pose, D):
@@ -131,6 +145,8 @@ def nearLights(r, pose):
     if dist < nearLightsRadius: return True
     else: return False
 
+### Main
+
 ### User variables
 # robot parameters
 robotD = 0.30 # diameter in m
@@ -144,11 +160,21 @@ robotV_turn = 45 # turning speed in deg/s
 timeStep = 0.1 # simulation time step in sec
 # capture a frame every [frameStep] timeSteps
 # frameStep = 20 
-frameStep = int(sys.argv[2])
+# frameStep = int(sys.argv[2])
 nearLightsRadius = 5.0 #max dist in m to nearest light for pose to be printed 
+#Camera instrinsic parameters:
+cam_intrinsic = [56.144973871705915, 43.60281897270362, 0.20]
+                #hFoV, vFoV, focal length
+#Single room generating mode
+single_room = 2
+# single_room = None
 
-### Main
-houseID = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('houseID', help='house to be processed')
+parser.add_argument('frameStep', help='capture frame every [frameStep] x 0.1sec', type=int)
+args = parser.parse_args()
+houseID = args.houseID
+frameStep = args.frameStep
 house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
 
 f = open(house_temp_dir + houseID + '_fromOcMap.pckl','rb')
@@ -162,11 +188,17 @@ f2 = open(house_temp_dir + houseID + '_lighting.pckl','rb')
 f2.close()
 
 overview_file = open(house_temp_dir + houseID + "_Poses_Overview.txt","w")
+camInfoDir = os.path.join(house_temp_dir, 'camInfo')
+if not os.path.exists(camInfoDir):
+    os.mkdir(camInfoDir)
+
+if single_room:
+    rooms_with_light = [single_room]
+    print 'Single room mode: only generating for room', single_room
 
 # print 'Generating separate pose files for rooms', \
 #       ','.join(str(room) for room in list(rooms_with_light)),'..'
 for room in rooms_with_light:
-    # if room not in nullRooms:
     r = room - 1
 
     wf = initPoseFile(room)
@@ -278,7 +310,7 @@ for room in rooms_with_light:
 
         if i%frameStep == 0:
             if nearLights(r, pose):
-                printPoseToFile(r, pose, wf)
+                printPoseToFile(r, pose, wf, camInfoDir, room, framesCountRoom, cam_intrinsic, camDownAngle)
                 framesCountRoom += 1
 
         i += 1;
