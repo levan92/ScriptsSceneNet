@@ -39,7 +39,6 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
 def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
     # cam_pose: x, y, z, theta(about y), look-down angle
     # cam_info: hFoV, vFoV, focal length
-    print cam_info
     hFoV, vFoV, f_l = cam_info
     height_pix, width_pix = image_size
     scaling = np.tan(np.deg2rad(hFoV/2.0)) * f_l * 2 / width_pix 
@@ -48,17 +47,25 @@ def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
     x_c = (width_pix/2.0 - obj_loc_pix[1]) * scaling
     p_c = np.array([x_c, y_c, f_l])
     cam_x, cam_y, cam_z, theta, alpha = cam_pose
-    R_wc = np.array([
-    [np.cos(theta), 0, np.sin(theta)],
-    [np.sin(alpha)*np.sin(theta), np.cos(alpha), -np.sin(alpha)*np.cos(theta)],
-    [-np.cos(alpha)*np.sin(theta), np.sin(alpha), np.cos(alpha)*np.cos(theta)]
-                     ])
-    p_w = np.dot(R_wc,p_c)
+    # R_wc = np.array([
+    # [np.cos(theta), 0, np.sin(theta)],
+    # [np.sin(alpha)*np.sin(theta), np.cos(alpha), -np.sin(alpha)*np.cos(theta)],
+    # [-np.cos(alpha)*np.sin(theta), np.sin(alpha), np.cos(alpha)*np.cos(theta)]
+    #                  ])
+    R_alpha = np.array([[1,0,0],
+                        [0,np.cos(alpha),-np.sin(alpha)],
+                        [0,np.sin(alpha),np.cos(alpha)]
+                        ])
+    R_theta = np.array([[np.cos(theta), 0, np.sin(theta)],
+                        [0,1,0],
+                        [-np.sin(theta), 0, np.cos(theta)]
+                        ])
+    p_c2 = np.dot(R_alpha,p_c)
+    p_w = np.dot(R_theta, p_c2)
     p_0_w = np.array([cam_x, cam_y, cam_z])
-    v = p_w - p_0_w
-    mu = (floorHeight - p_0_w[1]) / v[1]
-    obj_loc_w_zx = np.array([p_0_w[2] + mu * v[2],  #z
-                             p_0_w[0] + mu * v[0]]) #x
+    mu = (floorHeight - p_0_w[1]) / p_w[1]
+    obj_loc_w_zx = np.array([p_0_w[2] + mu * p_w[2],  #z
+                             p_0_w[0] + mu * p_w[0]]) #x
     return obj_loc_w_zx
 
 def main(pred_path, cam_info_txt):
@@ -69,10 +76,8 @@ def main(pred_path, cam_info_txt):
     obj_min_size = 10 #needs to be more than this size to be considered obj
     
     # Cam and Pose info
-    cam_info = linecache.getline(cam_info_txt,1)
-    print cam_info
-    cam_pose = np.array(linecache.getline(cam_info_txt,2))
-    print cam_pose
+    cam_info = [float(i) for i in linecache.getline(cam_info_txt,1).split()]
+    cam_pose = [float(i) for i in linecache.getline(cam_info_txt,2).split()]
     # cam_info = [56.144973871705915, 43.60281897270362, 0.20]
     #             #hFoV, vFoV, focal length (m?)
     floorHeight = 0.05 
@@ -81,9 +86,10 @@ def main(pred_path, cam_info_txt):
     # cam_pose = np.array([0.,                    #x
     #                      floorHeight + robotH,  #y
     #                      0.,                    #z
-    #                      np.deg2rad(125),   #facing direction
+    #                      np.deg2rad(90),   #facing direction
     #                      lookdown_angle])  #look-down angle
-
+    print 'Current Coord(zx) of cam:','[',cam_pose[2],',',cam_pose[0],']'
+    print 'facing',np.rad2deg(cam_pose[3]),'deg'
     pred_image = imread(pred_path)
     # cropped_image = pred_image[FG_threshold_i:]
     height, width = np.shape(pred_image)
