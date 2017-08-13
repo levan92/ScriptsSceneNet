@@ -5,8 +5,14 @@ import os
 import subprocess
 import pickle
 import time
+import argparse
 
-houseID = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('houseID', help='house to be processed')
+parser.add_argument('--singleRoom', help='state if only want to generate 1 room', type=int)
+args = parser.parse_args()
+
+houseID = args.houseID
 
 DynamicPoseSceneNet_path = "/homes/el216/Workspace/scenenet/build/DynamicPose_SceneNet"
 house_temp_dir = '/homes/el216/Workspace/ScriptsSceneNet/' + houseID + '/'
@@ -26,6 +32,10 @@ f.close()
 # f2 = open(house_temp_dir + houseID + '_fromRandomObjects.pckl','rb')
 # [_, _, _, _, _, _, nullRooms] = pickle.load(f2)
 # f2.close()
+
+if args.singleRoom:
+    rooms_with_light = [args.singleRoom]
+    print 'Rendering only single room: Room',args.singleRoom
 
 for room in rooms_with_light:
     # if room not in nullRooms:
