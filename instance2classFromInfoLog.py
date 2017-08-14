@@ -89,10 +89,11 @@ THREE_CLASSES = [(0,'Unknown'),
                                  (3,'Objects')
 ]
 
-NYU_CLASS_TO_THREE_CLASSES = {0:0, 1:3, 2:3, 3:2,  4:3,  5:1,  6:3, 
+#NYU_CLASS_TO_THREE_CLASSES = {0:0, 1:3, 2:3, 3:2,  4:3,  5:1,  6:3, 
+#                                7:3, 8:3, 9:3, 10:3, 11:3, 12:2, 13:2}
+
+NYU_CLASS_TO_THREE_CLASSES = {0:0, 1:3, 2:3, 3:2,  4:3,  5:1,  6:2, 
                                 7:3, 8:3, 9:3, 10:3, 11:3, 12:2, 13:2}
-
-
 
 def main(arg1):
 
