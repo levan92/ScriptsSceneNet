@@ -10,7 +10,7 @@ from math import atan2
 import argparse
 import linecache
 
-def findNeighbours(pixel, pixels_objects, neighbour_dist):
+def findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size):
     object_group = []
     object_group.append(pixel)
     obj_loc = np.array(pixel)
@@ -27,13 +27,15 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist):
                 # obj_bb[1][0] = max(obj_bb[1][0], neighbour[0])
                 # obj_bb[1][1] = max(obj_bb[1][1], neighbour[1])             
     obj_loc = obj_loc / float(len(object_group))
-    if len(object_group)>=3:
+    if len(object_group) >= obj_min_size:
         min_bb_dict = minimum_bounding_box(object_group)
         obj_bb = list(min_bb_dict.corner_points)
         centroid = min_bb_dict.rectangle_center
         obj_bb.sort(key=lambda p: atan2(p[1]-centroid[1],p[0]-centroid[0]))
     else:
-        obj_bb = object_group
+        object_group = None
+        obj_loc = None
+        obj_bb = None
     return object_group, obj_loc, obj_bb, pixels_objects
 
 def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
@@ -101,8 +103,8 @@ def main(pred_path, cam_info_txt):
     objs_bb = []
     for n, pixel in enumerate(pixels_objects):
         object_group, obj_loc, obj_bb, pixels_objects = \
-            findNeighbours(pixel, pixels_objects, neighbour_dist)
-        if len(object_group) >= obj_min_size:
+            findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size)
+        if object_group:
             objects.append(object_group)
             objs_loc.append(obj_loc)
             objs_bb.append(obj_bb)
@@ -126,7 +128,8 @@ def main(pred_path, cam_info_txt):
 
     savename = pred_path.replace('.png','_grouped.png')
     plt.savefig(savename)
-    plt.show()
+    # plt.show()
+    return objs_loc
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
