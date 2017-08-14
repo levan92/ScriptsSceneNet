@@ -10,7 +10,7 @@ from math import atan2
 import argparse
 import linecache
 
-def findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size):
+def findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size, min_filled_ratio):
     object_group = []
     object_group.append(pixel)
     obj_loc = np.array(pixel)
@@ -32,11 +32,13 @@ def findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size):
         obj_bb = list(min_bb_dict.corner_points)
         centroid = min_bb_dict.rectangle_center
         obj_bb.sort(key=lambda p: atan2(p[1]-centroid[1],p[0]-centroid[0]))
-    else:
-        object_group = None
-        obj_loc = None
-        obj_bb = None
+        if (len(object_group) / min_bb_dict.area) > min_filled_ratio:
+            return object_group, obj_loc, obj_bb, pixels_objects
+    object_group = None
+    obj_loc = None
+    obj_bb = None
     return object_group, obj_loc, obj_bb, pixels_objects
+    
 
 def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
     # cam_pose: x, y, z, theta(about y), look-down angle
@@ -73,10 +75,13 @@ def getWorldLoc(obj_loc_pix, cam_pose, cam_info, floorHeight, image_size):
 def main(pred_path, cam_info_txt):
     start = time.time()
     
-    FG_threshold_i = 50 #anything higher than i = 50 will be ignored
+    FG_threshold_i = 90 #anything higher than i = 50 will be ignored
     neighbour_dist = 1 # <= 2 tiles away is considered neighbour
-    obj_min_size = 10 #needs to be more than this size to be considered obj
-    
+    # obj_min_size = 150 #needs to be more than this size to be considered obj
+    obj_min_size = 250 #needs to be more than this size to be considered obj
+    # w.r.t. to a 240 x 320 label png
+    min_filled_ratio = 0.5 #object's pixels need to fill up more than [ratio] of its bounding box
+
     # Cam and Pose info
     cam_info = [float(i) for i in linecache.getline(cam_info_txt,1).split()]
     cam_pose = [float(i) for i in linecache.getline(cam_info_txt,2).split()]
@@ -103,7 +108,7 @@ def main(pred_path, cam_info_txt):
     objs_bb = []
     for n, pixel in enumerate(pixels_objects):
         object_group, obj_loc, obj_bb, pixels_objects = \
-            findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size)
+            findNeighbours(pixel, pixels_objects, neighbour_dist, obj_min_size, min_filled_ratio)
         if object_group:
             objects.append(object_group)
             objs_loc.append(obj_loc)
@@ -115,6 +120,7 @@ def main(pred_path, cam_info_txt):
     axes.set_ylim([0,height])
     axes.invert_yaxis()
     colors = cm.jet(np.linspace(0,1,len(objects)))
+    objs_loc_zx = []
     for i in range(len(objects)):
         # print objs_loc[i]
         y,x = zip(*objects[i]) 
@@ -125,11 +131,13 @@ def main(pred_path, cam_info_txt):
         axes.add_patch(plt.Polygon(obj_bb, closed=True, fill=None, edgecolor='r'))
         obj_loc_zx = getWorldLoc(objs_loc[i], cam_pose, cam_info, floorHeight, [height, width])
         print 'Coord(zx) of object in room:',obj_loc_zx
+        objs_loc_zx.append(obj_loc_zx)
 
     savename = pred_path.replace('.png','_grouped.png')
     plt.savefig(savename)
     # plt.show()
-    return objs_loc
+    plt.clf()
+    return objs_loc_zx
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
