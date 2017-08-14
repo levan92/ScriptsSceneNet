@@ -7,12 +7,17 @@ import argparse
 def getParentName(path):
     return os.path.basename(os.path.abspath(os.path.join(path, os.pardir)))
 
-def main(set_name, label_dir_name, houses):
+def main(args):
+    set_name = args.set_name
+    label_dir_name = args.label_dir_name
+    houses = args.houses
     # output_dir = "/vol/bitbucket/el216/output_scenenet/"
     output_dir = "/scratch/el216/output_scenenet/"
     #dataset_dir = "/vol/bitbucket/el216/scenenet_dataset/" + set_name + '/' 
     dataset_dir = "/scratch/el216/scenenet_dataset/"+set_name+"/"
     # dataset_txt = "/homes/el216/Workspace/ScriptsSceneNet/dataset_overview.txt"
+    if args.custom_save_dir:
+        dataset_dir = args.custom_save_dir
     if not os.path.exists(dataset_dir):
         os.mkdir(dataset_dir)
         print ("Created new dir,",dataset_dir)
@@ -106,5 +111,6 @@ if __name__ == '__main__':
                         help='name of label dir to use, usually labels, labels_2, labels_3')
     parser.add_argument('houses', type=str, nargs='+', 
                         help='houses to move into the set, separated by space')
+    parser.add_argument('--custom_save_dir',type=str,help='custom save dir instead of saving in /scratch')
     args = parser.parse_args()
-    main(args.set_name, args.label_dir_name, args.houses)
+    main(args)
