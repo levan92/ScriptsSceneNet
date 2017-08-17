@@ -4,7 +4,7 @@ import argparse
 def main(dir,target):
     for root, folders, files in os.walk(dir):
         for file in files:
-            if file.startswith(target):
+            if target in file:
                 filepath = os.path.join(root, file)
                 os.remove(filepath)
                 print('Removed',filepath)

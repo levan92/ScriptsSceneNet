@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 from pylab import *
 import random
+import os.path
 
 def world2CellCoord(world):
     [z,x] = world
@@ -186,6 +187,13 @@ for room in rooms_with_light:
 #print rooms_obj_ids
 #print objs_cell
 visualiseMaps()
+
+toSave = [ocMap, numRooms, cellSide, origin_ocMap, roomsBBmin, roomsBBmax, roomsSize,
+           rooms_obj_ids, objs_cell]
+f = open(os.path.join(house_temp_dir,'forFindObject.pckl'),'wb')
+pickle.dump(toSave, f)
+f.close()
+
 
 # #returns world coordinate of the top-left of a given cell
 # def cell2WorldCoord_TopLeft(cell):

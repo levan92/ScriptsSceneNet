@@ -84,7 +84,7 @@ def matchWnidFromTexture(texture):
 
 houseID = sys.argv[1]
 
-layoutFilePath = '/vol/bitbucket/el216/suncg/house/' + \
+layoutFilePath = '/scratch/el216/suncg/house/' + \
                  houseID + '/houseOneFloor.obj'
 
 mappingCSV = '/homes/el216/Workspace/SUNCGtoolbox/metadata/ModelCategoryMapping.csv'
