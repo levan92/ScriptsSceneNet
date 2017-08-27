@@ -1,14 +1,13 @@
 README
-The following directory contains scripts that support the rendering of SUNCG houses using SceneNet-RBGD renderer, for the purpose of generating a dataset of POVs from a robotic vacuum cleaner camera of small objects on the floor of a house. 
+The following directory contains scripts that support the rendering of SUNCG houses using SceneNet-RBGD renderer, for the purpose of generating a dataset of POVs from a robotic vacuum cleaner camera of small objects on the floor of a house. It also contains some scripts with post-processing functions after the render is done.
 
+1) MAKE_DATASET.sh & MAKE_DATASET_BATCH.sh
 
-readLayout.py
-	Contains functions that help parse the layout .obj files of the houses. More important 
-	functions include a function that returns the faces of the floor of each room in the
-	house.
+2) convertToOneFloorObj.py
 
+3) checkLighting.py & checkLightingBatch.py
 
-occupancyMap.py
+4) occupancyMap.py
 	By using "readLayout.py" and receiving information regarding the faces of the floor of
 	each room in the house, an occupancy map of the different rooms in the house is
 	generated. 
@@ -22,8 +21,7 @@ occupancyMap.py
 
 	Output files: fromOcMap.pckl, roomsLayout.png
 
-
-randomObjects.py
+5) randomObjects.py
 	Generates random small objects to be placed in each room of the house. Each room is
 	randomly defined a messiness index (0 - 100%), and from that index the number of objects
 	in the room. 
@@ -40,16 +38,14 @@ randomObjects.py
 	Input files: smallObjects.txt, fromOcMap.pckl
 	Output files: fromRandomObjects.pckl, roomsLayout+Objects.png, randomObjectsLocations.txt
 
-
-generateSceneDesc.py
+6) generateSceneDesc.py
 	Generates "scene_description.txt" for SceneNet renderer. Reads the random objects
 	variables from "randomObjects.py" and writes them in the format required by SceneNet.
 
 	Input file: fromRandomObjects.pckl
 	Output file: scene_description.txt
 
-
-generateLookAroundPoses.py:
+7) generateLookAroundPoses.py:
 	Generates "poses.txt" for SceneNet renderer. Takes in room information generated from
 	"occupancyMap.py". 
 
@@ -60,8 +56,7 @@ generateLookAroundPoses.py:
 	Input file: fromOcMap.pckl
 	Output file: poses.txt
 
-
-generatePoses.py:
+8) generatePoses.py:
 	Generates "poses.txt" for SceneNet renderer. Takes in room information generated from 
 	"occupancyMap.py". 
 
@@ -75,11 +70,37 @@ generatePoses.py:
 	Input file: fromOcMap.pckl
 	Output file: poses.txt
 
+9) RunScenenetEachRoom.py
 
-convertPngToMatrix.py: 
-	Output from SceneNet gives the instances and depth data in terms of a png, which cannot
-	be directly visualised. This script automatically reads the output folder, processes the
-	instances and depth pngs into visual image maps. It also does some folders organising at
-	the same time. 
+10) getAvrgRGB.py
+
+11) removeNearFrames.py
+
+12) removeBlackFrames.py
+
+13) processInfoLogForSUNCG.py
+
+14) instance2classFromInfoLog.py
+
+15) output_to_dataset.py
+
+16) houses_count.py
+
+17) update_dataset_overview.py
+
+18) data_aug.py & dataAug_targetSize.py
+
+19) findObject.py & findObject_batch.py
+
+20) visualise.py & visualise_batch.py
+
+21) Miscellaneous scripts:
+	The following scripts have simple and trivial functions that are written to make some of the repetitive actions more efficient and systematic. Specific functions and usage can be easily read from code:
+	- sum_house_sizes.py
+	- sample_set.py
+	- remove_from_dataset.py
+	- remove_aug.py
+	- purge_target_files.py
+
 
 
