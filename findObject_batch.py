@@ -62,6 +62,7 @@ def visualiseMaps(house, room, ocMap, pred_objs, save_dir, roomsBBmin, roomsBBma
     # show()
     print save_name,'saved in',save_dir
     return
+
 parser = argparse.ArgumentParser()
 parser.add_argument('house',type=str,help='target house')
 parser.add_argument('room',type=int,help='target room number')
@@ -71,6 +72,7 @@ parser.add_argument('ocmap_pckl',type=str,help='pckl file of ocMap')
 parser.add_argument('overall_save_dir',type=str,help='save dir for overall room infos')
 parser.add_argument('--found_objs_txt',type=str,help='if txt provided, program loads from it and will not find objects again')
 args = parser.parse_args()
+
 room = str(args.room)
 house = args.house
 f = open(os.path.normpath(args.ocmap_pckl),'rb')
