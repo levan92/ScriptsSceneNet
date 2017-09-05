@@ -112,13 +112,13 @@ def main(dataset_dir, augmenters):
     if zoom: # crop images from each side by 0 to 16px (randomly chosen)
         seq.add( iaa.Crop(px=(0, 16), keep_size=False, name="Zoom") )
     if blur: # blur images, sigma of 0 to 2.5
-        seq.add( iaa.GaussianBlur(sigma=(0., 2.0), name="Blur") )
+        seq.add( iaa.GaussianBlur(sigma=(0., 8.0), name="Blur") )
     if noise:
-        seq.add( iaa.AdditiveGaussianNoise(scale=(0.0*255, 0.05*255), name="Noise") )
+        seq.add( iaa.AdditiveGaussianNoise(scale=(0.0*255, 0.15*255), name="Noise") )
     if contrast:
-        seq.add( iaa.ContrastNormalization((0.5, 2.0), name="Contrast") )
+        seq.add( iaa.ContrastNormalization((0.2, 4.0), name="Contrast") )
     if brightness:
-        seq.add( iaa.Multiply((0.25, 2.0), name="Brightness") )
+        seq.add( iaa.Multiply((0.1, 4.0), name="Brightness") )
 
     def activator_labels(images, augmenter, parents, default):
         if augmenter.name in ["Blur","Noise","Contrast","Brightness"]:
@@ -156,4 +156,4 @@ def main(dataset_dir, augmenters):
     print "Done."
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2:])
+    main(os.path.normpath(sys.argv[1]), sys.argv[2:])
